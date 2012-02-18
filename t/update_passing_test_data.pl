@@ -40,6 +40,8 @@ KEY
 
 my @wanted;
 
+$ENV{PUGS_USE_EXTERNAL_TEST}=1;
+
 find({ wanted => \&queue, no_chdir => 1 }, 't/spec/');
 
 sub queue {
@@ -125,7 +127,7 @@ sub read_specfile {
 sub get_harness {
     return TAP::Harness->new({
             verbosity   => -2,
-            exec        => ["$ENV{HOME}/.cabal/bin/pugs"],
+            exec        => ["./perl6"],
             merge       => 1,
     });
 }

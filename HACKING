@@ -58,12 +58,16 @@ This was cobbled together from:
     perl t/run_spectests
 
 This will checkout a copy of the spectest suite, and run all the known
-to pass tests (list in t/spectest.data). This assumes you've installed pugs to
+to pass tests (list in t/spectest.data). This assumes you've got a copy of
+pugs built as
 
-    $HOME/.cabal/bin/pugs
+    Pugs/pugs
 
 To get a per-synopsis summary, run: 
 
     perl t/spec/test_summary pugs
 
-This requires an alias of ./perl6 in the top level directory.
+This requires a ./perl6 script containing:
+
+    #!/bin/sh
+    PUGS_USE_EXTERNAL_TEST=1 ./Pugs/pugs -IPugs/ext/Test/lib $*

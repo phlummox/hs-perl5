@@ -15,4 +15,5 @@ if (@ARGV) {
 }
 
 my $nt = `t/spec/fudge @OPTS @ARGV`;
-system("/home/coke/.cabal/bin/pugs", split ' ', $nt);
+$ENV{PUGS_USE_EXTERNAL_TEST}=1;
+system("./Pugs/pugs", "-IPugs/ext/Test/lib", split ' ', $nt);
