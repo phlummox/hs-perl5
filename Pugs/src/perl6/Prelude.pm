@@ -26,7 +26,8 @@ the `is builtin` trait.
 
 =cut
 
-use Math::Basic :GLOBAL<pi>;
+#use Math::Basic :GLOBAL<pi>;
+sub pi() is export(:constants) {3.141592653589793}
 
 class Process {
     multi sub exec($prog, @args) returns Bool is builtin is primitive is unsafe {
