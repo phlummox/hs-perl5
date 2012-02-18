@@ -210,6 +210,20 @@ sub lives_ok (Code &code, Str $desc?, :$todo, :$depends) returns Bool is export 
     }
 }
 
+sub done_testing() is export {
+    die "done_testing() has been renamed to done(), please change your test code";
+}
+
+sub done() is export {
+    $Test::testing_done = 1;
+
+    unless $Test::num_of_tests_planned {
+        $Test::num_of_tests_planned = $Test::num_of_tests_run;
+    }
+
+    test_ends();
+}
+
 ## misc. test utilities
 
 sub version_lt (Str $version1, Str $version2) returns Bool {
@@ -376,7 +390,11 @@ sub test_ends {
     $Test::testing_started = 0;
 }
 
-END { Test::test_ends() }
+END {
+    unless $Test::done_testing {
+        Test::test_ends();
+    }
+}
 
 =pod
 
