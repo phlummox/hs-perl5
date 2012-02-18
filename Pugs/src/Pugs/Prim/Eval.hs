@@ -52,8 +52,9 @@ opRequire dumpEnv v = do
     loaded      <- existsFromRef seen v
     let file | '.' `elem` mod = mod
              | otherwise      = (concat $ intersperse (getConfig "file_sep") $ split "::" mod) ++ ".pm"
+    useExternalTest <- io $ (maybe False (/= "")) `fmap` (getEnv "PUGS_USE_EXTERNAL_TEST")
     pathName    <- case mod of
-        "Test"  -> return "Test.pm"
+        "Test" | not useExternalTest -> return "Test.pm"
         _       -> requireInc incs file (errMsg file incs)
     if loaded then opEval style pathName "" else do
         -- %*INC{mod} = { relname => file, pathname => pathName }
@@ -70,7 +71,7 @@ opRequire dumpEnv v = do
         ends    <- fromVal =<< readRef endAV
         clearRef endAV
         rv <- case mod of
-            "Test"  -> shortcutToTestPM
+            "Test" | not useExternalTest -> shortcutToTestPM
             _       -> tryFastEval pathName (pathName ++ ".yml")
         endAV'  <- findSymRef (cast "@*END") glob
         _       <- doArray (VRef endAV') (`array_unshift` ends)
@@ -88,7 +89,7 @@ opRequire dumpEnv v = do
         evl <- asks envEval
         evl ast
     tryFastEval pathName pathNameYml = do
-        io $ print pathNameYml
+        -- io $ print pathNameYml
         ok <- io $ doesFileExist pathNameYml
         if not ok then slowEval pathName else do
         isYamlStale <- tryIO False $ do
