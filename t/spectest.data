@@ -41,6 +41,7 @@ S04-statements/map-and-sort-in-for.t
 S04-statements/no-implicit-block.t
 S04-statements/redo.t
 S04-statements/until.t
+S05-mass/properties-general.t
 S05-modifier/perl5_1.t
 S05-modifier/perl5_2.t
 S05-modifier/perl5_3.t
