@@ -10,6 +10,7 @@ S01-perl-5-integration/strings.t
 S01-perl-5-integration/subs.t
 S02-lexical-conventions/begin_end_pod.t
 S02-lexical-conventions/end-pod.t
+S02-lexical-conventions/sub-block-parsing.t
 S02-literals/array-interpolation.t
 S02-literals/hash-interpolation.t
 S02-literals/hex_chars.t
@@ -27,6 +28,7 @@ S02-types/subscripts_and_context.t
 S03-binding/nested.t
 S03-operators/assign-is-not-binding.t
 S03-operators/chained-declarators.t
+S03-operators/relational.t
 S03-operators/scalar-assign.t
 S03-smartmatch/any-hash.t
 S04-exceptions/control_across_runloop.t
@@ -43,12 +45,16 @@ S05-modifier/perl5_1.t
 S05-modifier/perl5_2.t
 S05-modifier/perl5_3.t
 S05-modifier/perl5_4.t
+S05-modifier/perl5_5.t
 S05-modifier/perl5_7.t
+S05-modifier/perl5_8.t
+S05-modifier/perl5_9.t
 S06-advanced/recurse.t
 S06-advanced/return_function.t
 S06-currying/named.t
 S06-macros/macros-d1.t
 S06-macros/postfix.t
+S06-other/main-eval.t
 S06-signature/defaults.t
 S06-signature/passing-hashes.t
 S06-signature/scalar-type.t
