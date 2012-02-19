@@ -1,3 +1,4 @@
+integration/advent2009-day04.t
 integration/lexical-array-in-inner-block.t
 integration/lexicals-and-attributes.t
 integration/method-calls-and-instantiation.t
@@ -12,12 +13,14 @@ S02-lexical-conventions/begin_end_pod.t
 S02-lexical-conventions/end-pod.t
 S02-lexical-conventions/sub-block-parsing.t
 S02-literals/array-interpolation.t
+S02-literals/autoref.t
 S02-literals/hash-interpolation.t
 S02-literals/hex_chars.t
 S02-literals/pair-boolean.t
 S02-literals/underscores.t
 S02-magicals/block.t
 S02-magicals/dollar-underscore.t
+S02-magicals/subname.t
 S02-magicals/sub.t
 S02-types/assigning-refs.t
 S02-types/catch_type_cast_mismatch.t
@@ -26,6 +29,7 @@ S02-types/nested_arrays.t
 S02-types/nested_pairs.t
 S02-types/parsing-bool.t
 S02-types/subscripts_and_context.t
+S03-binding/hashes.t
 S03-binding/nested.t
 S03-binding/subs.t
 S03-operators/assign-is-not-binding.t
@@ -34,7 +38,9 @@ S03-operators/relational.t
 S03-operators/repeat.t
 S03-operators/scalar-assign.t
 S03-smartmatch/any-array.t
+S03-smartmatch/any-complex.t
 S03-smartmatch/any-hash.t
+S03-smartmatch/array-array.t
 S04-exceptions/control_across_runloop.t
 S04-phasers/init.t
 S04-phasers/multiple.t
@@ -76,8 +82,10 @@ S06-signature/passing-hashes.t
 S06-signature/scalar-type.t
 S06-signature/slurpy-blocks.t
 S06-traits/is-copy.t
+S06-traits/is-rw.t
 S10-packages/export.t
 S10-packages/nested-use.t
+S10-packages/scope.t
 S11-modules/require.t
 S12-attributes/undeclared.t
 S12-class/inheritance-class-methods.t
@@ -86,6 +94,7 @@ S12-class/self-inheritance.t
 S12-construction/destruction.t
 S12-construction/named-params-in-BUILD.t
 S12-methods/class-and-instance.t
+S12-methods/default-trait.t
 S12-methods/lvalue.t
 S12-methods/topic.t
 S12-methods/typed-attributes.t
@@ -107,14 +116,17 @@ S24-testing/5-todo.t
 S29-context/exit-in-if.t
 S29-context/sleep.t
 S29-os/system.t
+S32-array/elems.t
 S32-array/end.t
 S32-array/keys_values.t
 S32-array/pairs.t
 S32-container/cat.t
 S32-hash/keys_values.t
+S32-num/pi.t
 S32-num/sqrt.t
 S32-str/append.t
 S32-str/capitalize.t
+S32-str/chomp.t
 S32-str/chop.t
 S32-str/lcfirst.t
 S32-str/lc.t
