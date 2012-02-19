@@ -33,6 +33,7 @@ S03-operators/chained-declarators.t
 S03-operators/relational.t
 S03-operators/repeat.t
 S03-operators/scalar-assign.t
+S03-smartmatch/any-array.t
 S03-smartmatch/any-hash.t
 S04-exceptions/control_across_runloop.t
 S04-phasers/init.t
@@ -59,6 +60,7 @@ S05-modifier/perl5_7.t
 S05-modifier/perl5_8.t
 S05-modifier/perl5_9.t
 S05-substitution/match.t
+S06-advanced/lexical-subs.t
 S06-advanced/recurse.t
 S06-advanced/return_function.t
 S06-currying/named.t
@@ -103,6 +105,7 @@ S24-testing/0-compile.t
 S24-testing/4-version_lt.t
 S24-testing/5-todo.t
 S29-context/exit-in-if.t
+S29-context/sleep.t
 S29-os/system.t
 S32-array/end.t
 S32-array/keys_values.t
