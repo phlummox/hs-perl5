@@ -11,6 +11,7 @@ S01-perl-5-integration/strings.t
 S01-perl-5-integration/subs.t
 S02-lexical-conventions/begin_end_pod.t
 S02-lexical-conventions/end-pod.t
+S02-lexical-conventions/minimal-whitespace.t
 S02-lexical-conventions/sub-block-parsing.t
 S02-literals/array-interpolation.t
 S02-literals/autoref.t
@@ -29,6 +30,7 @@ S02-types/nested_arrays.t
 S02-types/nested_pairs.t
 S02-types/parsing-bool.t
 S02-types/subscripts_and_context.t
+S02-types/unicode.t
 S03-binding/hashes.t
 S03-binding/nested.t
 S03-binding/subs.t
@@ -44,6 +46,7 @@ S03-smartmatch/array-array.t
 S04-exceptions/control_across_runloop.t
 S04-phasers/init.t
 S04-phasers/multiple.t
+S04-phasers/next.t
 S04-phasers/pre-post.t
 S04-statements/for-scope.t
 S04-statements/for_with_only_one_item.t
@@ -55,8 +58,13 @@ S04-statements/redo.t
 S04-statements/until.t
 S05-mass/named-chars.t
 S05-mass/properties-block.t
+S05-mass/properties-derived.t
 S05-mass/properties-general.t
 S05-mass/properties-script.t
+S05-mass/stdrules.t
+S05-metachars/line-anchors.t
+S05-metachars/newline.t
+S05-metasyntax/litvar.t
 S05-modifier/perl5_1.t
 S05-modifier/perl5_2.t
 S05-modifier/perl5_3.t
