@@ -253,7 +253,7 @@ multi sub skip (Str $reason?, :$depends) returns Bool is export {
     Test::proclaim(1, "", "skip $reason", :$depends);
 }
 
-multi sub skip (Int $count, Str $reason, :$depends) returns Bool is export {
+multi sub skip (Str $reason, Int $count, :$depends) returns Bool is export {
     for (1 .. $count) {
         # Hack -- PIL2JS doesn't support multisubs correctly yet
         if $*OS eq "browser" {
