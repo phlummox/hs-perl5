@@ -601,7 +601,7 @@ More implementation-specific deadlines can be appended to a single C<todo> call:
 =head3 skip
 
   skip (Str $reason?) returns Bool
-  skip (Int $count, Str $reason?) returns Bool
+  skip (Str $reason?, Int $count = 1) returns Bool
 
 If for some reason a test is to be skipped, you can use this
 function to do so.
