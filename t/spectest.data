@@ -48,6 +48,7 @@ S03-operators/autovivification.t
 S03-operators/chained-declarators.t
 S03-operators/eqv.t
 S03-operators/not.t
+S03-operators/range.t
 S03-operators/relational.t
 S03-operators/repeat.t
 S03-operators/scalar-assign.t
@@ -122,6 +123,7 @@ S12-construction/named-params-in-BUILD.t
 S12-methods/class-and-instance.t
 S12-methods/default-trait.t
 S12-methods/lvalue.t
+S12-methods/submethods.t
 S12-methods/topic.t
 S12-methods/typed-attributes.t
 S13-overloading/fallbacks-deep.t
