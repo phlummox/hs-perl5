@@ -132,6 +132,7 @@ S32-array/keys_values.t
 S32-array/pairs.t
 S32-container/cat.t
 S32-hash/keys_values.t
+S32-list/map.t
 S32-num/pi.t
 S32-num/sqrt.t
 S32-str/append.t
