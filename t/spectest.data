@@ -49,6 +49,7 @@ S03-operators/autoincrement.t
 S03-operators/autovivification.t
 S03-operators/chained-declarators.t
 S03-operators/context-forcers.t
+S03-operators/equality.t
 S03-operators/eqv.t
 S03-operators/not.t
 S03-operators/range.t
@@ -116,6 +117,7 @@ S06-signature/slurpy-blocks.t
 S06-signature/sub-ref.t
 S06-traits/is-copy.t
 S06-traits/is-rw.t
+S09-subscript/slice.t
 S10-packages/export.t
 S10-packages/nested-use.t
 S10-packages/scope.t
