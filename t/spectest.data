@@ -1,3 +1,4 @@
+integration/99problems-01-to-10.t
 integration/advent2009-day04.t
 integration/lexical-array-in-inner-block.t
 integration/lexicals-and-attributes.t
@@ -33,6 +34,7 @@ S02-types/assigning-refs.t
 S02-types/catch_type_cast_mismatch.t
 S02-types/flattening.t
 S02-types/hash_ref.t
+S02-types/hash.t
 S02-types/nested_arrays.t
 S02-types/nested_pairs.t
 S02-types/parsing-bool.t
@@ -46,6 +48,7 @@ S03-operators/assign-is-not-binding.t
 S03-operators/autoincrement.t
 S03-operators/autovivification.t
 S03-operators/chained-declarators.t
+S03-operators/context-forcers.t
 S03-operators/eqv.t
 S03-operators/not.t
 S03-operators/range.t
@@ -65,13 +68,16 @@ S04-phasers/init.t
 S04-phasers/multiple.t
 S04-phasers/next.t
 S04-phasers/pre-post.t
+S04-statement-modifiers/for.t
 S04-statements/for-scope.t
 S04-statements/for_with_only_one_item.t
 S04-statements/last.t
 S04-statements/lazy.t
+S04-statements/loop.t
 S04-statements/map-and-sort-in-for.t
 S04-statements/no-implicit-block.t
 S04-statements/redo.t
+S04-statements/repeat.t
 S04-statements/until.t
 S05-mass/named-chars.t
 S05-mass/properties-block.t
@@ -107,6 +113,7 @@ S06-signature/passing-arrays.t
 S06-signature/passing-hashes.t
 S06-signature/scalar-type.t
 S06-signature/slurpy-blocks.t
+S06-signature/sub-ref.t
 S06-traits/is-copy.t
 S06-traits/is-rw.t
 S10-packages/export.t
@@ -120,6 +127,7 @@ S12-class/literal.t
 S12-class/self-inheritance.t
 S12-construction/destruction.t
 S12-construction/named-params-in-BUILD.t
+S12-methods/chaining.t
 S12-methods/class-and-instance.t
 S12-methods/default-trait.t
 S12-methods/lvalue.t
@@ -168,3 +176,4 @@ S32-str/ucfirst.t
 S32-str/uc.t
 S32-temporal/time.t
 S32-trig/pi.t
+S32-trig/simple.t
