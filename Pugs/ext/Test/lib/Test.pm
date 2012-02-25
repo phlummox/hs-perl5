@@ -77,6 +77,12 @@ sub ok (Bool $cond, Str $desc?, :$todo, :$depends) returns Bool is export {
     Test::proclaim($cond, $desc, $todo, :$depends);
 }
 
+## nok
+
+sub nok (Bool $cond, Str $desc?, :$todo, :$depends) returns Bool is export {
+    Test::proclaim(!$cond, $desc, $todo, :$depends);
+}
+
 ## is
 
 sub is (Str $got, Str $expected, Str $desc?, :$todo, :$depends) returns Bool is export {
