@@ -216,6 +216,16 @@ sub lives_ok (Code &code, Str $desc?, :$todo, :$depends) returns Bool is export 
     }
 }
 
+sub eval_lives_ok (Str $code, Str $desc = '' :$todo, :$depends) returns Bool is export {
+    eval $code;
+    if ($!) {
+        Test::proclaim(undef, $desc, $todo, "An exception was thrown : $!", :$depends);
+    }
+    else {
+        &Test::ok.nextwith(1, $desc, :$todo, :$depends);
+    }
+}
+
 sub done_testing() is export {
     die "done_testing() has been renamed to done(), please change your test code";
 }
