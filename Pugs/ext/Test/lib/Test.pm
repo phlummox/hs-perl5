@@ -216,7 +216,7 @@ sub lives_ok (Code &code, Str $desc?, :$todo, :$depends) returns Bool is export 
     }
 }
 
-sub eval_lives_ok (Str $code, Str $desc = '' :$todo, :$depends) returns Bool is export {
+sub eval_lives_ok (Str $code, Str $desc = '', :$todo, :$depends) returns Bool is export {
     eval $code;
     if ($!) {
         Test::proclaim(undef, $desc, $todo, "An exception was thrown : $!", :$depends);
