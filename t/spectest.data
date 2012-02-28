@@ -84,6 +84,7 @@ S03-operators/relational.t
 S03-operators/repeat.t
 S03-operators/scalar-assign.t
 S03-operators/spaceship-and-containers.t
+S03-operators/subscript-vs-lt.t
 S03-operators/value_equivalence.t
 S03-smartmatch/any-any.t
 S03-smartmatch/any-array.t
@@ -192,6 +193,7 @@ S12-class/literal.t
 S12-class/namespaced.t
 S12-class/rw.t
 S12-class/self-inheritance.t
+S12-construction/autopairs.t
 S12-construction/destruction.t
 S12-construction/named-params-in-BUILD.t
 S12-methods/attribute-params.t
