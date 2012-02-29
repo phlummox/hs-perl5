@@ -10,7 +10,9 @@ module Pugs.AST.SIO (
     module Control.Concurrent.STM
 ) where
 import Pugs.Internals
-import Control.Concurrent.STM
+import Control.Concurrent.STM (STM, atomically, TVar,
+    writeTVar, readTVar, newTVarIO, newTVar, readTMVar, newTMVarIO,
+    tryPutTMVar, takeTMVar, newEmptyTMVar)
 
 instance Monad m => ((:>:) (m a)) (Identity a) where cast = return . runIdentity
 instance ((:>:) (SIO a)) (STM a) where cast = liftSTM
