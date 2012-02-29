@@ -27,7 +27,7 @@ import System.Exit
 import System.IO (hPutStrLn, stderr)
 import System.IO.Unsafe
 import Control.Exception (Exception(..))
-import Control.Concurrent.STM
+import Control.Concurrent.STM (STM, atomically, TVar, writeTVar, readTVar)
 import Control.Monad.Trans (MonadIO(..))
 import qualified Control.Exception (catch, evaluate)
 
@@ -100,7 +100,7 @@ finallyM :: (Monad m)
      -> m a     -- ^ Result of the actual action
 finallyM ma mb = do
     r <- ma
-    mb
+    _ <- mb
     return r
 
 internalError :: String -> a
