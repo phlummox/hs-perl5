@@ -23,7 +23,7 @@ import Pugs.Compat.Posix      as X
 import Pugs.Compat.Regex      as X 
 
 import Control.Concurrent     as X 
-import Control.Concurrent.STM as X 
+import Control.Concurrent.STM as X (STM, atomically, always, alwaysSucceeds, retry, orElse, check, catchSTM)
 import Control.Exception      as X (catchJust, Exception(..))
 import Control.Monad          as X (replicateM, forM, forM_, MonadPlus(..), msum, liftM2, liftM3, guard, foldM, unless, liftM, filterM, join, when)
 import Control.Monad.Error    as X (MonadError(..), ErrorT(..), Error(..))
