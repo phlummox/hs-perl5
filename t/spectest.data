@@ -55,6 +55,7 @@ S02-types/mixed_multi_dimensional.t
 S02-types/nan.t
 S02-types/nested_arrays.t
 S02-types/nested_pairs.t
+S02-types/num.t
 S02-types/parsing-bool.t
 S02-types/subscripts_and_context.t
 S02-types/unicode.t
