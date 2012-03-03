@@ -33,6 +33,7 @@ S02-literals/autoref.t
 S02-literals/hash-interpolation.t
 S02-literals/hex_chars.t
 S02-literals/pair-boolean.t
+S02-literals/quoting.t
 S02-literals/radix.t
 S02-literals/string-interpolation.t
 S02-literals/sub-calls.t
@@ -47,15 +48,18 @@ S02-names-vars/variables-and-packages.t
 S02-types/array_extending.t
 S02-types/array.t
 S02-types/assigning-refs.t
+S02-types/bool.t
 S02-types/catch_type_cast_mismatch.t
 S02-types/flattening.t
 S02-types/hash_ref.t
 S02-types/hash.t
+S02-types/infinity.t
 S02-types/mixed_multi_dimensional.t
 S02-types/nan.t
 S02-types/nested_arrays.t
 S02-types/nested_pairs.t
 S02-types/num.t
+S02-types/pair.t
 S02-types/parsing-bool.t
 S02-types/subscripts_and_context.t
 S02-types/unicode.t
@@ -103,10 +107,12 @@ S03-smartmatch/array-array.t
 S03-smartmatch/disorganized.t
 S04-blocks-and-statements/pointy.t
 S04-declarations/implicit-parameter.t
+S04-declarations/multiple.t
 S04-exceptions/control_across_runloop.t
 S04-phasers/ascending-order.t
 S04-phasers/check.t
 S04-phasers/descending-order.t
+S04-phasers/end.t
 S04-phasers/enter-leave.t
 S04-phasers/exit-in-begin.t
 S04-phasers/init.t
@@ -132,6 +138,7 @@ S04-statements/next.t
 S04-statements/no-implicit-block.t
 S04-statements/redo.t
 S04-statements/repeat.t
+S04-statements/terminator.t
 S04-statements/unless.t
 S04-statements/until.t
 S04-statements/while.t
@@ -168,6 +175,7 @@ S06-macros/macros-d1.t
 S06-macros/postfix.t
 S06-macros/returning-string.t
 S06-operator-overloading/imported-subs.t
+S06-other/anon-hashes-vs-blocks.t
 S06-other/main-eval.t
 S06-other/misc.t
 S06-signature/caller-param.t
@@ -245,6 +253,7 @@ S32-hash/delete.t
 S32-hash/keys_values.t
 S32-hash/slice.t
 S32-list/create.t
+S32-list/grep.t
 S32-list/map.t
 S32-list/reduce.t
 S32-list/reverse.t
@@ -254,6 +263,7 @@ S32-num/abs.t
 S32-num/int.t
 S32-num/log.t
 S32-num/pi.t
+S32-num/rat.t
 S32-num/sign.t
 S32-num/sqrt.t
 S32-str/append.t
