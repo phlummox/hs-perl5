@@ -30,9 +30,13 @@ S02-lexical-conventions/sub-block-parsing.t
 S02-lexical-conventions/unicode.t
 S02-literals/array-interpolation.t
 S02-literals/autoref.t
+S02-literals/char-by-name.t
+S02-literals/char-by-number.t
 S02-literals/hash-interpolation.t
 S02-literals/hex_chars.t
+S02-literals/misc-interpolation.t
 S02-literals/pair-boolean.t
+S02-literals/pairs.t
 S02-literals/quoting.t
 S02-literals/radix.t
 S02-literals/string-interpolation.t
@@ -93,6 +97,7 @@ S03-operators/repeat.t
 S03-operators/scalar-assign.t
 S03-operators/spaceship-and-containers.t
 S03-operators/subscript-vs-lt.t
+S03-operators/ternary.t
 S03-operators/value_equivalence.t
 S03-smartmatch/any-any.t
 S03-smartmatch/any-array.t
@@ -163,6 +168,8 @@ S05-modifier/perl5_6.t
 S05-modifier/perl5_7.t
 S05-modifier/perl5_8.t
 S05-modifier/perl5_9.t
+S05-modifier/pos.t
+S05-modifier/sigspace.t
 S05-substitution/match.t
 S05-transliteration/trans.t
 S06-advanced/lexical-subs.t
@@ -179,7 +186,10 @@ S06-other/anon-hashes-vs-blocks.t
 S06-other/main-eval.t
 S06-other/misc.t
 S06-signature/caller-param.t
+S06-signature/closure-over-parameters.t
+S06-signature/code.t
 S06-signature/defaults.t
+S06-signature/errors.t
 S06-signature/passing-arrays.t
 S06-signature/passing-hashes.t
 S06-signature/scalar-type.t
