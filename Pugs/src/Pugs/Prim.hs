@@ -213,6 +213,9 @@ op1 "pair" = op1Cast $ VList . (map $ \(k, v) -> castV ((VStr k, v) :: VPair))
 op1 "~"    = op1Cast VStr
 op1 "?"    = op1Cast VBool
 op1 "int"  = op1Cast VInt
+op1 "Int"  = op1Cast VInt
+op1 "Num"  = op1Cast VNum
+op1 "Rat"  = op1Cast VRat
 op1 "+^"   = op1Cast (VInt . pred . negate) -- Arbitrary precision complement- 0 ==> -1 / 1 ==> -2
 op1 "~^"   = op1Cast (VStr . mapStr complement)
 op1 "?^"   = op1 "!"
@@ -1889,6 +1892,15 @@ initSyms = seq (length syms) $ do
 \\n   Str       pre     Pugs::Safe::safe_getc      safe ()\
 \\n   Str       pre     Pugs::Safe::safe_readline  safe ()\
 \\n   Int       pre     int     safe   (Int)\
+\\n   Int       pre     Int     safe   (Int)\
+\\n   Int       pre     Num     safe   (Num)\
+\\n   Int       pre     Rat     safe   (Rat)\
+\\n   Num       pre     Int     safe   (Int)\
+\\n   Num       pre     Num     safe   (Num)\
+\\n   Num       pre     Rat     safe   (Rat)\
+\\n   Rat       pre     Int     safe   (Int)\
+\\n   Rat       pre     Num     safe   (Num)\
+\\n   Rat       pre     Rat     safe   (Rat)\
 \\n   List      pre     list    safe   (List)\
 \\n   Hash      pre     hash    safe   (List)\
 \\n   List      pre     pair    safe   (List)\
