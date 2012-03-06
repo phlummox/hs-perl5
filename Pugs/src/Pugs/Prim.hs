@@ -105,6 +105,9 @@ op0 "fork"    = const $ opPerl5 "fork" []
 op0 "defer"   = const $ do
     env <- ask
     if envAtomic env then guardSTM retry else fail "Cannot call &defer outside a contend block."
+op0 "Int" = const $ return (VType $ mkType "Int")
+op0 "Num" = const $ return (VType $ mkType "Num")
+op0 "Rat" = const $ return (VType $ mkType "Rat")
 op0 other = const $ fail ("Unimplemented listOp: " ++ other)
 
 -- |Implementation of unary primitive operators and functions
@@ -1892,14 +1895,17 @@ initSyms = seq (length syms) $ do
 \\n   Str       pre     Pugs::Safe::safe_getc      safe ()\
 \\n   Str       pre     Pugs::Safe::safe_readline  safe ()\
 \\n   Int       pre     int     safe   (Int)\
+\\n   Int       pre     Int     safe   ()\
 \\n   Int       pre     Int     safe   (Int)\
-\\n   Int       pre     Num     safe   (Num)\
-\\n   Int       pre     Rat     safe   (Rat)\
-\\n   Num       pre     Int     safe   (Int)\
+\\n   Int       pre     Int     safe   (Num)\
+\\n   Int       pre     Int     safe   (Rat)\
+\\n   Num       pre     Num     safe   ()\
+\\n   Num       pre     Num     safe   (Int)\
 \\n   Num       pre     Num     safe   (Num)\
-\\n   Num       pre     Rat     safe   (Rat)\
-\\n   Rat       pre     Int     safe   (Int)\
-\\n   Rat       pre     Num     safe   (Num)\
+\\n   Num       pre     Num     safe   (Rat)\
+\\n   Rat       pre     Rat     safe   ()\
+\\n   Rat       pre     Rat     safe   (Int)\
+\\n   Rat       pre     Rat     safe   (Num)\
 \\n   Rat       pre     Rat     safe   (Rat)\
 \\n   List      pre     list    safe   (List)\
 \\n   Hash      pre     hash    safe   (List)\
