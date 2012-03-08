@@ -239,6 +239,7 @@ S14-roles/crony.t
 S14-roles/stubs.t
 S14-roles/submethods.t
 S14-roles/super.t
+S16-io/getc.t
 S16-io/print.t
 S16-io/say.t
 S17-async/async.t
@@ -248,10 +249,12 @@ S24-testing/0-compile.t
 S24-testing/4-version_lt.t
 S24-testing/5-todo.t
 S29-any/isa.t
+S29-context/evalfile.t
 S29-context/eval.t
 S29-context/exit-in-if.t
 S29-context/sleep.t
 S29-os/system.t
+S32-array/bool.t
 S32-array/elems.t
 S32-array/end.t
 S32-array/keys_values.t
@@ -276,6 +279,7 @@ S32-num/pi.t
 S32-num/rat.t
 S32-num/sign.t
 S32-num/sqrt.t
+S32-num/stringify.t
 S32-str/append.t
 S32-str/bool.t
 S32-str/capitalize.t
