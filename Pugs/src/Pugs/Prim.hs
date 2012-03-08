@@ -108,6 +108,7 @@ op0 "defer"   = const $ do
 op0 "Int" = const $ return (VType $ mkType "Int")
 op0 "Num" = const $ return (VType $ mkType "Num")
 op0 "Rat" = const $ return (VType $ mkType "Rat")
+op0 "Bool" = const $ return (VType $ mkType "Bool")
 op0 other = const $ fail ("Unimplemented listOp: " ++ other)
 
 -- |Implementation of unary primitive operators and functions
@@ -215,6 +216,7 @@ op1 "list" = op1Cast VList
 op1 "pair" = op1Cast $ VList . (map $ \(k, v) -> castV ((VStr k, v) :: VPair))
 op1 "~"    = op1Cast VStr
 op1 "?"    = op1Cast VBool
+op1 "Bool" = op1Cast VBool
 op1 "int"  = op1Cast VInt
 op1 "Int"  = op1Cast VInt
 op1 "Num"  = op1Cast VNum
@@ -1899,14 +1901,22 @@ initSyms = seq (length syms) $ do
 \\n   Int       pre     Int     safe   (Int)\
 \\n   Int       pre     Int     safe   (Num)\
 \\n   Int       pre     Int     safe   (Rat)\
+\\n   Int       pre     Int     safe   (Bool)\
 \\n   Num       pre     Num     safe   ()\
 \\n   Num       pre     Num     safe   (Int)\
 \\n   Num       pre     Num     safe   (Num)\
 \\n   Num       pre     Num     safe   (Rat)\
+\\n   Num       pre     Num     safe   (Bool)\
 \\n   Rat       pre     Rat     safe   ()\
 \\n   Rat       pre     Rat     safe   (Int)\
 \\n   Rat       pre     Rat     safe   (Num)\
 \\n   Rat       pre     Rat     safe   (Rat)\
+\\n   Rat       pre     Rat     safe   (Bool)\
+\\n   Bool      pre     Bool    safe   ()\
+\\n   Bool      pre     Bool    safe   (Int)\
+\\n   Bool      pre     Bool    safe   (Num)\
+\\n   Bool      pre     Bool    safe   (Rat)\
+\\n   Bool      pre     Bool    safe   (Bool)\
 \\n   List      pre     list    safe   (List)\
 \\n   Hash      pre     hash    safe   (List)\
 \\n   List      pre     pair    safe   (List)\
