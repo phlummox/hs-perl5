@@ -51,7 +51,7 @@ wordAny     = satisfy isWordAny <?> "word character"
 isWordAny   :: Char -> Bool
 isWordAlpha :: Char -> Bool
 isWordNoDash :: Char -> Bool
-isWordAny x = (isAlphaNum x || x == '_' || x == '-' || x == '\'')
+isWordAny x = (isAlphaNum x || x == '_')
 isWordAlpha x = (isAlpha x || x == '_')
 isWordNoDash x = (isAlphaNum x || x == '_' || x == '\'')
 
@@ -203,7 +203,7 @@ ruleQualifiedIdentifierNoDash = verbatimRule "qualified identifier" $ do
 ruleVerbatimIdentifier :: RuleParser String
 ruleVerbatimIdentifier = verbatimRule "identifier" $ do
     c  <- identStart
-    cs <- many identLetter
+    cs <- many identLetter `sepBeginBy` many (oneOf "'-")
     return (c:cs)
 
 ruleVerbatimIdentifierNoDash :: RuleParser String
@@ -506,12 +506,19 @@ decimal         = number 10 digit
 identifier, ident :: RuleParser String
 identifier = lexeme . try $ ident
 
-ident
-    = do{ c <- identStart
-        ; cs <- many identLetter
-        ; return (c:cs)
-        }
-    <?> "identifier"
+ident = (<?> "identifier") $ do
+    c <- identStart
+    cs <- many identLetter `sepBeginBy` many (oneOf "'-")
+    return (c:cs)
+
+sepBeginBy p sep = fmap concat $ many $ do
+    ss <- sep
+    cs <- p
+    return (ss ++ cs)
+
+
+
+
 
 -----------------------------------------------------------
 -- White space & symbols
