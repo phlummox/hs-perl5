@@ -272,7 +272,7 @@ rulePackageHead :: RuleParser (Either String (String, Exp, Exp, Env))
 rulePackageHead = do
     scope   <- option Nothing $ fmap Just ruleScope
     sym     <- choice $ map symbol (words "package module class role grammar")
-    name    <- ruleQualifiedIdentifier
+    name    <- ruleQualifiedIdentifierNoDash
     optional ruleVersionPart -- v
     optional ruleAuthorPart  -- a
     whiteSpace

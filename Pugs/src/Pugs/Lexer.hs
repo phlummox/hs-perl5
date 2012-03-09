@@ -15,6 +15,7 @@ module Pugs.Lexer (
     braces, brackets, angles, balancedDelim, decimal,
 
     ruleVerbatimIdentifier, ruleDelimitedIdentifier, ruleQualifiedIdentifier,
+    ruleVerbatimIdentifierNoDash, ruleDelimitedIdentifierNoDash, ruleQualifiedIdentifierNoDash,
 
     symbol, interpolatingStringLiteral, escapeCode,
 
@@ -37,9 +38,10 @@ import qualified Text.ParserCombinators.Parsec as Parsec (eof)
 eof :: RuleParser ()
 eof = Parsec.eof <?> ""
 
-identStart, identLetter :: RuleParser Char
+identStart, identLetter, identLetterNoDash :: RuleParser Char
 identStart  = satisfy isWordAlpha
 identLetter = satisfy isWordAny
+identLetterNoDash = satisfy isWordNoDash
 
 wordAlpha   :: RuleParser Char
 wordAny     :: RuleParser Char
@@ -48,8 +50,10 @@ wordAny     = satisfy isWordAny <?> "word character"
 
 isWordAny   :: Char -> Bool
 isWordAlpha :: Char -> Bool
+isWordNoDash :: Char -> Bool
 isWordAny x = (isAlphaNum x || x == '_' || x == '-')
 isWordAlpha x = (isAlpha x || x == '_')
+isWordNoDash x = (isAlphaNum x || x == '_')
 
 maybeParens :: RuleParser a -> RuleParser a
 maybeParens p = choice [ parens p, p ]
@@ -178,15 +182,34 @@ ruleDelimitedIdentifier delim = verbatimRule "delimited identifier" $ do
     --option "" (try $ string delim) -- leading delimiter
     ruleVerbatimIdentifier `sepBy1` (try $ string delim)
 
+ruleDelimitedIdentifierNoDash :: String -- ^ Delimiter (e.g. \'@::@\')
+                        -> RuleParser [String]
+ruleDelimitedIdentifierNoDash delim = verbatimRule "delimited identifier" $ do
+    -- Allowing the leading delim actually leads to subtle oddness with things
+    -- like `use jsan:.Foo` and `use pugs:::Foo`, so I took it out.
+    --option "" (try $ string delim) -- leading delimiter
+    ruleVerbatimIdentifierNoDash `sepBy1` (try $ string delim)
+
 ruleQualifiedIdentifier :: RuleParser String
 ruleQualifiedIdentifier = verbatimRule "qualified identifier" $ do
     chunks <- ruleDelimitedIdentifier "::"
+    return $ concat (intersperse "::" chunks)
+
+ruleQualifiedIdentifierNoDash :: RuleParser String
+ruleQualifiedIdentifierNoDash = verbatimRule "qualified identifier" $ do
+    chunks <- ruleDelimitedIdentifierNoDash "::"
     return $ concat (intersperse "::" chunks)
 
 ruleVerbatimIdentifier :: RuleParser String
 ruleVerbatimIdentifier = verbatimRule "identifier" $ do
     c  <- identStart
     cs <- many identLetter
+    return (c:cs)
+
+ruleVerbatimIdentifierNoDash :: RuleParser String
+ruleVerbatimIdentifierNoDash = verbatimRule "identifier without dash" $ do
+    c  <- identStart
+    cs <- many identLetterNoDash
     return (c:cs)
 
 {-
