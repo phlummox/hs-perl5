@@ -51,7 +51,7 @@ wordAny     = satisfy isWordAny <?> "word character"
 isWordAny   :: Char -> Bool
 isWordAlpha :: Char -> Bool
 isWordNoDash :: Char -> Bool
-isWordAny x = (isAlphaNum x || x == '_' || x == '-')
+isWordAny x = (isAlphaNum x || x == '_' || x == '-' || x == '\'')
 isWordAlpha x = (isAlpha x || x == '_')
 isWordNoDash x = (isAlphaNum x || x == '_')
 
