@@ -5,6 +5,7 @@ integration/advent2009-day03.t
 integration/advent2009-day04.t
 integration/advent2009-day07.t
 integration/advent2009-day11.t
+integration/advent2009-day12.t
 integration/advent2009-day15.t
 integration/advent2009-day19.t
 integration/code-blocks-as-sub-args.t
@@ -38,6 +39,7 @@ S02-literals/misc-interpolation.t
 S02-literals/pair-boolean.t
 S02-literals/pairs.t
 S02-literals/quoting.t
+# S02-literals/quoting-unicode.t # hangs on sprintf
 S02-literals/radix.t
 S02-literals/string-interpolation.t
 S02-literals/sub-calls.t
@@ -49,15 +51,20 @@ S02-magicals/sub.t
 S02-names/caller.t
 S02-names/symbolic-deref.t
 S02-names-vars/variables-and-packages.t
+S02-types/anon_block.t
 S02-types/array_extending.t
 S02-types/array.t
 S02-types/assigning-refs.t
+# S02-types/bag.t # NYI
 S02-types/bool.t
 S02-types/catch_type_cast_mismatch.t
 S02-types/flattening.t
 S02-types/hash_ref.t
 S02-types/hash.t
 S02-types/infinity.t
+# S02-types/keybag.t # NYI
+# S02-types/keyhash.t # NYI
+# S02-types/keyset.t # NYI
 S02-types/mixed_multi_dimensional.t
 S02-types/nan.t
 S02-types/nested_arrays.t
@@ -65,6 +72,7 @@ S02-types/nested_pairs.t
 S02-types/num.t
 S02-types/pair.t
 S02-types/parsing-bool.t
+# S02-types/set.t # NYI
 S02-types/subscripts_and_context.t
 S02-types/unicode.t
 S03-binding/arrays.t
@@ -80,13 +88,16 @@ S03-operators/assign.t
 S03-operators/autoincrement-range.t
 S03-operators/autoincrement.t
 S03-operators/autovivification.t
+# S03-operators/bag.t # NYI
 S03-operators/bit.t
 S03-operators/boolean-bitwise.t
 S03-operators/chained-declarators.t
+# S03-operators/comparison.t # Issue #10
 S03-operators/context-forcers.t
 S03-operators/context.t
 S03-operators/equality.t
 S03-operators/eqv.t
+S03-operators/increment.t
 S03-operators/inplace.t
 S03-operators/names.t
 S03-operators/not.t
@@ -95,6 +106,8 @@ S03-operators/range.t
 S03-operators/relational.t
 S03-operators/repeat.t
 S03-operators/scalar-assign.t
+# S03-operators/set.t # NYI
+S03-operators/short-circuit.t
 S03-operators/spaceship-and-containers.t
 S03-operators/subscript-vs-lt.t
 S03-operators/ternary.t
@@ -113,6 +126,7 @@ S03-smartmatch/disorganized.t
 S04-blocks-and-statements/pointy.t
 S04-declarations/implicit-parameter.t
 S04-declarations/multiple.t
+S04-declarations/my.t
 S04-exceptions/control_across_runloop.t
 S04-phasers/ascending-order.t
 S04-phasers/check.t
@@ -134,6 +148,7 @@ S04-statement-modifiers/while.t
 S04-statement-parsing/hash.t
 S04-statements/do.t
 S04-statements/for-scope.t
+S04-statements/for.t
 S04-statements/for_with_only_one_item.t
 S04-statements/last.t
 S04-statements/lazy.t
@@ -180,20 +195,24 @@ S06-currying/mixed.t
 S06-currying/named.t
 S06-macros/macros-d1.t
 S06-macros/postfix.t
+S06-macros/returning-closure.t
 S06-macros/returning-string.t
 S06-operator-overloading/imported-subs.t
 S06-other/anon-hashes-vs-blocks.t
 S06-other/main-eval.t
 S06-other/misc.t
+S06-signature/arity.t
 S06-signature/caller-param.t
 S06-signature/closure-over-parameters.t
 S06-signature/code.t
 S06-signature/defaults.t
 S06-signature/errors.t
+S06-signature/named-parameters.t
 S06-signature/passing-arrays.t
 S06-signature/passing-hashes.t
 S06-signature/scalar-type.t
 S06-signature/slurpy-blocks.t
+S06-signature/slurpy-params.t
 S06-signature/sub-ref.t
 S06-traits/is-copy.t
 S06-traits/is-readonly.t
@@ -207,6 +226,7 @@ S11-modules/require.t
 S12-attributes/clone.t
 S12-attributes/delegation.t
 S12-attributes/inheritance.t
+S12-attributes/instance.t
 S12-attributes/undeclared.t
 S12-class/basic.t
 S12-class/inheritance-class-methods.t
@@ -232,6 +252,7 @@ S12-methods/typed-attributes.t
 S12-traits/basic.t
 S13-overloading/fallbacks-deep.t
 S13-syntax/aliasing.t
+S14-roles/attributes.t
 S14-roles/bool.t
 S14-roles/composition.t
 S14-roles/conflicts.t
@@ -246,6 +267,7 @@ S17-async/async.t
 S17-async/contend.t
 S19-command-line-options/01-multiple-e.t
 S24-testing/0-compile.t
+S24-testing/1-basic.t
 S24-testing/4-version_lt.t
 S24-testing/5-todo.t
 S29-any/isa.t
@@ -255,10 +277,14 @@ S29-context/exit-in-if.t
 S29-context/sleep.t
 S29-os/system.t
 S32-array/bool.t
+# S32-array/delete.t # Issue #6
 S32-array/elems.t
 S32-array/end.t
 S32-array/keys_values.t
 S32-array/pairs.t
+S32-array/push.t
+# S32-array/rotate.t # NYI
+S32-array/unshift.t
 S32-container/cat.t
 S32-container/roundrobin.t
 S32-container/zip.t
@@ -274,6 +300,7 @@ S32-list/sort.t
 S32-list/uniq.t
 S32-num/abs.t
 S32-num/complex.t
+S32-num/exp.t
 S32-num/int.t
 S32-num/log.t
 S32-num/pi.t
@@ -286,6 +313,8 @@ S32-str/bool.t
 S32-str/capitalize.t
 S32-str/chomp.t
 S32-str/chop.t
+# S32-str/indent.t # NYI: Str.indent, infix:<x>
+S32-str/index.t
 S32-str/lcfirst.t
 S32-str/lc.t
 S32-str/length.t
@@ -294,6 +323,23 @@ S32-str/rindex.t
 S32-str/substr.t
 S32-str/ucfirst.t
 S32-str/uc.t
+# S32-temporal/calendar.t # NYI
+# S32-temporal/DateTime-Instant-Duration.t # NYI
+# S32-temporal/DateTime.t # NYI
+# S32-temporal/Date.t # NYI
+# S32-temporal/local.t # NYI
 S32-temporal/time.t
+# S32-trig/atan2.t # Issue #6
+# S32-trig/cosech.t # Issue #6
+# S32-trig/cosec.t # Issue #6
+# S32-trig/cosh.t # Issue #6
+# S32-trig/cos.t # Issue #6
+# S32-trig/cotanh.t # Issue #6
+# S32-trig/e.t # NYI
 S32-trig/pi.t
+# S32-trig/sech.t # Issue #6
+# S32-trig/sec.t # Issue #6
 S32-trig/simple.t
+# S32-trig/sinh.t # Issue #6
+# S32-trig/tanh.t # Issue #6
+# S32-trig/tan.t # Issue #6
