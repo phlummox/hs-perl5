@@ -48,7 +48,7 @@ wordAny     = satisfy isWordAny <?> "word character"
 
 isWordAny   :: Char -> Bool
 isWordAlpha :: Char -> Bool
-isWordAny x = (isAlphaNum x || x == '_')
+isWordAny x = (isAlphaNum x || x == '_' || x == '-')
 isWordAlpha x = (isAlpha x || x == '_')
 
 maybeParens :: RuleParser a -> RuleParser a
