@@ -53,7 +53,7 @@ isWordAlpha :: Char -> Bool
 isWordNoDash :: Char -> Bool
 isWordAny x = (isAlphaNum x || x == '_' || x == '-' || x == '\'')
 isWordAlpha x = (isAlpha x || x == '_')
-isWordNoDash x = (isAlphaNum x || x == '_')
+isWordNoDash x = (isAlphaNum x || x == '_' || x == '\'')
 
 maybeParens :: RuleParser a -> RuleParser a
 maybeParens p = choice [ parens p, p ]
