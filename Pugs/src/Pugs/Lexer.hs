@@ -495,7 +495,7 @@ identContinue = fmap concat $ many $ try $ do
     cs <- identNext
     return (c:cs)
 
-ident = liftM2 (++) identBegin identContinue
+ident = liftM2 (++) identBegin (try identContinue <|> return "")
 
 -----------------------------------------------------------
 -- White space & symbols
