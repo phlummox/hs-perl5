@@ -272,7 +272,7 @@ rulePackageHead :: RuleParser (Either String (String, Exp, Exp, Env))
 rulePackageHead = do
     scope   <- option Nothing $ fmap Just ruleScope
     sym     <- choice $ map symbol (words "package module class role grammar")
-    name    <- ruleQualifiedIdentifierNoDash
+    name    <- ruleQualifiedIdentifier
     optional ruleVersionPart -- v
     optional ruleAuthorPart  -- a
     whiteSpace
@@ -1998,9 +1998,9 @@ ruleParamName = literalRule "parameter name" $ do
         then ruleSubNamePossiblyWithTwigil
         else do twigil <- ruleTwigil
                 name   <- case twigil of
-                    ""  -> many1 wordAny <|> string "/" <|> string "¢"
-                    "!" -> many wordAny
-                    _   -> many1 wordAny
+                    ""  -> ruleVerbatimIdentifier <|> many1 (oneOf "0123456789") <|> string "/" <|> string "¢"
+                    "!" -> ruleVerbatimIdentifier <|> return ""
+                    _   -> ruleVerbatimIdentifier <|> many1 (oneOf "0123456789")
                 return $ sigil ++ twigil ++ name
 
 -- XXX - Eventually return "Var" here and verbatimVarNameString can be the "String" form
