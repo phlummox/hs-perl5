@@ -150,6 +150,7 @@ S04-statements/do.t
 S04-statements/for-scope.t
 S04-statements/for.t
 S04-statements/for_with_only_one_item.t
+S04-statements/given.t
 S04-statements/last.t
 S04-statements/lazy.t
 S04-statements/loop.t
