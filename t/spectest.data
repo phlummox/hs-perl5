@@ -53,15 +53,18 @@ S02-names/symbolic-deref.t
 S02-names-vars/variables-and-packages.t
 S02-types/anon_block.t
 S02-types/array_extending.t
+S02-types/array_ref.t
 S02-types/array.t
 S02-types/assigning-refs.t
 # S02-types/bag.t # NYI
 S02-types/bool.t
 S02-types/catch_type_cast_mismatch.t
+S02-types/declare.t
 S02-types/flattening.t
 S02-types/hash_ref.t
 S02-types/hash.t
 S02-types/infinity.t
+S02-types/int-uint.t
 # S02-types/keybag.t # NYI
 # S02-types/keyhash.t # NYI
 # S02-types/keyset.t # NYI
@@ -72,8 +75,11 @@ S02-types/nested_pairs.t
 S02-types/num.t
 S02-types/pair.t
 S02-types/parsing-bool.t
+S02-types/range.t
 # S02-types/set.t # NYI
 S02-types/subscripts_and_context.t
+S02-types/subset.t
+S02-types/type.t
 S02-types/unicode.t
 S03-binding/arrays.t
 S03-binding/hashes.t
