@@ -56,6 +56,7 @@ S02-types/array_extending.t
 S02-types/array_ref.t
 S02-types/array.t
 S02-types/assigning-refs.t
+S02-types/autovivification.t
 # S02-types/bag.t # NYI
 S02-types/bool.t
 S02-types/catch_type_cast_mismatch.t
@@ -68,6 +69,7 @@ S02-types/int-uint.t
 # S02-types/keybag.t # NYI
 # S02-types/keyhash.t # NYI
 # S02-types/keyset.t # NYI
+S02-types/lists.t
 S02-types/mixed_multi_dimensional.t
 S02-types/nan.t
 S02-types/nested_arrays.t
