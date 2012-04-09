@@ -119,6 +119,7 @@ S03-operators/repeat.t
 S03-operators/scalar-assign.t
 # S03-operators/set.t # NYI
 S03-operators/short-circuit.t
+S03-operators/so.t
 S03-operators/spaceship-and-containers.t
 S03-operators/subscript-vs-lt.t
 S03-operators/ternary.t
