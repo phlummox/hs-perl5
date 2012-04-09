@@ -1,4 +1,5 @@
 integration/99problems-01-to-10.t
+integration/99problems-21-to-30.t
 integration/99problems-41-to-50.t
 integration/99problems-61-to-70.t
 integration/advent2009-day03.t
@@ -43,6 +44,7 @@ S02-literals/quoting.t
 S02-literals/radix.t
 S02-literals/string-interpolation.t
 S02-literals/sub-calls.t
+S02-literals/subscript.t
 S02-literals/underscores.t
 S02-magicals/block.t
 S02-magicals/dollar-underscore.t
@@ -107,6 +109,7 @@ S03-operators/equality.t
 S03-operators/eqv.t
 S03-operators/increment.t
 S03-operators/inplace.t
+S03-operators/misc.t
 S03-operators/names.t
 S03-operators/not.t
 S03-operators/range-int.t
@@ -142,6 +145,7 @@ S04-phasers/descending-order.t
 S04-phasers/end.t
 S04-phasers/enter-leave.t
 S04-phasers/exit-in-begin.t
+S04-phasers/first.t
 S04-phasers/init.t
 S04-phasers/interpolate.t
 S04-phasers/multiple.t
@@ -180,7 +184,9 @@ S05-mass/rx.t
 S05-mass/stdrules.t
 S05-metachars/line-anchors.t
 S05-metachars/newline.t
+S05-metasyntax/charset.t
 S05-metasyntax/litvar.t
+S05-metasyntax/prior.t
 S05-metasyntax/repeat.t
 S05-modifier/perl5_0.t
 S05-modifier/perl5_1.t
@@ -228,6 +234,7 @@ S06-traits/is-copy.t
 S06-traits/is-readonly.t
 S06-traits/is-rw.t
 S09-autovivification/autoincrement.t
+S09-hashes/objecthash.t
 S09-subscript/slice.t
 S10-packages/export.t
 S10-packages/nested-use.t
@@ -242,6 +249,7 @@ S12-class/basic.t
 S12-class/inheritance-class-methods.t
 S12-class/inheritance.t
 S12-class/instantiate.t
+S12-class/lexical.t
 S12-class/literal.t
 S12-class/namespaced.t
 S12-class/rw.t
@@ -280,6 +288,7 @@ S24-testing/0-compile.t
 S24-testing/1-basic.t
 S24-testing/4-version_lt.t
 S24-testing/5-todo.t
+S28-named-variables/inc.t
 S29-any/isa.t
 S29-context/evalfile.t
 S29-context/eval.t
@@ -303,6 +312,7 @@ S32-hash/keys_values.t
 S32-hash/slice.t
 S32-list/create.t
 S32-list/grep.t
+S32-list/join.t
 S32-list/map.t
 S32-list/pick.t
 S32-list/reduce.t
@@ -330,6 +340,7 @@ S32-str/index.t
 S32-str/lcfirst.t
 S32-str/lc.t
 S32-str/length.t
+S32-str/pos.t
 S32-str/quotemeta.t
 S32-str/rindex.t
 S32-str/substr.t
