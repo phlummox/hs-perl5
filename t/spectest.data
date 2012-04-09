@@ -310,13 +310,19 @@ S32-container/zip.t
 S32-hash/delete.t
 S32-hash/keys_values.t
 S32-hash/slice.t
+# S32-list/categorize.t # categorize, ... NYI
+# S32-list/classify.t # Array.classify NYI
 S32-list/create.t
+# S32-list/end.t # ... NYI
+# S32-list/first.t # ... NYI
 S32-list/grep.t
 S32-list/join.t
+# S32-list/map_function_return_values.t # fails all tests
 S32-list/map.t
 S32-list/pick.t
 S32-list/reduce.t
 S32-list/reverse.t
+# S32-list/roll.t # Array.roll NYI
 S32-list/sort.t
 S32-list/uniq.t
 S32-num/abs.t
@@ -344,6 +350,7 @@ S32-str/pos.t
 S32-str/quotemeta.t
 S32-str/rindex.t
 S32-str/substr.t
+# S32-str/trim.t # trim NYI
 S32-str/ucfirst.t
 S32-str/uc.t
 # S32-temporal/calendar.t # NYI
