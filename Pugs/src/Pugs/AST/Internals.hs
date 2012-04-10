@@ -489,7 +489,7 @@ valType (VSubst   _)    = mkType "Subst"
 valType (VMatch   _)    = mkType "Match"
 valType (VType    t)    = t
 valType (VObject  o)    = objType o
-valType (VOpaque  _)    = mkType "Object"
+valType (VOpaque  _)    = mkType "Mu"
 valType (PerlSV   _)    = mkType "Scalar::Perl5"
 valType (VV       _)    = mkType "Scalar::Perl5" -- (cast $ Val.valMeta v)
 
