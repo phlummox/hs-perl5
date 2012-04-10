@@ -215,8 +215,9 @@ op1 "List::reverse" = \v -> do
 op1 "list" = op1Cast VList
 op1 "pair" = op1Cast $ VList . (map $ \(k, v) -> castV ((VStr k, v) :: VPair))
 op1 "~"    = op1Cast VStr
+op1 "gist" = op1Cast VStr -- Cheat
 op1 "?"    = op1Cast VBool
-op1 "so"    = op1Cast VBool
+op1 "so"   = op1Cast VBool
 op1 "Bool" = op1Cast VBool
 op1 "int"  = op1Cast VInt
 op1 "Int"  = op1Cast VInt
@@ -1889,6 +1890,7 @@ initSyms = seq (length syms) $ do
 \\n   Num       pre     sqrt    safe   (Num)\
 \\n   Num       spre    -       safe   (Num)\
 \\n   Str       spre    ~       safe   (Str)\
+\\n   Str       pre     gist    safe   (Any)\
 \\n   Bool      spre    ?       safe   (Bool)\
 \\n   Bool      pre     so      safe   (Any)\
 \\n   Str       spre    =       unsafe (?IO)\
