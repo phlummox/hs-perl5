@@ -114,7 +114,7 @@ main = do
 
         
 
-data Object =
+data Mu =
  O | A | B | C | D | E | F | G | H | I | J | K | K1 | K2 | K3 | X | Y | Z
  deriving (Eq, Show)
 

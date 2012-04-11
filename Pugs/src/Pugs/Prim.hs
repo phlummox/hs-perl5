@@ -694,7 +694,7 @@ op1 "Pugs::Internals::emit_yaml" = \v -> do
     glob <- filterPrim =<< asks envGlobal
     yml  <- io $ showYaml (filterUserDefinedPad glob, v)
     return $ VStr yml
-op1 "Object::HOW" = \v -> do
+op1 "Mu::HOW" = \v -> do
     typ     <- evalValType v
     evalExp $ _Var (':':'*':showType typ)
 op1 "Class::name" = \v -> do
@@ -1314,7 +1314,7 @@ op3 "split" = op3Split
 op3 "Str::split" = \x y z -> do
     op3 "split" y x z
 op3 "HOW::new" = \t n p -> do
-    cls     <- op3 "Object::new" t n p
+    cls     <- op3 "Mu::new" t n p
     meta    <- readRef =<< fromVal cls
     fetch   <- doHash meta hash_fetchVal
 
@@ -1338,7 +1338,7 @@ op3 "HOW::new" = \t n p -> do
     
     return cls
 
-op3 "Object::new" = \t n p -> do
+op3 "Mu::new" = \t n p -> do
     positionals <- fromVal p
     typ     <- fromVal t
     named   <- fromVal n
@@ -1359,7 +1359,7 @@ op3 "Object::new" = \t n p -> do
     -- Register finalizers by keeping weakrefs somehow
     setFinalization obj
 
-op3 "Object::clone" = \t n _ -> do
+op3 "Mu::clone" = \t n _ -> do
     named <- fromVal n
     (VObject o) <- fromVal t
     attrs   <- readIVar (IHash $ objAttrs o)
@@ -2068,10 +2068,10 @@ initSyms = seq (length syms) $ do
 \\n   Bool      pre     flush   unsafe (IO)\
 \\n   Bool      pre     IO::close   unsafe,export (IO:)\
 \\n   Bool      pre     Socket::close   unsafe,export (Socket:)\
-\\n   Bool      pre     die     safe   (?Object)\
+\\n   Bool      pre     die     safe   (?Mu)\
 \\n   Bool      pre     warn    safe   (List)\
-\\n   Bool      pre     fail_   safe   (?Object)\
-\\n   Bool      pre     fail    safe   (?Object)\
+\\n   Bool      pre     fail_   safe   (?Mu)\
+\\n   Bool      pre     fail    safe   (?Mu)\
 \\n   Socket    pre     listen  unsafe (Int)\
 \\n   Socket    pre     connect unsafe (Str, Int)\
 \\n   Any       pre     accept  unsafe (Any)\
@@ -2200,8 +2200,8 @@ initSyms = seq (length syms) $ do
 \\n   Str       pre     chr     safe   (Int)\
 \\n   Int       pre     ord     safe   (Str)\
 \\n   Str       pre     oct     safe   (Str)\
-\\n   Object    pre     stat    unsafe  (Str)\
-\\n   Object    pre     lstat   unsafe  (Str)\
+\\n   Mu    pre     stat    unsafe  (Str)\
+\\n   Mu    pre     lstat   unsafe  (Str)\
 \\n   Int       pre     from    safe   (Match)\
 \\n   Int       pre     to      safe   (Match)\
 \\n   List      pre     matches safe   (Match)\
@@ -2214,17 +2214,17 @@ initSyms = seq (length syms) $ do
 \\n   Int       pre     sign    safe   (Num)\
 \\n   Bool      pre     kill    safe   (Thread)\
 \\n   Int       pre     kill    unsafe (Int, List)\
-\\n   Object    pre     Object::new     safe,export   (Object: Named)\
-\\n   Object    pre     BUILDALL   safe   (Object)\
-\\n   Object    pre     DESTROYALL safe   (Object)\
+\\n   Mu    pre     Mu::new     safe,export   (Mu: Named)\
+\\n   Mu    pre     BUILDALL   safe   (Mu)\
+\\n   Mu    pre     DESTROYALL safe   (Mu)\
 \\n   Code      pre     TEMP    safe   (rw!Any)\
-\\n   Object    pre     Object::clone   safe   (Object: Named)\
-\\n   Class     pre     Object::HOW    safe,export   (Object)\
-\\n   Object    pre     HOW::new     safe   (Object: Named)\
-\\n   Object    pre     HOW::does     safe   (Object: List)\
+\\n   Mu    pre     Mu::clone   safe   (Mu: Named)\
+\\n   Class     pre     Mu::HOW    safe,export   (Mu)\
+\\n   Mu    pre     HOW::new     safe   (Mu: Named)\
+\\n   Mu    pre     HOW::does     safe   (Mu: List)\
 \\n   Str       pre     Class::name    safe   (Class)\
 \\n   Hash      pre     Class::traits  safe   (Class)\
-\\n   Object    pre     WHICH      safe   (Any)\
+\\n   Mu    pre     WHICH      safe   (Any)\
 \\n   Int       pre     Rat::numerator   safe   (Rat:)\
 \\n   Int       pre     Rat::denominator safe   (Rat:)\
 \\n   Bool      pre     Thread::yield   safe   (Thread)\

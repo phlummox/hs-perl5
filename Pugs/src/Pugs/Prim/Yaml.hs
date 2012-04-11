@@ -37,8 +37,8 @@ fromYaml MkNode{n_elem=EMap nodes, n_tag=tag} = do
                 return (key, val)
             hv      <- io $ (H.fromList H.hashString vals :: IO IHash)
             return $ VRef (hashRef hv)
-        Just s | (pre, post) <- Str.splitAt 16 s   -- 16 == length "tag:pugs:Object:"
-               , pre == packBuf "tag:pugs:Object:" -> do
+        Just s | (pre, post) <- Str.splitAt 16 s   -- 16 == length "tag:pugs:Mu:"
+               , pre == packBuf "tag:pugs:Mu:" -> do
             let typ = unpackBuf post
             vals    <- forM nodes $ \(keyNode, valNode) -> do
                 key <- fromVal =<< fromYaml keyNode
@@ -110,7 +110,7 @@ toYaml v@(VObject obj) = do
     -- parens, which is, of course, wrong.
     hash    <- fromVal v :: Eval VHash
     attrs   <- toYaml $ VRef (hashRef hash)
-    return $ tagNode (Just $ packBuf $ "tag:pugs:Object:" ++ showType (objType obj)) attrs
+    return $ tagNode (Just $ packBuf $ "tag:pugs:Mu:" ++ showType (objType obj)) attrs
 toYaml (VRule MkRulePGE{rxRule=rule, rxGlobal=global, rxStringify=stringify, rxAdverbs=adverbs}) = do
     adverbs' <- toYaml adverbs
     return . mkTagNode "tag:pugs:Rule" $ EMap

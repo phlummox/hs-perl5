@@ -827,7 +827,7 @@ e.g.
 will produce the list of types
 
 @
-Any, Void, Object, Scalar, Complex, Num
+Any, Void, Mu, Scalar, Complex, Num
 @
 
 This function does /not/ expect to be given junctive types.
@@ -865,7 +865,7 @@ initTreeCount :: Int
 initTreeCount = countTree initTree
 
 rawTree :: Tree ID
-rawTree = fmap cast $! Node "Object"
+rawTree = fmap cast $! Node "Mu"
     [ Node "Any"
         [ Node "Item"
             [ Node "List"

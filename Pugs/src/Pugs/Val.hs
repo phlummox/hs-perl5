@@ -35,7 +35,7 @@ itemVal :: Val -> Eval Val
 itemVal = return
 
 valMeta :: Val -> PureStr
-valMeta _ = cast "Object"
+valMeta _ = cast "Mu"
 
 valShow :: Val -> PureStr
 valShow _ = cast "<opaque>"
