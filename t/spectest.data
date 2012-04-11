@@ -112,6 +112,7 @@ S03-operators/inplace.t
 S03-operators/misc.t
 S03-operators/names.t
 S03-operators/not.t
+S03-operators/precedence.t
 S03-operators/range-int.t
 S03-operators/range.t
 S03-operators/relational.t
@@ -235,6 +236,7 @@ S06-traits/is-copy.t
 S06-traits/is-readonly.t
 S06-traits/is-rw.t
 S09-autovivification/autoincrement.t
+S09-autovivification/autovivification.t
 S09-hashes/objecthash.t
 S09-subscript/slice.t
 S10-packages/export.t
@@ -332,6 +334,7 @@ S32-num/exp.t
 S32-num/int.t
 S32-num/log.t
 S32-num/pi.t
+S32-num/power.t
 S32-num/rat.t
 S32-num/sign.t
 S32-num/sqrt.t
