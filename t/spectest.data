@@ -219,7 +219,6 @@ S06-macros/macros-d1.t
 S06-macros/postfix.t
 S06-macros/returning-closure.t
 S06-macros/returning-string.t
-S06-multi/by-trait.t
 S06-multi/syntax.t
 S06-operator-overloading/imported-subs.t
 S06-other/anon-hashes-vs-blocks.t
