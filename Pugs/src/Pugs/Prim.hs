@@ -1122,6 +1122,7 @@ op2 "Pugs::Internals::openFile" = \x y -> do
 op2 "exp" = \x y -> if defined y
     then op2Num (**) x y
     else op1Floating exp x
+op2 "Rat" = \x y -> op1Cast VRat x -- Cheat, ignore epsilon
 op2 "Pugs::Internals::sprintf" = \x y -> do
     -- a single argument is all Haskell can really handle.
     -- XXX printf should be wrapped in a catch so a mis-typed argument
@@ -1913,9 +1914,13 @@ initSyms = seq (length syms) $ do
 \\n   Num       pre     Num     safe   (Bool)\
 \\n   Rat       pre     Rat     safe   ()\
 \\n   Rat       pre     Rat     safe   (Int)\
+\\n   Rat       pre     Rat     safe   (Int: Any)\
 \\n   Rat       pre     Rat     safe   (Num)\
+\\n   Rat       pre     Rat     safe   (Num: Any)\
 \\n   Rat       pre     Rat     safe   (Rat)\
+\\n   Rat       pre     Rat     safe   (Rat: Any)\
 \\n   Rat       pre     Rat     safe   (Bool)\
+\\n   Rat       pre     Rat     safe   (Bool: Any)\
 \\n   Bool      pre     Bool    safe   ()\
 \\n   Bool      pre     Bool    safe   (Int)\
 \\n   Bool      pre     Bool    safe   (Num)\
