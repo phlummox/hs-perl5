@@ -111,6 +111,7 @@ S03-operators/context-forcers.t
 S03-operators/context.t
 S03-operators/equality.t
 S03-operators/eqv.t
+S03-operators/identity.t
 S03-operators/increment.t
 S03-operators/inplace.t
 S03-operators/misc.t
@@ -162,6 +163,7 @@ S04-phasers/start.t
 S04-statement-modifiers/for.t
 S04-statement-modifiers/given.t
 S04-statement-modifiers/until.t
+S04-statement-modifiers/values_in_bool_context.t
 S04-statement-modifiers/while.t
 S04-statement-parsing/hash.t
 S04-statements/do.t
@@ -179,6 +181,7 @@ S04-statements/no-implicit-block.t
 S04-statements/redo.t
 S04-statements/repeat.t
 S04-statements/terminator.t
+S04-statements/try.t
 S04-statements/unless.t
 S04-statements/until.t
 S04-statements/while.t
@@ -231,6 +234,7 @@ S06-signature/code.t
 S06-signature/defaults.t
 S06-signature/errors.t
 S06-signature/named-parameters.t
+S06-signature/optional.t
 S06-signature/passing-arrays.t
 S06-signature/passing-hashes.t
 S06-signature/scalar-type.t
@@ -260,6 +264,7 @@ S12-class/inheritance.t
 S12-class/instantiate.t
 S12-class/lexical.t
 S12-class/literal.t
+S12-class/magical-vars.t
 S12-class/namespaced.t
 S12-class/rw.t
 S12-class/self-inheritance.t
@@ -305,6 +310,7 @@ S29-context/exit-in-if.t
 S29-context/sleep.t
 S29-os/system.t
 S32-array/bool.t
+S32-array/delete.t
 # S32-array/delete.t # Issue #6
 S32-array/elems.t
 S32-array/end.t
@@ -318,6 +324,7 @@ S32-container/roundrobin.t
 S32-container/zip.t
 S32-hash/delete.t
 S32-hash/keys_values.t
+S32-hash/kv.t
 S32-hash/slice.t
 # S32-list/categorize.t # categorize, ... NYI
 # S32-list/classify.t # Array.classify NYI
