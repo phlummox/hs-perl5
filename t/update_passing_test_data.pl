@@ -91,6 +91,14 @@ sub go {
     my $fudged = qx{t/spec/fudge --keep-exit-code pugs $orig};
     chomp $fudged;
 
+    open my $x, "<", $orig;
+    my $fileplan = "?";
+    while (my $line = <$x>){
+        if ($line =~ /^plan (\d+);/) {
+           $fileplan = $1;
+        }
+    }
+
     my $H = get_harness();
     my $agg = TAP::Parser::Aggregator->new();
     $agg->start();
@@ -108,9 +116,9 @@ sub go {
     $some_passed = 'S' if $actually_passed;
     $plan_ok     = 'P' if !scalar($agg->parse_errors);
     $all_passed  = 'A' if !       $agg->has_errors;
-    printf "[%s%s%s] (% 3d/%-3d) %s\n", $some_passed, $plan_ok, $all_passed,
-           $actually_passed, $planned, $orig
-                if $actually_passed || ($plan_ok && $planned > 0);
+    printf "[%s%s%s] (% 3d/%-3d/%-3s) %s\n", $some_passed, $plan_ok, $all_passed,
+           $actually_passed, $planned, $fileplan, $orig;
+                #if $actually_passed || ($plan_ok && $planned > 0);
 }
 
 sub read_specfile {
