@@ -159,6 +159,8 @@ op1 "sin"  = op1Floating sin
 op1 "tan"  = op1Floating tan
 op1 "sqrt" = op1Floating sqrt
 op1 "atan" = op1Floating atan
+op1 "acos"  = op1Floating cos
+op1 "asin"  = op1Floating sin
 op1 "post:i" = \x -> do
     n <- fromVal x
     return $ VComplex (0 :+ n)
@@ -1885,6 +1887,8 @@ initSyms = seq (length syms) $ do
 \\n   Num       pre     cos     safe   (Num)\
 \\n   Num       pre     sin     safe   (Num)\
 \\n   Num       pre     tan     safe   (Num)\
+\\n   Num       pre     acos    safe   (Num)\
+\\n   Num       pre     asin    safe   (Num)\
 \\n   Any       pre     Pugs::Internals::pi      safe   ()\
 \\n   Any       pre     self    safe,macro   ()\
 \\n   Bool      pre     nothing safe   ()\
