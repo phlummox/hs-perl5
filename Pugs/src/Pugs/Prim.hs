@@ -225,7 +225,6 @@ op1 "int"  = op1Cast VInt
 op1 "Int"  = op1Cast VInt
 op1 "Num"  = op1Cast VNum
 op1 "Rat"  = op1Cast VRat
-op1 "Complex" = op1Cast VComplex
 op1 "+^"   = op1Cast (VInt . pred . negate) -- Arbitrary precision complement- 0 ==> -1 / 1 ==> -2
 op1 "~^"   = op1Cast (VStr . mapStr complement)
 op1 "?^"   = op1 "!"
@@ -1926,7 +1925,6 @@ initSyms = seq (length syms) $ do
 \\n   Rat       pre     Rat     safe   (Rat: Any)\
 \\n   Rat       pre     Rat     safe   (Bool)\
 \\n   Rat       pre     Rat     safe   (Bool: Any)\
-\\n   Complex   pre     Complex safe   (Complex)\
 \\n   Bool      pre     Bool    safe   ()\
 \\n   Bool      pre     Bool    safe   (Int)\
 \\n   Bool      pre     Bool    safe   (Num)\
