@@ -70,4 +70,4 @@ To get a per-synopsis summary, run:
 This requires a ./perl6 script containing:
 
     #!/bin/sh
-    LC_ALL=en_US.ISO-8859-1 PUGS_USE_EXTERNAL_TEST=1 ./Pugs/pugs -IPugs/ext/Test/lib $*
+    PUGS_USE_EXTERNAL_TEST=1 ./Pugs/pugs -IPugs/ext/Test/lib $*
