@@ -6,7 +6,6 @@ integration/advent2009-day03.t
 integration/advent2009-day04.t
 integration/advent2009-day07.t
 integration/advent2009-day11.t
-integration/advent2009-day12.t
 integration/advent2009-day15.t
 integration/advent2009-day19.t
 integration/code-blocks-as-sub-args.t
@@ -173,7 +172,6 @@ S04-statements/for_with_only_one_item.t
 S04-statements/given.t
 S04-statements/if.t
 S04-statements/last.t
-S04-statements/lazy.t
 S04-statements/loop.t
 S04-statements/map-and-sort-in-for.t
 S04-statements/next.t
@@ -276,7 +274,6 @@ S12-methods/chaining.t
 S12-methods/class-and-instance.t
 S12-methods/default-trait.t
 S12-methods/how.t
-S12-methods/lvalue.t
 S12-methods/method-vs-sub.t
 S12-methods/submethods.t
 S12-methods/topic.t
@@ -291,7 +288,6 @@ S14-roles/conflicts.t
 S14-roles/crony.t
 S14-roles/stubs.t
 S14-roles/submethods.t
-S14-roles/super.t
 S16-io/getc.t
 S16-io/print.t
 S16-io/say.t
