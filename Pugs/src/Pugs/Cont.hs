@@ -10,7 +10,7 @@
 -}
 
 module Pugs.Cont (
-    callCCT, shift, reset, shiftT, resetT,
+    callCCT, shiftT, resetT,
     module Control.Monad.Cont,
 ) where
 
@@ -30,13 +30,6 @@ callCCT f = callCC f' where
 
 -- ghc doesn't allow something like m (forall c. m c)
 newtype EmptyMonad m = EmptyMonad { runEmptyMonad :: forall c. m c }
-
--- shift/reset for the Cont monad
-shift :: ((a -> Cont s r) -> Cont r r) -> Cont r a
-shift e = Cont $ \k -> e (return . k) `runCont` id
-
-reset :: Cont a a -> Cont r a 
-reset e = return $ e `runCont` id
 
 -- shiftT/resetT for the ContT monad transformer
 shiftT :: Monad m => ((a -> ContT r m s) -> ContT s m s) -> ContT s m a
