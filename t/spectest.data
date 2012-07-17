@@ -6,6 +6,8 @@ integration/advent2009-day03.t
 integration/advent2009-day04.t
 integration/advent2009-day07.t
 integration/advent2009-day11.t
+integration/advent2009-day12.t
+integration/advent2009-day14.t
 integration/advent2009-day15.t
 integration/advent2009-day19.t
 integration/code-blocks-as-sub-args.t
@@ -39,7 +41,7 @@ S02-literals/misc-interpolation.t
 S02-literals/pair-boolean.t
 S02-literals/pairs.t
 S02-literals/quoting.t
-# S02-literals/quoting-unicode.t # hangs on sprintf
+S02-literals/quoting-unicode.t
 S02-literals/radix.t
 S02-literals/string-interpolation.t
 S02-literals/sub-calls.t
@@ -65,6 +67,7 @@ S02-types/autovivification.t
 # S02-types/bag.t # NYI
 S02-types/bool.t
 S02-types/catch_type_cast_mismatch.t
+S02-types/compact.t
 S02-types/declare.t
 S02-types/flattening.t
 S02-types/hash_ref.t
@@ -131,6 +134,7 @@ S03-operators/ternary.t
 S03-operators/value_equivalence.t
 S03-smartmatch/any-any.t
 S03-smartmatch/any-array.t
+S03-smartmatch/any-bool.t
 S03-smartmatch/any-callable.t
 S03-smartmatch/any-complex.t
 S03-smartmatch/any-hash.t
@@ -139,6 +143,7 @@ S03-smartmatch/any-num.t
 S03-smartmatch/any-str.t
 S03-smartmatch/any-type.t
 S03-smartmatch/array-array.t
+S03-smartmatch/array-hash.t
 S03-smartmatch/disorganized.t
 S04-blocks-and-statements/pointy.t
 S04-declarations/implicit-parameter.t
@@ -183,6 +188,7 @@ S04-statements/try.t
 S04-statements/unless.t
 S04-statements/until.t
 S04-statements/while.t
+S05-capture/match-object.t
 S05-mass/named-chars.t
 S05-mass/properties-block.t
 S05-mass/properties-derived.t
@@ -192,6 +198,7 @@ S05-mass/rx.t
 S05-mass/stdrules.t
 S05-metachars/line-anchors.t
 S05-metachars/newline.t
+S05-metasyntax/changed.t 
 S05-metasyntax/charset.t
 S05-metasyntax/litvar.t
 S05-metasyntax/prior.t
@@ -225,6 +232,7 @@ S06-operator-overloading/imported-subs.t
 S06-other/anon-hashes-vs-blocks.t
 S06-other/main-eval.t
 S06-other/misc.t
+S06-routine-modifiers/scoped-named-subs.t
 S06-signature/arity.t
 S06-signature/caller-param.t
 S06-signature/closure-over-parameters.t
@@ -249,6 +257,7 @@ S09-subscript/slice.t
 S10-packages/export.t
 S10-packages/nested-use.t
 S10-packages/scope.t
+S11-modules/importing.t
 S11-modules/require.t
 S12-attributes/clone.t
 S12-attributes/delegation.t
@@ -269,6 +278,7 @@ S12-class/self-inheritance.t
 S12-construction/autopairs.t
 S12-construction/destruction.t
 S12-construction/named-params-in-BUILD.t
+S12-methods/accessors.t
 S12-methods/attribute-params.t
 S12-methods/chaining.t
 S12-methods/class-and-instance.t
@@ -280,12 +290,15 @@ S12-methods/topic.t
 S12-methods/typed-attributes.t
 S12-traits/basic.t
 S13-overloading/fallbacks-deep.t
+S13-overloading/operators.t
 S13-syntax/aliasing.t
 S14-roles/attributes.t
 S14-roles/bool.t
 S14-roles/composition.t
 S14-roles/conflicts.t
 S14-roles/crony.t
+S14-roles/lexical.t
+S14-roles/namespaced.t
 S14-roles/stubs.t
 S14-roles/submethods.t
 S16-io/getc.t
@@ -304,6 +317,7 @@ S29-context/evalfile.t
 S29-context/eval.t
 S29-context/exit-in-if.t
 S29-context/sleep.t
+S29-conversions/hash.t
 S29-os/system.t
 S32-array/bool.t
 S32-array/delete.t
