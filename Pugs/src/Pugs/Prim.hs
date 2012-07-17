@@ -109,6 +109,7 @@ op0 "Int" = const $ return (VType $ mkType "Int")
 op0 "Num" = const $ return (VType $ mkType "Num")
 op0 "Rat" = const $ return (VType $ mkType "Rat")
 op0 "Bool" = const $ return (VType $ mkType "Bool")
+op0 "Complex" = const $ return (VType $ mkType "Complex")
 op0 other = const $ fail ("Unimplemented listOp: " ++ other)
 
 -- |Implementation of unary primitive operators and functions
@@ -225,6 +226,7 @@ op1 "int"  = op1Cast VInt
 op1 "Int"  = op1Cast VInt
 op1 "Num"  = op1Cast VNum
 op1 "Rat"  = op1Cast VRat
+op1 "Complex"  = op1Cast VComplex
 op1 "+^"   = op1Cast (VInt . pred . negate) -- Arbitrary precision complement- 0 ==> -1 / 1 ==> -2
 op1 "~^"   = op1Cast (VStr . mapStr complement)
 op1 "?^"   = op1 "!"
@@ -1916,6 +1918,12 @@ initSyms = seq (length syms) $ do
 \\n   Num       pre     Num     safe   (Num)\
 \\n   Num       pre     Num     safe   (Rat)\
 \\n   Num       pre     Num     safe   (Bool)\
+\\n   Complex   pre     Complex safe   ()\
+\\n   Complex   pre     Complex safe   (Int)\
+\\n   Complex   pre     Complex safe   (Num)\
+\\n   Complex   pre     Complex safe   (Rat)\
+\\n   Complex   pre     Complex safe   (Bool)\
+\\n   Complex   pre     Complex safe   (Complex)\
 \\n   Rat       pre     Rat     safe   ()\
 \\n   Rat       pre     Rat     safe   (Int)\
 \\n   Rat       pre     Rat     safe   (Int: Any)\
