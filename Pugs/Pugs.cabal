@@ -177,10 +177,10 @@ executable pugs
 
     if flag(Perl5)
         cpp-options: -DPUGS_HAVE_PERL5=1
+        includes:
+            perl5/p5embed.h
+        c-sources:
+            cbits/Prelude_pm.c cbits/Test_pm.c perl5/p5embed.c
 
     c-sources:
         cbits/Prelude_pm.c cbits/Test_pm.c
-        perl5/p5embed.c
-
-    includes:
-        perl5/p5embed.h
