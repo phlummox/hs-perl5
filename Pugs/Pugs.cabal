@@ -1,5 +1,5 @@
 Name            : Pugs
-Version         : 6.2.13.20120203
+Version         : 6.2.13.20120717
 license         : BSD3
 license-file    : LICENSE
 cabal-version   : >= 1.2.3
@@ -167,7 +167,7 @@ executable pugs
         control-timeout >= 0.1.2,
 
         MetaObject       >= 0.0.4,
-        HsParrot         >= 0.0.2,
+        HsParrot         >= 0.0.2.20120717,
         pugs-compat      >= 0.0.6.20120717.204800,
         pugs-DrIFT       >= 2.2.3.20120717,
         stringtable-atom >= 0.0.4,
