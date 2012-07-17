@@ -17,7 +17,7 @@ if (@ARGV) {
 my $nt = `t/spec/fudge @OPTS @ARGV`;
 $ENV{PUGS_USE_EXTERNAL_TEST}=1;
 if ($^O eq 'darwin') {
-    $ENV{LC_ALL}="C";
+    $ENV{LC_ALL}="en_US.ISO8859-1";
 }
 else {
     $ENV{LC_ALL}="en_US.ISO-8859-1";
