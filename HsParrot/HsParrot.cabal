@@ -1,5 +1,5 @@
 Name:                HsParrot
-Version:             0.0.2.20110925
+Version:             0.0.2.20120717
 Category:            Language, Pugs
 Synopsis:            Haskell integration with Parrot virtual machine
 Description:         Haskell integration with Parrot virtual machine
@@ -25,7 +25,7 @@ Library
                          PatternGuards
     hs-source-dirs:      src
     Build-Depends:       base > 4 && < 5, bytestring>=0.9.0.1, pretty, HsSyck,
-                         pugs-DrIFT
+                         pugs-DrIFT >= 2.2.3.20120717
     Exposed-modules:     Language.PIR
     Other-modules:       Language.PIR.Emit
 
