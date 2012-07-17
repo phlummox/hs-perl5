@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+if ($^O eq 'darwin' and $^X ne '/usr/bin/perl') {
+    # Always prefer system perl with embedding Perl5 on OSX.
+    exec("/usr/bin/perl" => $0, @ARGV);
+}
+
 use 5.006;
 use strict;
 use Cwd;
