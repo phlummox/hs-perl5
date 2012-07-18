@@ -109,6 +109,7 @@ op0 "defer"   = const $ do
 op0 "Int" = const $ return (VType $ mkType "Int")
 op0 "Num" = const $ return (VType $ mkType "Num")
 op0 "Rat" = const $ return (VType $ mkType "Rat")
+op0 "FatRat" = const $ return (VType $ mkType "FatRat")
 op0 "Bool" = const $ return (VType $ mkType "Bool")
 op0 "Complex" = const $ return (VType $ mkType "Complex")
 op0 "Str" = const $ return (VType $ mkType "Str")
@@ -237,6 +238,7 @@ op1 "int"  = op1Cast VInt
 op1 "Int"  = op1Cast VInt
 op1 "Num"  = op1Cast VNum
 op1 "Rat"  = op1Cast VRat
+op1 "FatRat"  = op1Cast VRat
 op1 "Complex"  = op1Cast VComplex
 op1 "Str"  = op1Cast VStr
 op1 "+^"   = op1Cast (VInt . pred . negate) -- Arbitrary precision complement- 0 ==> -1 / 1 ==> -2
@@ -1947,6 +1949,15 @@ initSyms = seq (length syms) $ do
 \\n   Rat       pre     Rat     safe   (Rat: Any)\
 \\n   Rat       pre     Rat     safe   (Bool)\
 \\n   Rat       pre     Rat     safe   (Bool: Any)\
+\\n   Rat       pre     FatRat  safe   ()\
+\\n   Rat       pre     FatRat  safe   (Int)\
+\\n   Rat       pre     FatRat  safe   (Int: Any)\
+\\n   Rat       pre     FatRat  safe   (Num)\
+\\n   Rat       pre     FatRat  safe   (Num: Any)\
+\\n   Rat       pre     FatRat  safe   (Rat)\
+\\n   Rat       pre     FatRat  safe   (Rat: Any)\
+\\n   Rat       pre     FatRat  safe   (Bool)\
+\\n   Rat       pre     FatRat  safe   (Bool: Any)\
 \\n   Bool      pre     Bool    safe   ()\
 \\n   Bool      pre     Bool    safe   (Int)\
 \\n   Bool      pre     Bool    safe   (Num)\
