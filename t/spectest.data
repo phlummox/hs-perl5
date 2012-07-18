@@ -10,6 +10,7 @@ integration/advent2009-day12.t
 integration/advent2009-day14.t
 integration/advent2009-day15.t
 integration/advent2009-day19.t
+integration/class-name-and-attribute-conflict.t
 integration/code-blocks-as-sub-args.t
 integration/lexical-array-in-inner-block.t
 integration/lexicals-and-attributes.t
@@ -18,6 +19,7 @@ integration/no-indirect-new.t
 integration/packages.t
 integration/passing-pair-class-to-sub.t
 integration/real-strings.t
+integration/role-composition-vs-attribute.t
 integration/say-crash.t
 integration/substr-after-match-in-gather-in-for.t
 S01-perl-5-integration/basic.t
@@ -137,6 +139,7 @@ S03-smartmatch/any-type.t
 S03-smartmatch/array-array.t
 S03-smartmatch/array-hash.t
 S03-smartmatch/disorganized.t
+S03-smartmatch/hash-hash.t
 S04-blocks-and-statements/pointy.t
 S04-declarations/implicit-parameter.t
 S04-declarations/multiple.t
@@ -181,6 +184,7 @@ S04-statements/unless.t
 S04-statements/until.t
 S04-statements/while.t
 S05-capture/match-object.t
+S05-interpolation/regex-in-variable.t
 S05-mass/named-chars.t
 S05-mass/properties-block.t
 S05-mass/properties-derived.t
