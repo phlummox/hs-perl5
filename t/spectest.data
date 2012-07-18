@@ -64,7 +64,6 @@ S02-types/array_ref.t
 S02-types/array.t
 S02-types/assigning-refs.t
 S02-types/autovivification.t
-# S02-types/bag.t # NYI
 S02-types/bool.t
 S02-types/catch_type_cast_mismatch.t
 S02-types/compact.t
@@ -74,9 +73,6 @@ S02-types/hash_ref.t
 S02-types/hash.t
 S02-types/infinity.t
 S02-types/int-uint.t
-# S02-types/keybag.t # NYI
-# S02-types/keyhash.t # NYI
-# S02-types/keyset.t # NYI
 S02-types/lists.t
 S02-types/mixed_multi_dimensional.t
 S02-types/nan.t
@@ -86,7 +82,6 @@ S02-types/num.t
 S02-types/pair.t
 S02-types/parsing-bool.t
 S02-types/range.t
-# S02-types/set.t # NYI
 S02-types/subscripts_and_context.t
 S02-types/subset.t
 S02-types/type.t
@@ -104,11 +99,9 @@ S03-operators/assign.t
 S03-operators/autoincrement-range.t
 S03-operators/autoincrement.t
 S03-operators/autovivification.t
-# S03-operators/bag.t # NYI
 S03-operators/bit.t
 S03-operators/boolean-bitwise.t
 S03-operators/chained-declarators.t
-# S03-operators/comparison.t # Issue #10
 S03-operators/context-forcers.t
 S03-operators/context.t
 S03-operators/equality.t
@@ -125,7 +118,6 @@ S03-operators/range.t
 S03-operators/relational.t
 S03-operators/repeat.t
 S03-operators/scalar-assign.t
-# S03-operators/set.t # NYI
 S03-operators/short-circuit.t
 S03-operators/so.t
 S03-operators/spaceship-and-containers.t
@@ -321,13 +313,11 @@ S29-conversions/hash.t
 S29-os/system.t
 S32-array/bool.t
 S32-array/delete.t
-# S32-array/delete.t # Issue #6
 S32-array/elems.t
 S32-array/end.t
 S32-array/keys_values.t
 S32-array/pairs.t
 S32-array/push.t
-# S32-array/rotate.t # NYI
 S32-array/unshift.t
 S32-container/cat.t
 S32-container/roundrobin.t
@@ -336,19 +326,13 @@ S32-hash/delete.t
 S32-hash/keys_values.t
 S32-hash/kv.t
 S32-hash/slice.t
-# S32-list/categorize.t # categorize, ... NYI
-# S32-list/classify.t # Array.classify NYI
 S32-list/create.t
-# S32-list/end.t # ... NYI
-# S32-list/first.t # ... NYI
 S32-list/grep.t
 S32-list/join.t
-# S32-list/map_function_return_values.t # fails all tests
 S32-list/map.t
 S32-list/pick.t
 S32-list/reduce.t
 S32-list/reverse.t
-# S32-list/roll.t # Array.roll NYI
 S32-list/sort.t
 S32-list/uniq.t
 S32-num/abs.t
@@ -370,7 +354,6 @@ S32-str/capitalize.t
 S32-str/chomp.t
 S32-str/chop.t
 S32-str/flip.t
-# S32-str/indent.t # NYI: Str.indent, infix:<x>
 S32-str/index.t
 S32-str/lcfirst.t
 S32-str/lc.t
@@ -382,23 +365,6 @@ S32-str/substr.t
 S32-str/trim.t
 S32-str/ucfirst.t
 S32-str/uc.t
-# S32-temporal/calendar.t # NYI
-# S32-temporal/DateTime-Instant-Duration.t # NYI
-# S32-temporal/DateTime.t # NYI
-# S32-temporal/Date.t # NYI
-# S32-temporal/local.t # NYI
 S32-temporal/time.t
-# S32-trig/atan2.t # Issue #6
-# S32-trig/cosech.t # Issue #6
-# S32-trig/cosec.t # Issue #6
-# S32-trig/cosh.t # Issue #6
-# S32-trig/cos.t # Issue #6
-# S32-trig/cotanh.t # Issue #6
-# S32-trig/e.t # NYI
 S32-trig/pi.t
-# S32-trig/sech.t # Issue #6
-# S32-trig/sec.t # Issue #6
 S32-trig/simple.t
-# S32-trig/sinh.t # Issue #6
-# S32-trig/tanh.t # Issue #6
-# S32-trig/tan.t # Issue #6
