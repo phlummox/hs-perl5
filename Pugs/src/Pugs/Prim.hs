@@ -57,6 +57,7 @@ import qualified Data.HashTable as H
 import Data.Time.LocalTime
 import Data.Time.Calendar.OrdinalDate
 import Data.Time.Calendar.MonthDay
+import Data.Text (strip, stripStart, stripEnd, pack, unpack)
 
 constMacro :: Exp -> [Val] -> Eval Val
 constMacro = const . expToEvalVal
@@ -213,6 +214,15 @@ op1 "sort" = \v -> do
 op1 "Scalar::flip" = \v -> do
     str     <- fromVal v
     return (VStr $ reverse str)
+op1 "Scalar::trim" = \v -> do
+    str     <- fromVal v
+    return (VStr $ unpack $ strip $ pack str)
+op1 "Scalar::trim-leading" = \v -> do
+    str     <- fromVal v
+    return (VStr $ unpack $ stripStart $ pack str)
+op1 "Scalar::trim-trailing" = \v -> do
+    str     <- fromVal v
+    return (VStr $ unpack $ stripEnd $ pack str)
 op1 "List::reverse" = \v -> do
     vlist <- fromVal v
     return (VList $ reverse vlist)
@@ -1947,6 +1957,9 @@ initSyms = seq (length syms) $ do
 \\n   List      pre     pair    safe   (List)\
 \\n   Scalar    pre     item    safe   (Scalar)\
 \\n   Str       pre     Scalar::flip safe   (Scalar)\
+\\n   Str       pre     Scalar::trim safe   (Scalar)\
+\\n   Str       pre     Scalar::trim-leading safe   (Scalar)\
+\\n   Str       pre     Scalar::trim-trailing safe   (Scalar)\
 \\n   Any       pre     List::reverse safe   (Array)\
 \\n   Any       pre     reverse safe   (Scalar, List)\
 \\n   Any       pre     reverse safe   ()\
