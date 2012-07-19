@@ -41,7 +41,12 @@ KEY
 my @wanted;
 
 $ENV{PUGS_USE_EXTERNAL_TEST}=1;
-$ENV{LC_ALL} = "en_US.ISO-8859-1";
+if ($^O eq 'darwin') {
+    $ENV{LC_ALL}="en_US.ISO8859-1";
+}
+else {
+    $ENV{LC_ALL}="en_US.ISO-8859-1";
+}
 
 find({ wanted => \&queue, no_chdir => 1 }, 't/spec/');
 
