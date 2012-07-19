@@ -304,7 +304,6 @@ S17-async/async.t
 S17-async/contend.t
 S19-command-line-options/01-multiple-e.t
 S24-testing/0-compile.t
-S24-testing/1-basic.t
 S24-testing/4-version_lt.t
 S24-testing/5-todo.t
 S28-named-variables/inc.t
