@@ -63,7 +63,7 @@ pugs built as
 
     Pugs/pugs
 
-To get a per-synopsis summary, run: 
+To get a per-synopsis summary, run:
 
     perl t/spec/test_summary pugs
 
