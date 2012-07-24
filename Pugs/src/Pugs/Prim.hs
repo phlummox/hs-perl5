@@ -135,7 +135,7 @@ op1 "Str::split" = op1Cast (castV . words)
 op1 "lc"         = op1Cast (VStr . map toLower)
 op1 "lcfirst"    = op1StrFirst toLower
 op1 "uc"         = op1Cast (VStr . map toUpper)
-op1 "ucfirst"    = op1StrFirst toUpper
+op1 "tc"         = op1StrFirst toUpper
 op1 "capitalize" = op1Cast $ VStr . (mapEachWord capitalizeWord)
   where
     mapEachWord _ [] = []
@@ -1996,7 +1996,7 @@ initSyms = seq (length syms) $ do
 \\n   Str       pre     quotemeta safe   (Str)\
 \\n   Str       pre     lcfirst safe   (Str)\
 \\n   Str       pre     uc      safe   (Str)\
-\\n   Str       pre     ucfirst safe   (Str)\
+\\n   Str       pre     tc      safe   (Str)\
 \\n   Str       pre     capitalize safe   (Str)\
 \\n   Str       pre     crypt   safe   (Str, Str)\
 \\n   Str       post    ++      safe   (rw!Str)\

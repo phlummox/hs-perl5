@@ -365,6 +365,7 @@ S32-str/pos.t
 S32-str/quotemeta.t
 S32-str/rindex.t
 S32-str/substr.t
+S32-str/tc.t
 S32-str/trim.t
 S32-str/ucfirst.t
 S32-str/uc.t

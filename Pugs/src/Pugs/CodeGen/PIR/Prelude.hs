@@ -73,7 +73,7 @@ preludeStr = unlines
     , "    lc(substr $str, 0, 1) ~ substr $str, 1, chars($str) - 1;"
     , "}"
     , ""
-    , "sub ucfirst (Str $str) returns Str is builtin is primitive {"
+    , "sub tc (Str $str) returns Str is builtin is primitive {"
     , "    uc(substr $str, 0, 1) ~ substr $str, 1, chars($str) - 1;"
     , "}"
     , ""
