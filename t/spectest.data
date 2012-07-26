@@ -367,7 +367,6 @@ S32-str/rindex.t
 S32-str/substr.t
 S32-str/tc.t
 S32-str/trim.t
-S32-str/ucfirst.t
 S32-str/uc.t
 S32-temporal/time.t
 S32-trig/pi.t
