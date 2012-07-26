@@ -369,5 +369,6 @@ S32-str/tc.t
 S32-str/trim.t
 S32-str/uc.t
 S32-temporal/time.t
+S32-trig/e.t
 S32-trig/pi.t
 S32-trig/simple.t

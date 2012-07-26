@@ -68,6 +68,7 @@ op0 :: String -> [Val] -> Eval Val
 op0 "&"  = fmap opJuncAll . mapM fromVal
 op0 "^"  = fmap opJuncOne . mapM fromVal
 op0 "|"  = fmap opJuncAny . mapM fromVal
+op0 "e"  = const . return $ VNum $ exp 1
 op0 "want"  = const $ fmap VStr (asks (maybe "Item" envWant . envCaller))
 op0 "Bool::True"  = const . return $ VBool True
 op0 "Bool::False" = const . return $ VBool False
@@ -162,8 +163,8 @@ op1 "sin"  = op1Floating sin
 op1 "tan"  = op1Floating tan
 op1 "sqrt" = op1Floating sqrt
 op1 "atan" = op1Floating atan
-op1 "acos"  = op1Floating cos
-op1 "asin"  = op1Floating sin
+op1 "acos" = op1Floating cos
+op1 "asin" = op1Floating sin
 op1 "post:i" = \x -> do
     n <- fromVal x
     return $ VComplex (0 :+ n)
@@ -2315,5 +2316,6 @@ initSyms = seq (length syms) $ do
 \\n   Bool      pre     Pugs::Internals::current_pragma_value safe (Str)\
 \\n   Bool      pre     Pugs::Internals::caller_pragma_value safe (Str)\
 \\n   Num       pre     Pugs::Internals::base      safe (Int, Any)\
+\\n   Num       pre     e                          safe   ()\
 \\n   Any       pre     vv      safe (Any)\
 \\n"
