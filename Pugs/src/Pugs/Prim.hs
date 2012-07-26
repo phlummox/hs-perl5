@@ -89,7 +89,6 @@ op0 "File::Spec::cwd" = const $ do
 op0 "File::Spec::tmpdir" = const $ do
     tmp <- guardIO getTemporaryDirectory
     return $ VStr tmp
-op0 "Pugs::Internals::pi" = const $ return $ VNum pi
 op0 "self"    = const $ expToEvalVal (_Var "$__SELF__")
 op0 "say"     = const $ op1 "IO::say" (VHandle stdout)
 op0 "print"   = const $ op1 "IO::print" (VHandle stdout)
@@ -1904,7 +1903,6 @@ initSyms = seq (length syms) $ do
 \\n   Num       pre     tan     safe   (Num)\
 \\n   Num       pre     acos    safe   (Num)\
 \\n   Num       pre     asin    safe   (Num)\
-\\n   Any       pre     Pugs::Internals::pi      safe   ()\
 \\n   Any       pre     self    safe,macro   ()\
 \\n   Bool      pre     nothing safe   ()\
 \\n   Num       pre     exp     safe   (Num, ?Num)\
