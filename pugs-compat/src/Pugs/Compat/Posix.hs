@@ -131,7 +131,6 @@ import qualified Control.Exception
 import Debug.Trace
 import qualified System.Environment
 import System.Directory (getCurrentDirectory, setCurrentDirectory, doesFileExist, doesDirectoryExist)
-import IO
 import System.IO
 import System.Exit
 import Foreign.C.String
