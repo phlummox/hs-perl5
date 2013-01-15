@@ -212,6 +212,9 @@ op1 "sort" = \v -> do
         int <- fromVal rv
         return (int <= (0 :: Int))
     retSeq sorted
+op1 "flip" = \v -> do
+    str     <- fromVal v
+    return (VStr $ reverse str)
 op1 "Scalar::flip" = \v -> do
     str     <- fromVal v
     return (VStr $ reverse str)
@@ -1966,6 +1969,7 @@ initSyms = seq (length syms) $ do
 \\n   Hash      pre     hash    safe   (List)\
 \\n   List      pre     pair    safe   (List)\
 \\n   Scalar    pre     item    safe   (Scalar)\
+\\n   Str       pre     flip safe   (Scalar)\
 \\n   Str       pre     Scalar::flip safe   (Scalar)\
 \\n   Str       pre     Scalar::trim safe   (Scalar)\
 \\n   Str       pre     Scalar::trim-leading safe   (Scalar)\
