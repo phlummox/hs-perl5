@@ -131,7 +131,6 @@ import qualified Control.Exception
 import Debug.Trace
 import qualified System.Environment
 import System.Directory (getCurrentDirectory, setCurrentDirectory, doesFileExist, doesDirectoryExist)
-import IO
 import System.IO
 import System.Exit
 import Foreign.C.String
@@ -139,6 +138,7 @@ import Foreign.Ptr
 import Foreign.C.Types
 import Data.Ratio
 import Data.Typeable
+import System.Posix.Types
 import System.Posix.Internals
 import Foreign.C.Error
 
@@ -166,7 +166,7 @@ setEnv :: String -> String -> Bool -> IO ()
 setEnv k v _ = withCWString k $ withCWString v . win32SetEnv
 
 getEnv :: String -> IO (Maybe String)
-getEnv k = (fmap Just (System.Environment.getEnv k)) `Control.Exception.catch` (const $ return Nothing)
+getEnv k = (fmap Just (System.Environment.getEnv k)) `Control.Exception.catch` (\(e :: Control.Exception.SomeException) -> return Nothing)
 
 unsetEnv :: String -> IO ()
 unsetEnv k = withCWString k $ \ key -> withCWString "" $ \ v -> do
@@ -194,17 +194,24 @@ removeLink _ = warnWith "unlink"
 setFileMode :: FilePath -> FileMode -> IO ()
 setFileMode _ _ = warnWith "chmod"
 
+{-
 newtype DirStream = DirStream (Ptr CDir)
     deriving (Typeable)
+-}
+
+type DirStream = ()
 
 openDirStream :: FilePath -> IO DirStream
-openDirStream name =
-  withCString name $ \s -> do
-    dirp <- c_opendir s
-    return (DirStream dirp)
+openDirStream name = warnWith "opendir"
+--  withCString name $ \s -> do
+--    dirp <- c_opendir s
+--    return (DirStream dirp)
 
 readDirStream :: DirStream -> IO FilePath
-readDirStream (DirStream dirp) =
+readDirStream _ = undefined
+
+{-
+readDirStream dirp =
   alloca $ \ptr_dEnt  -> loop ptr_dEnt
  where
   loop ptr_dEnt = do
@@ -234,6 +241,14 @@ closeDirStream :: DirStream -> IO ()
 closeDirStream (DirStream dirp) = do
     c_closedir dirp
     return ()
+
+-}
+
+rewindDirStream :: DirStream -> IO ()
+rewindDirStream _ = undefined
+
+closeDirStream :: DirStream -> IO ()
+closeDirStream _ = undefined
 
 -- Win32 specific
 
@@ -272,7 +287,7 @@ getProcessTimes = do
 
 -- This is Win32 specific, dunno about other non POSIX platforms
 statFileSize :: FilePath -> IO Integer
-statFileSize n = bracket (openFile n ReadMode) hClose hFileSize
+statFileSize n = Control.Exception.bracket (openFile n ReadMode) hClose hFileSize
 -- statFileSize _ = failWith "-s"
 
 -- Again, Win32 specific magic, as stolen from GHC
