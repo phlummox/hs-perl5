@@ -1,8 +1,8 @@
 Name           : pugs-compat
-Version        : 0.0.6.20120717.204800
+Version        : 0.0.6.20130209.0
 Build-type     : Simple
 Category       : Pugs
-License        : BSD3
+License        : PublicDomain
 License-file   : LICENSE
 Maintainer     : audreyt@audreyt.org
 Synopsis       : Portable Haskell/POSIX layer for Pugs
