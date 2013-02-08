@@ -2,6 +2,7 @@ integration/99problems-01-to-10.t
 integration/99problems-21-to-30.t
 integration/99problems-41-to-50.t
 integration/99problems-61-to-70.t
+integration/advent2009-day01.t
 integration/advent2009-day03.t
 integration/advent2009-day04.t
 integration/advent2009-day07.t
@@ -17,6 +18,7 @@ integration/lexicals-and-attributes.t
 integration/method-calls-and-instantiation.t
 integration/no-indirect-new.t
 integration/packages.t
+integration/pair-in-array.t
 integration/passing-pair-class-to-sub.t
 integration/real-strings.t
 integration/role-composition-vs-attribute.t
@@ -29,6 +31,7 @@ S01-perl-5-integration/roundtrip.t
 S01-perl-5-integration/strings.t
 S01-perl-5-integration/subs.t
 S02-lexical-conventions/begin_end_pod.t
+S02-lexical-conventions/bom.t
 S02-lexical-conventions/end-pod.t
 S02-lexical-conventions/minimal-whitespace.t
 S02-lexical-conventions/sub-block-parsing.t
@@ -150,6 +153,7 @@ S04-phasers/check.t
 S04-phasers/descending-order.t
 S04-phasers/end.t
 S04-phasers/enter-leave.t
+S04-phasers/eval-in-begin.t
 S04-phasers/exit-in-begin.t
 S04-phasers/first.t
 S04-phasers/init.t
@@ -219,8 +223,8 @@ S06-advanced/return_function.t
 S06-advanced/return.t
 S06-currying/mixed.t
 S06-currying/named.t
-S06-macros/macros-d1.t
 S06-macros/postfix.t
+S06-macros/quasi-blocks.t
 S06-macros/returning-closure.t
 S06-macros/returning-string.t
 S06-multi/syntax.t
@@ -281,6 +285,7 @@ S12-methods/class-and-instance.t
 S12-methods/default-trait.t
 S12-methods/how.t
 S12-methods/method-vs-sub.t
+S12-methods/qualified.t
 S12-methods/submethods.t
 S12-methods/topic.t
 S12-methods/typed-attributes.t
@@ -304,6 +309,7 @@ S17-async/async.t
 S17-async/contend.t
 S19-command-line-options/01-multiple-e.t
 S24-testing/0-compile.t
+S24-testing/1-basic.t
 S24-testing/4-version_lt.t
 S24-testing/5-todo.t
 S28-named-variables/inc.t
