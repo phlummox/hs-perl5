@@ -18,6 +18,7 @@ integration/lexicals-and-attributes.t
 integration/method-calls-and-instantiation.t
 integration/no-indirect-new.t
 integration/packages.t
+integration/pair-in-array.t
 integration/passing-pair-class-to-sub.t
 integration/real-strings.t
 integration/role-composition-vs-attribute.t
