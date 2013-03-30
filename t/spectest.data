@@ -180,6 +180,7 @@ S04-statements/loop.t
 S04-statements/map-and-sort-in-for.t
 S04-statements/next.t
 S04-statements/no-implicit-block.t
+S04-statements/sink.t
 S04-statements/redo.t
 S04-statements/repeat.t
 S04-statements/terminator.t
