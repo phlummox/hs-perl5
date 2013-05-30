@@ -3,7 +3,7 @@ Version         : 6.2.13.20120717
 license         : BSD3
 license-file    : LICENSE
 cabal-version   : >= 1.2.3
-copyright       : 2005-2012, The Pugs Contributors
+copyright       : 2005-2013, The Pugs Contributors
 maintainer      : Audrey Tang <audreyt@audreyt.org>
 category        : Language, Pugs
 stability       : experimental
