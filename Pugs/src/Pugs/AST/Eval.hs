@@ -3,7 +3,7 @@
 module Pugs.AST.Eval where
 import Pugs.Internals
 import Pugs.Cont hiding (resetT)
-import System.IO.Error (try, IOError)
+import System.IO.Error (tryIOError, IOError)
 import Control.Exception (SomeException)
 
 import Pugs.AST.SIO
@@ -154,7 +154,7 @@ Perform an IO action and raise an exception if it fails.
 -}
 guardIO :: IO a -> Eval a
 guardIO x = do
-    rv <- io $ try x
+    rv <- io $ tryIOError x
     case rv of
         Left e -> fail (show e)
         Right v -> return v
@@ -167,7 +167,7 @@ supress the exception and return an associated value instead.
 -}
 guardIOexcept :: MonadIO m => [((IOError -> Bool), a)] -> IO a -> m a
 guardIOexcept safetyNet x = do
-    rv <- io $ try x
+    rv <- io $ tryIOError x
     case rv of
         Right v -> return v
         Left  e -> catcher e safetyNet
