@@ -161,7 +161,6 @@ S04-phasers/multiple.t
 S04-phasers/next.t
 S04-phasers/pre-post.t
 S04-phasers/rvalue.t
-S04-phasers/start.t
 S04-statement-modifiers/for.t
 S04-statement-modifiers/given.t
 S04-statement-modifiers/until.t
@@ -329,7 +328,6 @@ S32-array/unshift.t
 S32-container/cat.t
 S32-container/roundrobin.t
 S32-container/zip.t
-S32-hash/delete.t
 S32-hash/keys_values.t
 S32-hash/kv.t
 S32-hash/slice.t
