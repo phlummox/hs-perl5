@@ -1,3 +1,9 @@
+[Changes for 0.51 - 2013-11-08]
+
+* Port to hashtables package for compatibility with GHC 7.8.
+* Switch internal integer hash algorithm to Cuckoo hashing.
+  Reported by: Henk-Jan van Tuyl
+
 [Changes for 0.50 - 2011-03-19]
 
 * parseYaml and emitYaml now work with Unicode Strings.

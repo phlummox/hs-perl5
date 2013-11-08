@@ -22,7 +22,7 @@ import Foreign.Marshal.Utils
 import Foreign.Storable
 import System.IO.Unsafe
 import GHC.Ptr (Ptr(..))
-import qualified Data.HashTable as Hash
+import qualified Data.HashTable.IO as Hash
 import qualified Data.ByteString.Char8 as Buf
 import Data.ByteString.UTF8 (fromString, toString)
 import Data.ByteString.Char8 (useAsCStringLen, useAsCString)
@@ -123,7 +123,7 @@ emitYamlBytes node = do
         #{poke SyckEmitter, style} emitter scalarFold
         #{poke SyckEmitter, anchor_format} emitter (Ptr "%d"## :: CString)
 
-        marks <- Hash.new (==) (Hash.hashInt)
+        marks <- Hash.new
 
         let freeze = freezeNode marks
         syck_emitter_handler emitter =<< mkEmitterCallback (emitterCallback freeze)
@@ -234,7 +234,7 @@ parseYamlCStr :: CString -> IO YamlNode
 parseYamlCStr cstr = do
     bracket syck_new_parser syck_free_parser $ \parser -> do
         err     <- newIORef Nothing
-        badancs <- Hash.new (==) Hash.hashInt
+        badancs <- Hash.new
         syck_parser_str_auto parser cstr nullFunPtr
         syck_parser_handler parser =<< mkNodeCallback (nodeCallback badancs)
         syck_parser_error_handler parser =<< mkErrorCallback (errorCallback err)
@@ -248,7 +248,8 @@ parseYamlCStr cstr = do
             Nothing     -> return nilNode
             Just e      -> fail e
 
-type BadAnchorTable = Hash.HashTable Int YamlNode
+type HashTable k v = Hash.CuckooHashTable k v
+type BadAnchorTable = HashTable Int YamlNode
 
 
 nodeCallback :: BadAnchorTable -> SyckParser -> SyckNode -> IO SYMID
@@ -274,11 +275,13 @@ nodeCallback badancs parser syckNode = mdo
     -- Do something here about circular refs.
     case nodeId :: SYMID of
         0   -> return False
-        _   -> alloca $ \origPtr -> do
-            syck_lookup_sym parser nodeId origPtr
-            ptr <- peek origPtr
-            -- print ("bad anchor handled", nodeId, ptr)
-            Hash.update badancs (ptr `minusPtr` nullPtr) node
+        _   -> do
+            alloca $ \origPtr -> do
+                syck_lookup_sym parser nodeId origPtr
+                ptr <- peek origPtr
+                -- print ("bad anchor handled", nodeId, ptr)
+                Hash.insert badancs (ptr `minusPtr` nullPtr) node
+            return True
 
     symId   <- fmap fromIntegral (syck_add_sym parser nodePtr)
     return symId
@@ -303,7 +306,7 @@ errorCallback err parser cstr = do
         , ", column ", show (cursor - lineptr)
         ]
 
-freezeNode :: Hash.HashTable Int (Ptr a) -> YamlNode -> IO (Ptr a)
+freezeNode :: HashTable Int (Ptr a) -> YamlNode -> IO (Ptr a)
 freezeNode nodes MkNode{ n_anchor = AReference n } = do
     rv <- Hash.lookup nodes n
     case rv of
