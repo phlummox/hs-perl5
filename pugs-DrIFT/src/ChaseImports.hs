@@ -29,8 +29,9 @@ import Data.List
 import qualified Unlit
 import Control.Monad
 import GenUtil
+import Control.Exception(catch, SomeException)
 
-try x = catch (x >>= return . Right) (return . Left)
+try x = catch (x >>= return . Right) (\e -> return $ Left (e :: SomeException))
 
 --- Split up input ---------------------------------------------------------
 splitString :: String -> String -> (String,String)

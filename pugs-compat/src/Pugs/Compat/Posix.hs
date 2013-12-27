@@ -67,6 +67,7 @@ import Foreign.C.Types
 import Foreign.C.String
 import Data.Typeable
 import qualified System.Posix.Signals
+import Control.Exception
 
 _PUGS_HAVE_POSIX :: Bool
 _PUGS_HAVE_POSIX = True
@@ -75,7 +76,8 @@ doesExist :: FilePath -> IO Bool
 doesExist = fileExist
 
 testStatusWith :: (FileStatus -> Bool) -> FilePath -> IO Bool
-testStatusWith t f = fmap t (getFileStatus f) `catch` const (return False)
+testStatusWith t f = fmap t (getFileStatus f) `catch`
+	(const (return False) :: SomeException -> IO Bool)
 
 doesFileExist :: FilePath -> IO Bool
 doesFileExist = testStatusWith isRegularFile
