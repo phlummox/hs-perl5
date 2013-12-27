@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 
 --  $Id: GenUtil.hs,v 1.30 2004/12/01 23:58:27 john Exp $
 -- arch-tag: 835e46b7-8ffd-40a0-aaf9-326b7e347760
@@ -101,6 +102,7 @@ import qualified System.Environment as System
 import qualified System.Exit as System
 import System.Random(StdGen, newStdGen, Random(randomR))
 import System.Time
+import Control.Exception
 
 {-# SPECIALIZE snub :: [String] -> [String] #-}
 {-# SPECIALIZE snub :: [Int] -> [Int] #-}
@@ -286,10 +288,10 @@ lefts :: [Either a b] -> [a]
 lefts xs = [x | Left x <- xs]
 
 ioM :: Monad m => IO a -> IO (m a)
-ioM action = catch (fmap return action) (\e -> return (fail (show e)))
+ioM action = catch (fmap return action) (\(e :: SomeException) -> return (fail (show e)))
 
 ioMp :: MonadPlus m => IO a -> IO (m a)
-ioMp action = catch (fmap return action) (\_ -> return mzero)
+ioMp action = catch (fmap return action) (\(_ :: SomeException) -> return mzero)
 
 -- | reformat a string to not be wider than a given width, breaking it up
 -- between words.
