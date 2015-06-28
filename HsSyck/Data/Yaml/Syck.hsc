@@ -39,7 +39,7 @@ data YamlAnchor
 type SYMID = CULong
 
 instance Data SYMID where
-  toConstr x = mkIntConstr (mkIntType "Foreign.C.Types.CULong") (fromIntegral x)
+  toConstr x = mkIntegralConstr (mkIntType "Foreign.C.Types.CULong") (fromIntegral x)
   gunfold _ z c = case constrRep c of
                     (IntConstr x) -> z (fromIntegral x)
                     _ -> error "gunfold"
