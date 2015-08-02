@@ -21,7 +21,7 @@ nameToCode name = inlinePerformIO $ do
 
 #else
 
-import qualified Data.HashTable as H
+import qualified Data.HashTable.IO as H
 import Data.ByteString.Unsafe (unsafePackAddressLen)
 
 -- If we don't have Perl 5, support for names in the 0x00 - 0xFF range only.
@@ -30,7 +30,7 @@ nameToCode :: String -> Maybe Int
 nameToCode name = inlinePerformIO (H.lookup _NameToCode (cast name))
 
 {-# NOINLINE _NameToCode #-}
-_NameToCode :: H.HashTable ByteString Int
+_NameToCode :: H.BasicHashTable ByteString Int
 _NameToCode = unsafePerformIO $! hashList =<< mapM compute
     [ (unsafePackAddressLen 4 "NULL"#, 0x0000)
     , (unsafePackAddressLen 16 "START OF HEADING"#, 0x0001)
@@ -290,8 +290,8 @@ _NameToCode = unsafePerformIO $! hashList =<< mapM compute
     , (unsafePackAddressLen 35 "LATIN SMALL LETTER Y WITH DIAERESIS"#, 0x00FF)
     ]
     where
-    hashList :: [(ByteString, a)] -> IO (H.HashTable ByteString a)
-    hashList = H.fromList hashByteString
+    hashList :: [(ByteString, a)] -> IO (H.BasicHashTable ByteString a)
+    hashList = H.fromList
     compute (f, y) = f >>= \x -> return (x, y)
 
 #endif

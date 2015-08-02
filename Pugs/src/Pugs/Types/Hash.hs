@@ -101,14 +101,14 @@ encodeKey, decodeKey :: HashIndex -> HashIndex
 encodeKey x = x
 decodeKey x = x
 
-instance HashClass IHash where
+instance x ~ IHash => HashClass x where
     hash_iType = const $ mkType "Hash"
     hash_clone hv = do
         ps  <- unsafeIOToSTM $ H.toList hv
         ps' <- forM ps $ \(k, sv) -> do
             sv' <- cloneIVar sv
             return (k, sv')
-        unsafeIOToSTM $ H.fromList H.hashString ps'
+        unsafeIOToSTM $ H.fromList ps'
     hash_fetch hv = do
         ps  <- io $ H.toList hv
         ps' <- forM ps $ \(k, sv) -> do

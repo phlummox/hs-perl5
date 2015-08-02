@@ -91,7 +91,7 @@ instance Compile Pad where
         where
         syms = padToList pad
 
-instance Compile IHash where
+instance x ~ IHash => Compile x where
     compile map = error (show map)
 
 

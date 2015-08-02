@@ -53,7 +53,7 @@ import qualified Data.IntSet as IntSet
 import DrIFT.YAML
 import GHC.Exts (unsafeCoerce#)
 import GHC.Unicode
-import qualified Data.HashTable as H
+import qualified Data.HashTable.IO as H
 import Data.Time.LocalTime
 import Data.Time.Calendar.OrdinalDate
 import Data.Time.Calendar.MonthDay
@@ -1366,7 +1366,7 @@ op3 "Mu::new" = \t n p -> do
     named   <- fromVal n
 
     defs    <- fetchMetaInfo "attrs" (showType typ)
-    attrs   <- io $ H.new (==) H.hashString
+    attrs   <- io $ H.new
     writeIVar (IHash attrs) (named `Map.union` defs)
     uniq    <- newObjectId
     unless (positionals == VList []) (fail "Must only use named arguments to new() constructor\nBe sure to use bareword keys.")
@@ -1385,7 +1385,7 @@ op3 "Mu::clone" = \t n _ -> do
     named <- fromVal n
     (VObject o) <- fromVal t
     attrs   <- readIVar (IHash $ objAttrs o)
-    attrs'  <- io $ H.new (==) H.hashString
+    attrs'  <- io $ H.new
     uniq    <- newObjectId
     writeIVar (IHash attrs') (named `Map.union` attrs)
     return $ VObject o{ objAttrs = attrs', objId = uniq }

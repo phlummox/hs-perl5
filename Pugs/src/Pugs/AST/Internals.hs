@@ -97,7 +97,8 @@ import Pugs.Types
 import qualified Data.Set       as Set
 import qualified Data.Map       as Map
 
-import qualified Data.HashTable    as H
+import qualified Data.HashTable.IO as H
+import Data.Int (Int32)
 import GHC.Conc (unsafeIOToSTM)
 
 import Pugs.Cont (callCC)
@@ -381,7 +382,7 @@ getArrayIndex idx def getArr ext = do
 createObjectRaw :: (MonadSTM m)
     => ObjectId -> Maybe Dynamic -> VType -> [(VStr, Val)] -> m VObject
 createObjectRaw uniq opaq typ attrList = do
-    attrs   <- stm . unsafeIOToSTM . H.fromList H.hashString $ map (\(a,b) -> (a, lazyScalar b)) attrList
+    attrs   <- stm . unsafeIOToSTM . H.fromList $ map (\(a,b) -> (a, lazyScalar b)) attrList
     return $ MkObject
         { objType   = typ
         , objId     = uniq
@@ -734,7 +735,7 @@ newObject typ = case showType typ of
         iv  <- newTVarIO mempty
         return $ arrayRef (MkIArray iv)
     "Hash"      -> do
-        h   <- io (H.new (==) H.hashString)
+        h   <- io H.new
         return $ hashRef (h :: IHash)
     "Sub"       -> newObject $ mkType "Code"
     "Routine"   -> newObject $ mkType "Code"
@@ -872,7 +873,7 @@ newArray vals = stm $ do
 newHash :: (MonadSTM m) => VHash -> m (IVar VHash)
 newHash hash = do
     --stm $ unsafeIOToSTM $ putStrLn "new hash"
-    ihash <- stm . unsafeIOToSTM $ H.fromList H.hashString (map (\(a,b) -> (a, lazyScalar b)) (Map.toList hash))
+    ihash <- stm . unsafeIOToSTM $ H.fromList (map (\(a,b) -> (a, lazyScalar b)) (Map.toList hash))
     return $ IHash ihash
 
 newHandle :: (MonadSTM m) => VHandle -> m (IVar VHandle)

@@ -1,10 +1,11 @@
 {-# OPTIONS_GHC -fglasgow-exts -fno-warn-orphans -fallow-overlapping-instances -fallow-undecidable-instances #-}
+{-# LANGUAGE TypeFamilies #-}
 module Pugs.AST.Types where
 import Pugs.Internals
 import Pugs.Types
 import qualified Data.Set       as Set
 import qualified Data.Map       as Map
-import qualified Data.HashTable    as H
+import qualified Data.HashTable.IO as H
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 
@@ -286,7 +287,7 @@ newtype IArray = MkIArray (TVar (Seq (IVar VScalar)))
     deriving (Typeable)
 
 type IArraySlice        = [IVar VScalar]
-type IHash              = H.HashTable VStr (IVar VScalar) -- XXX UTF8 handled at Types/Hash.hs
+type IHash              = H.BasicHashTable VStr (IVar VScalar) -- XXX UTF8 handled at Types/Hash.hs
 type IScalar            = TVar Val
 type IScalarProxy       = (Eval VScalar, (VScalar -> Eval ()))
 type IScalarLazy        = Maybe VScalar
@@ -362,11 +363,11 @@ instance Eq Regex where
     x == y = addressOf x == addressOf y
 
 -- Haddock doesn't seem to like data/instance declarations with a where clause.
-instance Eq IHash where
+instance x ~ IHash => Eq x where
     x == y = addressOf x == addressOf y
-instance Ord IHash where
+instance x ~ IHash => Ord x where
     compare x y = compare (addressOf x) (addressOf y)
-instance Show IHash where
+instance x ~ IHash => Show x where
     show = showAddressOf "Hash"
 instance Typeable2 H.HashTable where
     typeOf2 _ = mkTyConApp (mkTyCon "HashTable") []

@@ -165,6 +165,8 @@ executable pugs
         pretty, time, random, process, containers, bytestring, text,
         array, directory, utf8-string, binary, haskeline >= 0.6.4.7, FindBin,
         control-timeout >= 0.1.2,
+        hashtables,
+        hashable,
 
         MetaObject       >= 0.0.4,
         HsParrot         >= 0.0.2.20120717,
