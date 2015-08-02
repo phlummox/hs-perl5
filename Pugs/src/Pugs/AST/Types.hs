@@ -6,6 +6,7 @@ import Pugs.Types
 import qualified Data.Set       as Set
 import qualified Data.Map       as Map
 import qualified Data.HashTable.IO as H
+import qualified Data.HashTable.ST.Basic
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 
@@ -369,8 +370,7 @@ instance x ~ IHash => Ord x where
     compare x y = compare (addressOf x) (addressOf y)
 instance x ~ IHash => Show x where
     show = showAddressOf "Hash"
-instance Typeable2 H.HashTable where
-    typeOf2 _ = mkTyConApp (mkTyCon "HashTable") []
+deriving instance Typeable Data.HashTable.ST.Basic.HashTable
 
 instance Eq (IVar a) where
     x == y = addressOf x == addressOf y
@@ -427,8 +427,8 @@ instance Eq VProcess
 instance Ord VProcess where
     compare _ _ = EQ
 
-instance Typeable ProcessHandle where typeOf _ = mkTyConApp (mkTyCon "ProcessHandle") []
-instance Typeable Regex where typeOf _ = mkTyConApp (mkTyCon "Regex") []
+deriving instance Typeable ProcessHandle
+deriving instance Typeable Regex
 
 
 instance Eq VJunc where

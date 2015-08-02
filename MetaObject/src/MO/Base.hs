@@ -21,6 +21,7 @@ data (Typeable1 m, Monad m) => Invocant m
     = forall a. (Show a, Eq a, Ord a, Typeable a) => MkInvocant
         a                   -- Invocant
         (AnyResponder m)    -- Responder
+      deriving Typeable
 
 -- | open type to represent Code
 class Monad m => Codeable m c where

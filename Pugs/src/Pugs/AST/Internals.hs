@@ -210,13 +210,16 @@ data IVar v where
     IThunk  :: ThunkClass  a => !a -> IVar VThunk
     IPair   :: PairClass   a => !a -> IVar VPair
     IVal    ::                !Val -> IVar Val
+    deriving Typeable
 
 data VOpaque where
     MkOpaque :: Value a => !a -> VOpaque
+    deriving Typeable
 
 -- GADTs, here we come!
 data VRef where
     MkRef   :: (Typeable a) => !(IVar a) -> VRef
+    deriving Typeable
 
 data VObject = MkObject
     { objType   :: !VType
@@ -1299,25 +1302,11 @@ instance Unwrap Exp where
 instance Eq VOpaque where
     (MkOpaque x) == (MkOpaque y) = castV x == castV y
 
-instance Typeable VOpaque where
-    typeOf (MkOpaque x) = typeOf x
-
 instance Ord VOpaque where
     compare x y = castV x `compare` castV y
 
 instance Show VOpaque where
     show (MkOpaque x) = show x
-
-instance Typeable1 IVar where
-    typeOf1 (IScalar x) = typeOf x
-    typeOf1 (IArray  x) = typeOf x
-    typeOf1 (IHash   x) = typeOf x
-    typeOf1 (ICode   x) = typeOf x
-    typeOf1 (IHandle x) = typeOf x
-    typeOf1 (IRule   x) = typeOf x
-    typeOf1 (IThunk  x) = typeOf x
-    typeOf1 (IPair   x) = typeOf x
-    typeOf1 (IVal    x) = typeOf x
 
 instance Show VRef where
     show ref@(MkRef ivar) = case ivar of
@@ -1330,9 +1319,6 @@ instance Show VRef where
         IThunk  x -> showAddressOf (showType (refType ref)) x
         IPair   x -> showAddressOf (showType (refType ref)) x
         IVal    x -> showAddressOf (showType (refType ref)) x
-
-instance Typeable VRef where
-    typeOf (MkRef x) = typeOf x
 
 instance Eq VRef where
     x == y = addressOf x == addressOf y
