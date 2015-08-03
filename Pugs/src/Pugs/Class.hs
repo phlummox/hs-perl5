@@ -65,11 +65,13 @@ type MethodPrim a = (a -> Seq Val -> Eval Val)
 class Boxable b => MethodPrimable a b | a -> b where 
     asPrim :: a -> MethodPrim b
 
-instance Boxable a => MethodPrimable Val a where
-    asPrim v _ _ = return v
+newtype WrapPrimable a b = WrapPrimable a
 
-instance Boxable a => MethodPrimable Call a where
-    asPrim f x _ = ivDispatch (mkVal x) f
+instance Boxable a => MethodPrimable (WrapPrimable Val a) a where
+    asPrim (WrapPrimable v) _ _ = return v
+
+instance Boxable a => MethodPrimable (WrapPrimable Call a) a where
+    asPrim (WrapPrimable f) x _ = ivDispatch (mkVal x) f
 
 -- Auto-generate pure instances from Eval instances
 instance MethodPrimable (a -> b -> Eval z) a => MethodPrimable (a -> b -> z) a where
@@ -137,7 +139,7 @@ mkBoxClass cls methods = newMOClass MkMOClass
 -- mkPureClass :: (Boxable a) => String -> [(ID, MethodPrim a)] -> PureClass
 mkPureClass :: Boxable a => String -> [(ID, MethodPrim a)] -> PureClass
 mkPureClass cls methods = fix . (mkBoxClass cls .) $ \self -> flip (++) methods
-    [ ""        ... mkVal self
+    [ ""        ... WrapPrimable (mkVal self)
     , "ITEM"    ... id
     , "LIST"    ... id
     ]
