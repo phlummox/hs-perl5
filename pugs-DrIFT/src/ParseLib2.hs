@@ -32,6 +32,7 @@ module ParseLib2
     opt, skipUntil, skipUntilOff,skipUntilParse,skipNest) where
 
 import Data.Char
+import qualified Control.Applicative as AP
 import Control.Monad
 
 infixr 5 +++
@@ -61,6 +62,14 @@ instance MonadPlus Parser where
    mzero                = P (\pos inp -> [])
    -- mplus            :: Parser a -> Parser a -> Parser a
    (P p) `mplus` (P q)    = P (\pos inp -> (p pos inp ++ q pos inp))
+
+instance AP.Applicative Parser where
+    pure = return
+    (<*>) = ap
+
+instance AP.Alternative Parser where
+    (<|>) = mplus
+    empty = mzero
 
 -- bits which donn't fit into Haskell's type classes just yet :-(
 

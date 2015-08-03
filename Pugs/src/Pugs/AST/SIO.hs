@@ -13,6 +13,8 @@ import Pugs.Internals
 import Control.Concurrent.STM (STM, atomically, TVar,
     writeTVar, readTVar, newTVarIO, newTVar, readTMVar, newTMVarIO,
     tryPutTMVar, takeTMVar, newEmptyTMVar)
+import Control.Applicative (Applicative(..))
+import Control.Monad (ap)
 
 instance Monad m => ((:>:) (m a)) (Identity a) where cast = return . runIdentity
 instance ((:>:) (SIO a)) (STM a) where cast = liftSTM
@@ -50,6 +52,10 @@ instance Monad SIO where
 
 instance Functor SIO where
     fmap = liftM
+
+instance Applicative SIO where
+    pure  = return
+    (<*>) = ap
 
 -- | Typeclass of monadic types that an @STM@ monad can be lifted to.
 class (Monad m, Functor m) => MonadSTM m where
