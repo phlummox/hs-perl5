@@ -806,7 +806,7 @@ reduceSyn "rx" [exp, adverbs] = do
     val     <- enterEvalContext (cxtItem "Str") exp
     str     <- fromVal val
     p5      <- fromAdverb hv ["P5", "Perl5", "perl5"]
-    p5flags <- fromAdverb hv ["P5", "Perl5", "perl5"]
+    p5flags <- fromAdverb hv ["P5", "Perl5", "perl5"] :: Eval String
     flag_g  <- fromAdverb hv ["g", "global"]
     flag_i  <- fromAdverb hv ["i", "ignorecase"]
     flag_s  <- fromAdverb hv ["s", "sigspace"]
@@ -884,7 +884,8 @@ reduceSyn "inline" [langExp, _] = do
     when (lang /= "Haskell") $
         die "Inline: Unknown language" langVal
     pkg     <- asks envPackage -- full module name here
-    let file = (`concatMap` cast pkg) $ \v -> case v of
+    let pkg' = cast pkg :: String
+        file = (`concatMap` pkg') $ \v -> case v of
                     '-' -> "__"
                     _ | isAlphaNum v -> [v]
                     _ -> "_"
@@ -1524,7 +1525,7 @@ doApply appKind origSub@MkCode{ subCont = cont, subBody = fun, subType = typ } i
     checkSlurpyLimit :: (VInt, Exp) -> Eval [Val]
     checkSlurpyLimit (n, exp) = do
         listVal <- enterLValue $ enterEvalContext (cxtItem "Array") exp
-        list    <- fromVal listVal
+        list    <- fromVal listVal :: Eval [Val]
         elms    <- mapM fromVal list -- flatten
         return $ genericDrop n (concat elms :: [Val])
     isCollapsed :: Type -> Bool
@@ -1547,7 +1548,7 @@ doFetch fetchElem fetchVal fetchIdx isLV isSV = case (isLV, isSV) of
         retIVar elm
     (True, False) -> do
         -- LValue, List context
-        idxList <- fetchIdx
+        idxList <- fetchIdx :: Eval [Val]
         elms    <- mapM fetchElem idxList
         retIVar $ IArray elms
     (False, True) -> do

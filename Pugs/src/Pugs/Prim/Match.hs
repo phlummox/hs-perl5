@@ -335,6 +335,6 @@ pkgParentClasses pkg = do
     if ref == undef then return [] else do
     meta    <- readRef =<< fromVal ref
     fetch   <- doHash meta hash_fetchVal
-    attrs   <- fromVal =<< fetch "is"
+    attrs   <- fromVal =<< fetch "is" :: Eval [VStr]
     pkgs    <- mapM pkgParentClasses attrs
     return $ nub (pkg:concat pkgs)
