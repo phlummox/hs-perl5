@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# OPTIONS_GHC -fglasgow-exts #-}
 
 module MO.Util (
@@ -47,7 +48,7 @@ traceM x = trace x (return ())
 
 {-# INLINE addressOf #-}
 addressOf :: a -> Word
-addressOf x = W# (unsafeCoerce# x)
+addressOf !x = W# (unsafeCoerce# x)
 
 data Ord a => Collection a
     = MkCollection

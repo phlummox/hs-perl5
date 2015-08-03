@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module DrIFT.YAML where
 import Data.Yaml.Syck
 import Data.Ratio
@@ -297,7 +298,7 @@ asYAMLanchor x m = do
     where
     {-# INLINE addressOf #-}
     addressOf :: a -> Word
-    addressOf x = W# (unsafeCoerce# x)
+    addressOf !x = W# (unsafeCoerce# x)
 
 asYAMLwith :: (YAML a, YAML b) => (a -> EmitAs b) -> a -> EmitAs YamlNode
 asYAMLwith f x = asYAMLanchor x (asYAML =<< f x)

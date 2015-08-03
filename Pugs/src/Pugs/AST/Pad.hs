@@ -48,8 +48,10 @@ modifyMPad mp f = stm $ modifyTVar (mp_pad mp) f
 
 newMPad :: MonadSTM m => Pad -> m MPad
 newMPad p = do
-    tvar <- stm $ newTVar p
-    return $ MkMPad (addressOf tvar) tvar
+    (tvar, ptr) <- stm $ do
+      tvar' <- newTVar p
+      return (tvar', addressOf tvar')
+    return $ MkMPad ptr tvar
 
 {-
 {-|
