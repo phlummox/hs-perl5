@@ -21,9 +21,9 @@ module Pugs.Compat.Monads (
 
 import Prelude hiding (mapM)
 import Data.Traversable
-import Debug.Trace
+import Debug.Trace hiding (traceM)
 import qualified Data.ByteString.Internal as I (inlinePerformIO)
-import System.Exit
+import System.Exit hiding (die)
 import System.IO (hPutStrLn, stderr)
 import System.IO.Unsafe
 import Control.Exception (Exception(..))

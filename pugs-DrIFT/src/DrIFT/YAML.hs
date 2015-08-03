@@ -1,7 +1,7 @@
 module DrIFT.YAML where
 import Data.Yaml.Syck
 import Data.Ratio
-import GHC.Exts
+import GHC.Exts hiding (toList)
 import Data.Typeable
 import Data.Char
 import Control.Exception
