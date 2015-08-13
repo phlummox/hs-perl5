@@ -11,7 +11,7 @@ description:         DrIFT is a type sensitive preprocessor for Haskell. It extr
                      This allows instances to be derived for a type after the original module has been compiled.
                      As a bonus, simple utility functions can also be produced from a type.
 category:            Pugs
-cabal-version:       >= 1.2.3
+cabal-version:       >= 1.8
 license:             BSD3
 license-file:        LICENSE
 -- For contributors & what they did, see AUTHORS
@@ -36,6 +36,7 @@ executable          pugs-DrIFT
     build-depends:       base >= 4 && < 5, old-time, random, bytestring, utf8-string, pretty, containers, mtl >= 2.0.0.0, stm, HsSyck
                        , hashtables
                        , hashable
+                       , pugs-DrIFT
     main-is:             DrIFT.hs
     -- ghc-options:         -fparr
     hs-source-dirs:      src
@@ -46,7 +47,7 @@ executable          pugs-DrIFT
                          IncoherentInstances
 
 library
-    build-depends:       base >= 4 && < 5, old-time, random, bytestring, utf8-string, pretty, containers, mtl >= 2.0.0.0, stm, HsSyck
+    build-depends:       base >= 4 && < 5, old-time, random, bytestring, utf8-string, pretty, containers, mtl >= 2.0.0.0, stm, HsSyck, hashtables, hashable
     hs-source-dirs:      src
     -- ghc-options:         -fparr
     extensions:          ParallelListComp, ScopedTypeVariables,
