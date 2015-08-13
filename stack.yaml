@@ -11,4 +11,4 @@ extra-deps:
 - FindBin-0.0.5
 - control-timeout-0.1.2
 - stringtable-atom-0.0.7
-resolver: lts-2.20
+resolver: lts-3.0
