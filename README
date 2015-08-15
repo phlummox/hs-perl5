@@ -10,7 +10,7 @@ this website:
 
 ---
 
-Pugs.hs is known to build with GHC 7.10.1, preferably with the Haskell Stack:
+Pugs.hs is known to build with GHC 7.10.2, preferably with the Haskell Stack:
 
 1. Install https://github.com/commercialhaskell/stack
 2. `stack build --install-ghc`
@@ -25,7 +25,7 @@ Please refer to the INSTALL file for further details.
 ---
 
 The goal during this hiatus is to continue maintaining Pugs.hs, so it remains
-installable with current and future editions of the Haskell Platform, and
+installable with current and future editions of the Haskell Language, and
 interoperable with current and future releases of the Perl 5 Language. :-)
 
 Share and Enjoy!
