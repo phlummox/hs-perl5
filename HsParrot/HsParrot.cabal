@@ -1,5 +1,5 @@
 Name:                HsParrot
-Version:             0.0.2.20120717
+Version:             0.0.2.20150805
 Category:            Language, Pugs
 Synopsis:            Haskell integration with Parrot virtual machine
 Description:         Haskell integration with Parrot virtual machine
@@ -9,10 +9,10 @@ License:             BSD3
 License-File:        LICENSE
 Author:              Audrey Tang
 Maintainer:          audreyt@audreyt.org
-Copyright:           Audrey Tang, 2008
+Copyright:           Audrey Tang, 2008-2015
 
 Build-Type:          Simple
-Tested-With:         GHC==6.8.2, GHC==6.8.3
+Tested-With:         GHC==6.8.2, GHC==6.8.3, GHC==7.10.2
 
 cabal-version:       >= 1.2.3
 -- ghc-options:         -F -pgmF pugs-DrIFT -optF-pgmF
