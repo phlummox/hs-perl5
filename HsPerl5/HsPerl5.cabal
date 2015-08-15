@@ -1,6 +1,6 @@
 name:               HsPerl5
-version:            0.0.6
-copyright:          2008 Audrey Tang
+version:            0.0.6.20150815
+copyright:          2008-2015 Audrey Tang
 license:            BSD3
 license-file:       LICENSE
 author:             Audrey Tang <audreyt@audreyt.org>
@@ -27,7 +27,7 @@ extensions:         ForeignFunctionInterface, TypeSynonymInstances,
                     ScopedTypeVariables, FlexibleInstances,
                     UndecidableInstances, OverlappingInstances, IncoherentInstances
 exposed-modules:    Language.Perl5
-build-depends:      base
+build-depends:      base >= 4 && < 5
 extra-source-files: README test.hs Configure.PL p5embed.h perlxsi.c
 hs-source-dirs:     src
 category:           Language, Pugs
