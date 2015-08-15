@@ -1,6 +1,6 @@
 name:               MetaObject
-version:            0.0.6.20110925
-copyright:          2006 Caio Marcelo, 2008 Audrey Tang
+version:            0.0.6.20150815
+copyright:          2006 Caio Marcelo, 2008-2015 Audrey Tang
 license:            BSD3
 license-file:       LICENSE
 author:             Audrey Tang <audreyt@audreyt.org>
@@ -9,6 +9,7 @@ synopsis:           A meta-object system for Haskell based on Perl 6
 description:        A meta-object system for Haskell based on Perl 6
 stability:          experimental
 build-type:         Simple
+Tested-With:        GHC==7.10.2
 category:           Development, Pugs
 exposed-modules:    MO.Base MO.Compile.Attribute MO.Compile.Class
                     MO.Compile.Role MO.Compile MO.Run MO.Util MO.Capture MO.Util.C3
