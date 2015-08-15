@@ -1,5 +1,5 @@
 Name:                HsSyck
-Version:             0.51
+Version:             0.51.20150815
 Cabal-version:       >= 1.2.3
 Category:            Text, Pugs
 Synopsis:            Fast, lightweight YAML loader and dumper
@@ -16,10 +16,10 @@ License:             BSD3
 License-File:        LICENSE
 Author:              Audrey Tang
 Maintainer:          audreyt@audreyt.org
-Copyright:           Audrey Tang, Gaal Yahas, 2005, 2006, 2007, 2008, 2009, 2013
+Copyright:           Audrey Tang, Gaal Yahas, 2005-2015
 
 Build-Type:          Simple
-Tested-With:         GHC==6.8.2, GHC==6.8.3, GHC==6.10.1, GHC==6.10.2, GHC==7.6.3
+Tested-With:         GHC==6.8.2, GHC==6.8.3, GHC==6.10.1, GHC==6.10.2, GHC==7.6.3, GHC==7.10.2
 Extra-Source-Files:  syck/syck.h syck/syck_st.h syck/gram.h syck/yamlbyte.h changelog
 
 Flag SybInBase
