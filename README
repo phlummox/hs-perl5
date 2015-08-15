@@ -10,12 +10,13 @@ this website:
 
 ---
 
-Pugs.hs is known to build with GHC 6.10 through GHC 7.2.1, preferably with the
-Haskell Platform:
+Pugs.hs is known to build with GHC 7.10.1, preferably with the Haskell Stack:
 
-    http://hackage.haskell.org/platform/
+1. Install https://github.com/commercialhaskell/stack
+2. `stack build --install-ghc`
+3. `stack exec -- pugs`
 
-One can directly install it with the standard Cabal/Hackage system:
+One can also directly install it with the standard Cabal/Hackage system:
 
     cabal install Pugs
 
