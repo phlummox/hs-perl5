@@ -177,6 +177,7 @@ executable pugs
 
     if flag(Perl5)
         cpp-options: -DPUGS_HAVE_PERL5=1
+        ld-options: -pthread
         includes:
             perl5/p5embed.h
         c-sources:
