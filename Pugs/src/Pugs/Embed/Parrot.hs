@@ -99,7 +99,7 @@ evalPGE path match rule subrules = do
                     | otherwise   = errMsg
             fail $ "*** Running external 'parrot' failed:\n" ++ msg
     where
-    escape = escape . encodeUTF8
+    escape = _escape . encodeUTF8
     _escape "" = ""
     _escape ('\\':xs) = "\\\\" ++ _escape xs
     _escape ('\n':xs) = "\\n" ++ _escape xs

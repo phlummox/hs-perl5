@@ -100,7 +100,7 @@ returnPerl5 rv = do
     svs <- peekArray0 nullPtr rv
     case svs of
         []      -> fromArgs =<< peekArray0 nullPtr (rv `advancePtr` 1)
-        [err]   -> throwIO (DynException $ toDyn err)
+        [err]   -> throwIO (toException $ toDyn err)
         (_:x:_) -> fail =<< fromSV x
 
 -- | Data types that can be casted into a Perl 5 value (SV).

@@ -92,7 +92,7 @@ op2Pick r _ = die "pick not defined" r
 
 op1Sum :: Val -> Eval Val
 op1Sum list = do
-    vals <- fromVal list
+    vals <- fromVal list :: Eval [Val]
     foldM (op2Numeric (+)) undef vals
 
 op1Min :: Val -> Eval Val

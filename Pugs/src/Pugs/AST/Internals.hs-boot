@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -cpp -fglasgow-exts -fno-warn-orphans -fallow-overlapping-instances -fallow-undecidable-instances #-}
+{-# LANGUAGE RoleAnnotations #-}
 
 module Pugs.AST.Internals where
 import Pugs.Types
@@ -39,6 +40,7 @@ anyFromVal :: Typeable a => Val -> a
 createObjectRaw :: (MonadSTM m)
     => ObjectId -> Maybe Dynamic -> VType -> [(VStr, Val)] -> m VObject
 
+type role IVar nominal
 data IVar v
 data VOpaque
 

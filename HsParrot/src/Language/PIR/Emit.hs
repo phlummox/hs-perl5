@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module Language.PIR.Emit (
     Emit(..),
     nested, eqSep, commaSep,
@@ -8,8 +9,10 @@ class (Show x) => Emit x where
     emit :: x -> Doc
     -- emit x = error ("Unrecognized construct: " ++ show x)
 
+#if ! MIN_VERSION_pretty(1, 1, 2)
 instance Eq Doc where
     x == y = (render x) == (render y)
+#endif
 
 instance Emit String where
     emit = text

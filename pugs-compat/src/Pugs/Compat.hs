@@ -55,7 +55,7 @@ import Data.Time.Clock.POSIX  as X
 import Data.Tree              as X 
 import Data.Unique            as X 
 import Data.Word              as X hiding (Word)
-import Debug.Trace            as X 
+import Debug.Trace            as X hiding (traceM)
 import GHC.Conc               as X (unsafeIOToSTM)
 import GHC.Exts               as X (unsafeCoerce#, Word(W#), Word#)
 import Network                as X 
@@ -63,7 +63,7 @@ import Numeric                as X (showHex)
 import System.Cmd             as X 
 import System.Directory       as X (Permissions(..), getPermissions, getTemporaryDirectory, createDirectory, removeDirectory, removeFile, getDirectoryContents, getModificationTime)
 import System.Environment     as X (getArgs, withArgs, getProgName)
-import System.Exit            as X 
+import System.Exit            as X hiding (die)
 import System.IO              as X ( Handle, stdin, stdout, hClose, hGetLine, hGetChar, hGetContents, openFile, hSetBinaryMode, hPutStr, hPutStrLn, IOMode(..), stderr, SeekMode(..), hSetBuffering, BufferMode(..), hIsTerminalDevice, hFlush, hPrint, isEOF, hSeek, hTell, hIsOpen, hIsClosed, hIsReadable, hIsWritable, hIsSeekable)
 import System.IO.Error        as X (ioeGetErrorString, isUserError)
 import System.IO.Unsafe       as X 

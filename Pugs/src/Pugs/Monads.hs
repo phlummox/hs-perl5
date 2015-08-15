@@ -31,6 +31,8 @@ module Pugs.Monads (
 import Pugs.Internals
 import Pugs.AST
 import Pugs.Types
+import qualified Control.Applicative as AP
+import Control.Monad (ap)
 import qualified Data.Set as Set
 
 newtype MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
@@ -39,6 +41,13 @@ instance (Monad m) => Monad (MaybeT m) where
     (MaybeT mon) >>= f =
         MaybeT (mon >>= maybe (return Nothing) (runMaybeT . f))
     return              = MaybeT . return . Just
+
+instance (Monad m) => AP.Applicative (MaybeT m) where
+    pure = return
+    (<*>) = ap
+
+instance (Monad m) => Functor (MaybeT m) where
+    fmap = liftM
 
 instance MonadTrans MaybeT where
     lift mon = MaybeT (mon >>= return . Just)
@@ -55,6 +64,10 @@ instance (Monad m) => MonadPlus (MaybeT m) where
         case ma of
             Nothing -> b
             _       -> return ma 
+
+instance (Monad m) => AP.Alternative (MaybeT m) where
+    (<|>) = mplus
+    empty = mzero
 
 {-|
 Perform the given evaluation in an /LValue/ context.

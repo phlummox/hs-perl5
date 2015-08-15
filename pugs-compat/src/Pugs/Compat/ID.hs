@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -fno-full-laziness -fno-cse -cpp #-}
 
 module Pugs.Compat.ID (
-    ID, bufToID, hashNew, hashByteString,
+    ID, bufToID, hashNew,
     __, (+++), nullID, idKey, idBuf, AtomMap, AtomSet
 ) where
 
@@ -14,7 +14,7 @@ import Data.Bits
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.UTF8 as UTF8
-import qualified Data.HashTable as H
+import qualified Data.HashTable.IO as H
 
 type ID = Atom
 
@@ -28,22 +28,8 @@ idKey :: ID -> Int
 idKey = fromAtom
 
 {-# INLINE hashNew #-}
-hashNew :: IO (H.HashTable ByteString a)
-hashNew = H.new (==) hashByteString
-
-hashByteString :: ByteString -> Int32
-hashByteString = BS.foldl' f golden
-    where
-    f m c = fromIntegral c * magic + hashInt32 m
-    magic = 0xdeadbeef
-    golden :: Int32
-    golden = 1013904242 -- = round ((sqrt 5 - 1) * 2^32) :: Int32
-    hashInt32 :: Int32 -> Int32
-    hashInt32 x = mulHi x golden + x
-    mulHi a b = fromIntegral (r `shiftR` 32)
-        where
-        r :: Int64
-        r = fromIntegral a * fromIntegral b
+hashNew :: IO (H.BasicHashTable ByteString a)
+hashNew = H.new
 
 {-
 -- XXX - Under GHCI, our global _BufToID table could be refreshed into

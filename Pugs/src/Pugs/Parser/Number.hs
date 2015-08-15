@@ -1,3 +1,4 @@
+{-# LANGUAGE UndecidableInstances,FlexibleContexts #-}
 
 module Pugs.Parser.Number (
     parseNatOrRat,

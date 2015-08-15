@@ -1,0 +1,14 @@
+flags: {}
+packages:
+- HsParrot/
+- HsPerl5/
+- HsSyck/
+- MetaObject/
+- Pugs/
+- pugs-compat/
+- pugs-DrIFT/
+extra-deps:
+- FindBin-0.0.5
+- control-timeout-0.1.2
+- stringtable-atom-0.0.7
+resolver: lts-3.0

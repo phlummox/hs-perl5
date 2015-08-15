@@ -92,10 +92,7 @@ instance (Typeable1 m, Monad m) => ResponderInterface m (MethodTable m) where
 
 
 data AnyResponder m = forall c. ResponderInterface m c => MkResponder !(m c)
-
-instance (Typeable1 m, Monad m) => Typeable (AnyResponder m) where
-    typeOf _ = mkTyConApp (mkTyCon "AnyResponder") [typeOf1 (undefined :: m ())]
-
+                    deriving Typeable
 
 
 -- Invocant represent an object aggregated with an ResponderInterface
@@ -106,9 +103,6 @@ fromInvocant CaptMeth{ c_invocant = MkInvocant x _ } = case Typeable.cast x of
     Just y -> return y
     _      -> fail $ "Could not coerce from " ++ (show $ typeOf x) ++ " to " ++ (show $ typeOf (undefined :: b))
 
-
-instance (Typeable1 m, Monad m) => Typeable (Invocant m) where
-    typeOf _ = mkTyConApp (mkTyCon "Invocant") [typeOf1 (undefined :: m ())]
 
 ivDispatch :: (Typeable1 m, Monad m) => Invocant m -> MethodInvocation m -> m (Invocant m)
 ivDispatch i@(MkInvocant _ (MkResponder ri)) mi = do

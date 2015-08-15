@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 module Pugs.Compat.Cast (
     (:>:)(..),
@@ -54,7 +55,7 @@ fromTypeable x = case Typeable.cast x of
 
 {-# INLINE addressOf #-}
 addressOf :: a -> Word
-addressOf x = W# (unsafeCoerce# x)
+addressOf !x = W# (unsafeCoerce# x)
 
 {-# INLINE showAddressOf #-}
 showAddressOf :: String -> a -> String

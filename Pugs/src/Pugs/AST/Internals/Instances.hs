@@ -49,7 +49,7 @@ import qualified Data.Set       as Set
 import qualified Data.Map       as Map
 import qualified Pugs.Val       as Val
 
-import qualified Data.HashTable    as H
+import qualified Data.HashTable.IO as H
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import qualified Data.Foldable as F
@@ -166,13 +166,13 @@ instance YAML VRef where
         | s == packBuf "tag:hs:Array"   = fmap MkRef (newArray =<< fromYAML node)
         | s == packBuf "tag:hs:Hash"    = fmap MkRef (newHash =<< fromYAML node)
     fromYAML node = fail $ "Unhandled YAML node: " ++ show node
-instance YAML IHash where
+instance x ~ IHash => YAML x where
      asYAML x = do
          l      <- io $ H.toList x
          asYAMLmap "IHash" (map (\(k, v) -> (k, asYAML v)) l)
      fromYAML node = do
          l  <- fromYAMLmap node
-         l' <- H.fromList H.hashString l
+         l' <- H.fromList l
          return l'
 
 instance YAML ID where
@@ -1363,13 +1363,13 @@ instance Binary Pragma
           get = case 0 of
                     0 -> ap (ap (return MkPrag) get) get
 
-instance Binary IHash where
+instance x ~ IHash => Binary x where
      put x = do
         let kvs = unsafePerformIO (H.toList x)
         length kvs `seq` put (kvs :: [(VStr, IVar VScalar)])
      get = do
         (ins :: [(VStr, IVar VScalar)]) <- get
-        length ins `seq` return (unsafePerformIO $ H.fromList H.hashString ins)
+        length ins `seq` return (unsafePerformIO $ H.fromList ins)
 
 instance Binary JuncType
     where put (JAny) = putWord8 0

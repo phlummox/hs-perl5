@@ -5,6 +5,8 @@ import Pugs.Internals
 import Pugs.Cont hiding (resetT)
 import System.IO.Error (tryIOError, IOError)
 import Control.Exception (SomeException)
+import Control.Applicative (Applicative(..))
+import Control.Monad (ap)
 
 import Pugs.AST.SIO
 import {-# SOURCE #-} Pugs.AST.Internals
@@ -112,6 +114,10 @@ instance Monad Eval where
     fail str = do
         pos <- asks envPos'
         EvalT $ return (RException (errStrPos (cast str) pos))
+
+instance Applicative Eval where
+    pure  = return
+    (<*>) = ap
 
 instance Error Val where
     noMsg = errStr ""

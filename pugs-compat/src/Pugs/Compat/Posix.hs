@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE StandaloneDeriving, DeriveDataTypeable #-}
 {-|
     POSIX calls and emulations.
 
@@ -124,8 +125,7 @@ signalProcess = System.Posix.Signals.signalProcess
 clocksPerSecond :: (Num a) => a
 clocksPerSecond = 1000000
 
-instance Typeable DirStream where
-    typeOf _ = mkTyConApp (mkTyCon "DirStream") []
+deriving instance Typeable DirStream
 
 #else
 

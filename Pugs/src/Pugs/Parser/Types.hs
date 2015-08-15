@@ -21,7 +21,7 @@ import Pugs.Types
 import Pugs.Internals
 import Pugs.Pretty (pretty)
 import Text.ParserCombinators.Parsec.Pos
-import Debug.Trace
+import Debug.Trace hiding (traceM)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 

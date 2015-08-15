@@ -12,7 +12,8 @@ import qualified Data.Set as Set
 import qualified Data.Map as Map
 import qualified Data.ByteString.UTF8 as Str
 import qualified Data.ByteString.Char8 as Buf -- XXX
-import qualified Data.HashTable as H
+import qualified Data.HashTable.IO as H
+import qualified Data.Hashable as H
 import GHC.Int (Int32(I32#))
 
 import Pugs.Parser.Types
@@ -187,8 +188,11 @@ currentFunctions = do
     return (length funs `seq` funs)
 
 {-# NOINLINE _RefToFunction #-}
-_RefToFunction :: H.HashTable PadEntry (Maybe CurrentFunction)
-_RefToFunction = unsafePerformIO (H.new (==) hashPadEntry)
+_RefToFunction :: H.BasicHashTable PadEntry (Maybe CurrentFunction)
+_RefToFunction = unsafePerformIO H.new
+
+instance H.Hashable PadEntry where
+  hashWithSalt salt = H.hashWithSalt salt . hashPadEntry
 
 hashPadEntry :: PadEntry -> Int32
 hashPadEntry PEConstant{ pe_proto = v }  = I32# (unsafeCoerce# v)

@@ -1,7 +1,8 @@
+{-# LANGUAGE BangPatterns #-}
 module DrIFT.YAML where
 import Data.Yaml.Syck
 import Data.Ratio
-import GHC.Exts
+import GHC.Exts hiding (toList)
 import Data.Typeable
 import Data.Char
 import Control.Exception
@@ -18,13 +19,14 @@ import Data.List	( foldl' )
 import Data.Int		( Int32, Int64 )
 import Codec.Binary.UTF8.String (encodeString, decodeString)
 -- import Pugs.Internals (addressOf, safeMode)
-import Data.HashTable (HashTable)
+import Data.HashTable.IO (BasicHashTable)
 import qualified Data.IntSet as IntSet
-import qualified Data.HashTable as Hash
+import qualified Data.HashTable.IO as Hash
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as S
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Sequence as Seq
+import Data.Hashable (Hashable(..))
 
 type Buf = S.ByteString
 
@@ -296,7 +298,7 @@ asYAMLanchor x m = do
     where
     {-# INLINE addressOf #-}
     addressOf :: a -> Word
-    addressOf x = W# (unsafeCoerce# x)
+    addressOf !x = W# (unsafeCoerce# x)
 
 asYAMLwith :: (YAML a, YAML b) => (a -> EmitAs b) -> a -> EmitAs YamlNode
 asYAMLwith f x = asYAMLanchor x (asYAML =<< f x)
@@ -308,8 +310,8 @@ failWith e = fail $ "no parse: " ++ show e ++ " as " ++ show typ
     typ = typeOf (undefined :: a)
 
 
-type SeenHash = HashTable SYMID (Maybe YamlNode)
-type DuplHash = HashTable YamlNode Int
+type SeenHash = BasicHashTable SYMID (Maybe YamlNode)
+type DuplHash = BasicHashTable YamlNode Int
 
 -- Compress a YAML tree by finding common subexpressions.
 compressYamlNode :: YamlNode -> IO YamlNode
@@ -318,8 +320,8 @@ compressYamlNode node = do
     --          First time a SYMID is seen, firstTime (Hash from SYMID to (Maybe YamlNode))
     --          is inserted.  Next time, both YamlNodes are written to the dupNode
     --          hash (Hash from YamlNode to Int), and firstTime now contains Nothing.
-    seen    <- Hash.new (==) fromIntegral
-    dupl    <- Hash.new eqNode (fromIntegral . n_id)
+    seen    <- Hash.new
+    dupl    <- Hash.new
     count   <- newIORef 1
 
     let ?seenHash = seen
@@ -351,7 +353,7 @@ visitNode node = do
     case rv of
         Just 0  -> do
             i   <- readIORef ?countRef
-            Hash.update ?duplHash node i 
+            hashUpdate ?duplHash node i 
             writeIORef ?countRef (i+1)
             elem'   <- visitElem (n_elem node)
             return node{ n_anchor = AAnchor i, n_elem = elem' }
@@ -379,11 +381,11 @@ markNode node = do
     rv  <- Hash.lookup ?seenHash symid
     case rv of
         Just (Just prevNode)   -> do
-            Hash.update ?duplHash node' 0
-            Hash.update ?duplHash prevNode 0
-            Hash.update ?seenHash symid Nothing
-        Just _  -> Hash.update ?duplHash node' 0
-        _       -> Hash.update ?seenHash symid (Just node')
+            hashUpdate ?duplHash node' 0
+            hashUpdate ?duplHash prevNode 0
+            hashUpdate ?seenHash symid Nothing
+        Just _  -> hashUpdate ?duplHash node' 0
+        _       -> hashUpdate ?seenHash symid (Just node')
     return node'{ n_elem = elem' }
 
 markElem :: (?seenHash :: SeenHash, ?duplHash :: DuplHash) => YamlElem -> IO (Int32, YamlElem)
@@ -432,3 +434,19 @@ hashByteString = BS.foldl' f golden
         where
         r :: Int64
         r = fromIntegral a * fromIntegral b
+
+hashUpdate :: (Eq k, Hashable k) => BasicHashTable k v -> k -> v -> IO Bool
+hashUpdate h k v = do
+    v' <- Hash.lookup h k
+    Hash.insert h k v
+    case v' of
+        Just _ -> return True
+        Nothing -> return False
+
+instance Hashable YamlNode where
+    hashWithSalt salt i = let i' = fromIntegral . n_id $ i :: Int
+                           in hashWithSalt salt i'
+
+instance Hashable SYMID where
+    hashWithSalt salt i = let i' = fromIntegral i :: Int
+                           in hashWithSalt salt i'

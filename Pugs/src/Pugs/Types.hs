@@ -30,7 +30,7 @@ where
 import Pugs.Internals
 import Data.Bits (shiftL)
 import qualified Data.Map as Map
-import qualified Data.HashTable as H
+import qualified Data.HashTable.IO as H
 import qualified Data.IntMap as IntMap
 import qualified Data.IntSet as IntSet
 import qualified Data.ByteString.Char8 as Buf -- Intentionally not UTF8!
@@ -440,7 +440,7 @@ instance ((:>:) Var) ByteString where
     cast x = unsafePerformIO (bufToVar x)
 
 {-# NOINLINE _BufToVar #-}
-_BufToVar :: H.HashTable ByteString Var
+_BufToVar :: H.BasicHashTable ByteString Var
 _BufToVar = unsafePerformIO hashNew
 
 bufToVar :: ByteString -> IO Var

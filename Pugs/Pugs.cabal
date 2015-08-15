@@ -165,6 +165,8 @@ executable pugs
         pretty, time, random, process, containers, bytestring, text,
         array, directory, utf8-string, binary, haskeline >= 0.6.4.7, FindBin,
         control-timeout >= 0.1.2,
+        hashtables,
+        hashable,
 
         MetaObject       >= 0.0.4,
         HsParrot         >= 0.0.2.20120717,
@@ -177,6 +179,7 @@ executable pugs
 
     if flag(Perl5)
         cpp-options: -DPUGS_HAVE_PERL5=1
+        ld-options: -pthread
         includes:
             perl5/p5embed.h
         c-sources:
