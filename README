@@ -1,32 +1,13 @@
-This repository hosts a Haskell-based implementation of Perl 6.
+This module provides a Haskell interface to embedded Perl 5 interpreter.
 
-Currently, the Pugs.hs project exists mainly for historical/archival purposes,
-not for active development. (Forks are, of course, very much welcome.)
+Documentation and functionality is scarce at the moment; see test.hs for
+some basic usage examples.
 
-For a host of active implementations of the Perl 6 Language, please refer to
-this website:
+Currently supported features are:
+    * Function calls
+    * Method calls
+    * Module imports
+    * Callbacks
 
-    http://perl6.org/
-
----
-
-Pugs.hs is known to build with GHC 7.10.2, preferably with the Haskell Stack:
-
-1. Install https://github.com/commercialhaskell/stack
-2. `stack build --install-ghc`
-3. `stack exec -- pugs`
-
-One can also directly install it with the standard Cabal/Hackage system:
-
-    cabal install Pugs
-
-Please refer to the INSTALL file for further details.
-
----
-
-The goal during this hiatus is to continue maintaining Pugs.hs, so it remains
-installable with current and future editions of the Haskell Language, and
-interoperable with current and future releases of the Perl 5 Language. :-)
-
-Share and Enjoy!
-鳳
+Eventually the entirety of Pugs.Embed.Perl5 and Pugs.Run.Perl5 will be
+carried into this module.
