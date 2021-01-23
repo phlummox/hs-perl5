@@ -3,7 +3,7 @@
 
 #include "p5embed.h"
 #include <XSUB.h>
-#include "perlxsi.c"
+#include "perlxsi.h"
 
 /* define to enable pugsembed debug messages */
 #define PERL5_EMBED_DEBUG 0
