@@ -27,8 +27,8 @@ category:           Language, Perl
 extra-source-files:
     README
     CHANGELOG
-    p5embed.h
-    perlxsi.h
+    cbits/p5embed.h
+    cbits/perlxsi.h
     perl_configure.sh
 
 source-repository head
