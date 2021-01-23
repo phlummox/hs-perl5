@@ -1,5 +1,16 @@
+
+{-# LANGUAGE
+  ForeignFunctionInterface, TypeSynonymInstances,
+  ScopedTypeVariables, FlexibleInstances, FlexibleContexts,
+  UndecidableInstances
+#-}
+
+
+
+
 module Language.Perl5
-    ( Context(..)
+    (
+      Context(..)
     , ToSV(..)
     , FromSV(..)
     , withPerl5
@@ -9,13 +20,14 @@ module Language.Perl5
     , eval_
     , SV
     , use
-    ) where
+    )
+    where
 import Foreign
 import Foreign.C.Types
 import Foreign.C.String
 import Control.Exception (bracket, throwIO, Exception(..))
 import Data.Dynamic (toDyn)
-import Data.List (intersperse)
+import Data.List (intersperse, intercalate)
 
 -- | Perl 5's calling context.
 data Context = Void | Item | List
@@ -39,7 +51,7 @@ instance ToCV String where
         cv <- withCString sub perl5_get_cv
         if cv /= nullPtr then return cv else do
             let prms = map (\i -> "$_[" ++ show i ++ "]") [0 .. count-1]
-            eval ("sub { " ++ sub ++ "(" ++ (concat $ intersperse ", " prms) ++ ") }")
+            eval ("sub { " ++ sub ++ "(" ++ intercalate ", " prms ++ ") }")
 
 (.:) :: (ToCV sub, ToArgs args, FromArgs ret) => sub -> args -> IO ret
 (.:) = callSub
@@ -160,14 +172,14 @@ class FromArgs a where
     contextOf :: a -> Context
     contextOf _ = Item
 
-instance FromArgs () where
+instance {- OVERLAPS -} FromArgs () where
     fromArgs _ = return ()
     contextOf _ = Void
 
 instance ToArgs () where
     toArgs _ = return []
 
-instance ToSV a => ToArgs a where
+instance {-# OVERLAPS #-} ToSV a => ToArgs a where
     toArgs = fmap (:[]) . toSV
 
 instance (ToSV a, ToSV b) => ToArgs (a, b) where
@@ -176,7 +188,7 @@ instance (ToSV a, ToSV b) => ToArgs (a, b) where
         y' <- toSV y
         return [x', y']
 
-instance FromSV a => FromArgs a where
+instance {-# OVERLAPS #-} FromSV a => FromArgs a where
     fromArgs [] = fail "Can't convert an empty return list!"
     fromArgs (x:_) = fromSV x
     contextOf _ = Item
@@ -299,3 +311,4 @@ foreign import ccall "perl5_get_sv"
     perl5_get_sv :: CString -> IO SV
 foreign import ccall "perl5_get_cv"
     perl5_get_cv :: CString -> IO SV
+
