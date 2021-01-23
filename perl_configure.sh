@@ -4,7 +4,7 @@ set -ex
 
 cc_options="$(perl -MExtUtils::Embed -e ccopts)"
 ld_options="$(perl -MExtUtils::Embed -e ldopts)"
-OUTFILE=my-perl5.buildinfo
+OUTFILE=hs-perl5.buildinfo
 
 echo > $OUTFILE
 echo "cc-options: " $cc_options   >>  $OUTFILE
