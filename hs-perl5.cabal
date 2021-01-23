@@ -11,8 +11,8 @@ maintainer:         phlummox <phlummox2@gmail.com>
 synopsis:           Haskell interface to embedded Perl 5 interpreter
 description:        This module provides a Haskell interface to embedded Perl 5 interpreter.
 
-                    Documentation and functionality is scarce at the moment; see test.hs for
-                    some basic usage examples.
+                    Documentation and functionality is scarce at the moment; see
+                    examples/test.hs for some basic usage examples.
 
                     Currently supported features are:
                         * Function calls
