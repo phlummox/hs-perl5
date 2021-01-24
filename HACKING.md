@@ -5,15 +5,15 @@
 
 ["How to embed perl in your C program"][perlembed]
 
-:   a good starting point on the Perl C API
+* a good starting point on the Perl C API
 
 ["perlguts -- Introduction to the Perl API"][perlguts]
 
-:   more detail
+* more detail
 
 ["Perl API"][perlapi]
 
-:   reference documentation
+* reference documentation
 
 [perlembed]: https://perldoc.perl.org/perlembed
 [perlguts]: https://perldoc.perl.org/perlguts
