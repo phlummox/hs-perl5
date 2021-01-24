@@ -20,6 +20,8 @@ description:        This module provides a Haskell interface to embedded Perl 5 
                         * Module imports
                         * Callbacks
 
+                    *IN DEVELOPMENT & EXPERIMENTAL*
+
 stability:          experimental
 build-type:         Custom
 category:           Language, Perl
