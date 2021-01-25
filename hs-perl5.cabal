@@ -9,29 +9,29 @@ bug-reports:        https://github.com/phlummox/hs-perl5/issues
 author:             Audrey Tang <audreyt@audreyt.org>
 maintainer:         phlummox <phlummox2@gmail.com>
 synopsis:           Haskell interface to embedded Perl 5 interpreter
-description:        This module provides a Haskell interface to embedded Perl 5 interpreter.
-
+description:        This module provides a Haskell interface to embedded Perl 5
+                    interpreter.
+                    .
                     Documentation and functionality is scarce at the moment; see
-                    examples/test.hs for some basic usage examples.
-
+                    @examples/test.hs@ for some basic usage examples.
+                    .
                     Currently supported features are:
-                        * Function calls
-                        * Method calls
-                        * Module imports
-                        * Callbacks
-
-                    *IN DEVELOPMENT & EXPERIMENTAL*
-
+                    .
+                    * Function calls
+                    * Method calls
+                    * Module imports
+                    * Callbacks
+                    .
+                    /IN DEVELOPMENT & EXPERIMENTAL/
 stability:          experimental
 build-type:         Custom
 category:           Language, Perl
 
 extra-source-files:
     README.md
-    CHANGELOG
+    CHANGELOG.md
     cbits/p5embed.h
     cbits/perlxsi.h
-    perl_configure.sh
 
 source-repository head
   type: git
@@ -41,8 +41,6 @@ custom-setup
   setup-depends:
       Cabal
     , base
-    , directory
-    , filepath
     , process
 
 library
@@ -70,13 +68,14 @@ library
 --   default-language: Haskell2010
 
 executable example
+  buildable: False
   main-is: test.hs
   hs-source-dirs:
       examples
   build-depends:
       base
     , hs-perl5
-  ghc-options:         -Wall -fwarn-tabs -rtsopts -with-rtsopts=-N
+  ghc-options:         -Wall -fwarn-tabs -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 
