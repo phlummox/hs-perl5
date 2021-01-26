@@ -14,12 +14,21 @@ These are output to a .buildinfo file, which cabal picks up and
 uses to augment the fields from the .cabal file: see
 <https://www.haskell.org/cabal/release/cabal-1.22.2.0/doc/users-guide/developing-packages.html#system-dependent-parameters the cabal docco>.
 
+Currently this Setup file is known to work with versions of Cabal from
+>= 1.24 to <= 2.0.
+On Linux.
+
 -}
 import Control.Monad
 
 import Distribution.Simple
 import Distribution.Verbosity                 (Verbosity)
-import Distribution.Simple.Utils              (info)
+import Distribution.Simple.Utils              (
+                                                info
+#if MIN_VERSION_Cabal(2,2,0)
+                                              , findHookedPackageDesc
+#endif
+                                              )
 import Distribution.PackageDescription        ( HookedBuildInfo
                                               ,updatePackageDescription
                                               ,emptyHookedBuildInfo
@@ -30,9 +39,10 @@ import Distribution.Simple.Setup              (ConfigFlags(..)
                                               , fromFlag
                                               , configVerbosity
                                               )
+#if MIN_VERSION_Cabal(2,2,0)
+import Distribution.PackageDescription.Parsec (readHookedBuildInfo)
+#else
 import Distribution.PackageDescription.Parse  (readHookedBuildInfo)
-#ifdef CABAL_PARSEC
-import Distribution.PackageDescription.Parsec
 #endif
 
 import System.Process (readCreateProcess, shell)
@@ -53,7 +63,15 @@ is_verbose_configure =
   False
 #endif
 
-
+-- failed attempt to deal with Cabal >= 2.2
+hookedPackageDesc :: IO (Maybe FilePath)
+hookedPackageDesc =
+#if MIN_VERSION_Cabal(2,2,0)
+  do res <- findHookedPackageDesc "."
+     return res
+#else
+  defaultHookedPackageDesc
+#endif
 
 -- |
 -- List of
@@ -122,7 +140,7 @@ main = writeBuildInfo >> defaultMainWithHooks myUserHooks
 
               getHookedBuildInfo :: Verbosity -> IO HookedBuildInfo
               getHookedBuildInfo verbosity = do
-                maybe_infoFile <- defaultHookedPackageDesc
+                maybe_infoFile <- hookedPackageDesc
                 case maybe_infoFile of
                   Nothing       -> return emptyHookedBuildInfo
                   Just infoFile -> do
