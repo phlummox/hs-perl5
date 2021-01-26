@@ -22,19 +22,19 @@ matrix:
   - env: BUILD=cabal GHCVER=8.0.1 CABALVER=2.2 HAPPYVER=1.19.5 ALEXVER=3.1.7
     compiler: ": #GHC 8.0.1"
     addons:
-      {apt: {packages: [cabal-install-2.2,ghc-8.0.1,happy-1.19.5,alex-3.1.7], sources: [hvr-ghc]}}
+      {apt: {packages: [cabal-install-2.2,ghc-8.0.1,happy-1.19.5,alex-3.1.7,libperl-dev], sources: [hvr-ghc]}}
 
   # Stack lts-9
   - env: BUILD=stack STACK_RESOLVER="lts-9"
     compiler: ": #stack"
     addons:
-      {apt: {packages: [libgmp-dev], sources: [hvr-ghc]}}
+      {apt: {packages: [libgmp-dev,libperl-dev], sources: [hvr-ghc]}}
 
   # Stack lts-11
   - env: BUILD=stack STACK_RESOLVER="lts-11"
     compiler: ": #stack"
     addons:
-      {apt: {packages: [libgmp-dev], sources: [hvr-ghc]}}
+      {apt: {packages: [libgmp-dev,libperl-dev], sources: [hvr-ghc]}}
 
 before_install:
   - |
@@ -52,7 +52,7 @@ install:
     set -ex
     case "$BUILD" in
       cabal)
-        echo TODO
+        .travis-scripts/cabal-build.sh
       ;;
       stack)
         # build project with stack
