@@ -5,6 +5,36 @@
   UndecidableInstances
 #-}
 
+{- |
+
+Interact with embedded Perl interpreter.
+
+= Interpreter instance
+
+Pretty much any function in this module will only operated correctly if a
+properly initialized /interpreter instance/ exists  -- that is,
+the function 'perl5_init' has been called. You don't
+have to /pass/ the resulting 'Interpreter' to the functions, typically --
+rather, calling 'perl5_init' has the side effect
+of initializing various global variables needed by Perl.
+Normally, only one interpreter instance can exist at a time
+(unless your Perl library has been specially compiled to allow for multiple
+instances -- see <https://perldoc.perl.org/perlembed#Maintaining-multiple-interpreter-instances perlembed>).
+
+For convenience, a 'bracket'-like function is provided, 'withPerl5', which creates
+an interpreter using 'perl5_init', cleans up afterwards using
+'perl_destruct', and runs your 'IO' actions in between.
+
+Calling 'withPerl5' creates an 'Interpreter' instance that is
+equivalent to running
+
+@
+perl -e ""
+@
+
+at the command-line.
+
+-}
 
 
 
@@ -22,26 +52,23 @@ module Language.Perl5
     , use
     )
     where
+
+
+import Control.Exception (bracket, throwIO, Exception(..))
+
+import Data.Dynamic (toDyn)
+import Data.Int
+import Data.List (intersperse, intercalate)
+
 import Foreign
 import Foreign.C.Types
 import Foreign.C.String
-import Control.Exception (bracket, throwIO, Exception(..))
-import Data.Dynamic (toDyn)
-import Data.List (intersperse, intercalate)
+
+import Language.Perl5.Internal
+import Language.Perl5.Types
 
 {-# ANN module ("HLint: ignore Eta reduce" :: String) #-}
-
-
--- | Perl 5's calling context.
-data Context = Void | Item | List
-
-enumContext :: (Num a) => Context -> a
-enumContext Void = 128
-enumContext Item = 0
-enumContext List = 1
-
-type Interpreter = Ptr ()
-type SV = Ptr ()
+{-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
 
 class ToCV a where
     toCV :: a -> Int -> IO SV
@@ -91,7 +118,7 @@ callMethod inv meth args = do
 use :: String -> IO SV
 use m = eval $ "use " ++ m ++ "; q[" ++ m ++ "]"
 
--- | Run a computation within the context of a Perl 5 interpreter. 
+-- | Run a computation within the context of a Perl 5 interpreter.
 withPerl5 :: IO a -> IO a
 withPerl5 f =
     withCString "-e" $ \prog -> withCString "" $ \cstr ->
@@ -104,7 +131,7 @@ withPerl5 f =
 eval :: forall a. FromArgs a => String -> IO a
 eval str = withCStringLen str $ \(cstr, len) -> do
     rv  <- perl5_eval cstr (toEnum len) (enumContext $ contextOf (undefined :: a))
-    returnPerl5 rv 
+    returnPerl5 rv
 
 -- | Same as 'eval' but always in void context.
 eval_ :: String -> IO ()
@@ -134,11 +161,6 @@ instance ToSV () where
 instance FromSV () where
     fromSV x = seq x (return ())
 
-instance ToArgs [String] where
-    toArgs = mapM toSV
-
-instance FromArgs [String] where
-    fromArgs = mapM fromSV
 
 instance ToSV String where
     toSV str = withCStringLen str $ \(cstr, len) ->
@@ -149,14 +171,29 @@ instance FromSV String where
         cstr <- perl5_SvPV sv
         peekCString cstr
 
+-- | For convenience, a 'ToSV' instance is provided for 'Int's.
+-- However, it's lossy: actually, a Perl 'SV' will only fit
+-- an 'Int32'.
 instance ToSV Int where
     toSV = perl5_newSViv . toEnum
 
-instance ToSV Double where
-    toSV = perl5_newSVnv . realToFrac
-
 instance FromSV Int where
     fromSV = fmap fromEnum . perl5_SvIV
+
+--instance ToSV Int32 where
+--    toSV = toSV . toInt
+--      where
+--        toInt :: Int32 -> Int
+--        toInt = fromIntegral
+
+--instance FromSV Int32 where
+--    fromSV = fmap fromInt . fromSV
+--      where
+--        fromInt :: Int -> Int32
+--        fromInt = fromIntegral
+
+instance ToSV Double where
+    toSV = perl5_newSVnv . realToFrac
 
 instance FromSV Double where
     fromSV = fmap realToFrac . perl5_SvNV
@@ -175,6 +212,13 @@ class FromArgs a where
     fromArgs :: [SV] -> IO a
     contextOf :: a -> Context
     contextOf _ = Item
+
+instance ToArgs [String] where
+    toArgs = mapM toSV
+
+instance FromArgs [String] where
+    fromArgs = mapM fromSV
+
 
 instance {- OVERLAPS -} FromArgs () where
     fromArgs _ = return ()
@@ -233,7 +277,7 @@ instance FromArgs [SV] where
 instance ToArgs a => ToSV (IO a) where
     toSV f = do
         sp <- newStablePtr $ \_ _ -> do
-            svs <- toArgs =<< f 
+            svs <- toArgs =<< f
             newArray0 nullPtr svs
         perl5_make_cv sp
 
@@ -269,8 +313,6 @@ instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> a) where
             newArray0 nullPtr svs
         perl5_make_cv sp
 
-type Callback = Ptr SV -> CInt -> IO (Ptr SV)
-
 hsPerl5Apply :: StablePtr Callback -> Ptr SV -> CInt -> IO (Ptr SV)
 hsPerl5Apply ptr args cxt = do
     f <- deRefStablePtr ptr
@@ -279,40 +321,5 @@ hsPerl5Apply ptr args cxt = do
 foreign export ccall "hsPerl5Apply"
     hsPerl5Apply :: StablePtr Callback -> Ptr SV -> CInt -> IO (Ptr SV)
 
-foreign import ccall "perl5_make_cv"
-    perl5_make_cv :: StablePtr Callback -> IO SV
-foreign import ccall "perl5_init"
-    perl5_init :: CInt -> Ptr CString -> IO Interpreter
-foreign import ccall "perl5_sv_undef"
-    perl5_sv_undef :: IO SV
-foreign import ccall "perl5_sv_yes"
-    perl5_sv_yes :: IO SV
-foreign import ccall "perl5_sv_no"
-    perl5_sv_no :: IO SV
-foreign import ccall "perl5_eval"
-    perl5_eval :: CString -> CInt -> CInt -> IO (Ptr SV)
-foreign import ccall "perl5_newSVpvn"
-    perl5_newSVpvn :: CString -> CInt -> IO SV
-foreign import ccall "perl5_SvPV"
-    perl5_SvPV :: SV -> IO CString
-foreign import ccall "perl5_SvIV"
-    perl5_SvIV :: SV -> IO CInt
-foreign import ccall "perl5_SvNV"
-    perl5_SvNV :: SV -> IO CDouble
-foreign import ccall "perl5_newSViv"
-    perl5_newSViv :: CInt -> IO SV
-foreign import ccall "perl5_newSVnv"
-    perl5_newSVnv :: CDouble -> IO SV
-foreign import ccall "perl_destruct"
-    perl_destruct :: Interpreter -> IO CInt
-foreign import ccall "perl_free"
-    perl_free :: Interpreter -> IO ()
-foreign import ccall "perl5_apply"
-    perl5_apply :: SV -> SV -> Ptr SV -> CInt -> IO (Ptr SV)
-foreign import ccall "perl5_SvTRUE"
-    perl5_SvTRUE :: SV -> IO Bool
-foreign import ccall "perl5_get_sv"
-    perl5_get_sv :: CString -> IO SV
-foreign import ccall "perl5_get_cv"
-    perl5_get_cv :: CString -> IO SV
+
 
