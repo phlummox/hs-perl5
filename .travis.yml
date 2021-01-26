@@ -63,7 +63,7 @@ install:
         if [ -f "stack-${STACK_RESOLVER}.yaml" ] ; then
           cp "stack-${STACK_RESOLVER}.yaml" stack.yaml
         else
-          stack --resolver="${STACK_RESOLVER} init
+          stack --resolver="${STACK_RESOLVER}" init
         fi
         stack build  --test --no-run-tests
       ;;
