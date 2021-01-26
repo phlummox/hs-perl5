@@ -4,3 +4,4 @@
 .*.swp
 /hs-perl5.buildinfo
 /stack.yaml.lock
+.*.swp
