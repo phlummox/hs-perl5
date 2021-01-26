@@ -76,7 +76,7 @@ evalTest :: String -> Context -> IO (Ptr SV)
 evalTest str ctx =
   withCStringLen str $ \(cStr, len) ->
     withPerl5 $
-      perl5_eval cStr (fromIntegral len) (enumContext ctx)
+      perl5_eval cStr (fromIntegral len) (numContext ctx)
 
 
 -- |
@@ -85,7 +85,7 @@ evalTest str ctx =
 -- { NULL, ptr-to-sole-result, NULL}.
 prop_eval_cint_as_scalar_gives_single_result :: CInt -> Expectation
 prop_eval_cint_as_scalar_gives_single_result n = do
-  res <- evalTest (show n) Item
+  res <- evalTest (show n) ScalarCtx
   let res' :: Ptr SV
       res' = castPtr res
   zerothEl  <- peek res'
@@ -98,7 +98,7 @@ prop_eval_cint_as_scalar_gives_single_result n = do
 
 prop_eval_cint_as_scalar_roundtrips :: CInt -> Expectation
 prop_eval_cint_as_scalar_roundtrips n = do
-  res <- evalTest (show n) Item
+  res <- evalTest (show n) ScalarCtx
   let res' :: Ptr SV
       res' = castPtr res
   firstEl  <- peek (advancePtr res' 1) >>= perl5_SvIV
@@ -109,7 +109,7 @@ prop_eval_cint_as_scalar_roundtrips n = do
 prop_eval_simplestring_as_scalar_roundtrips :: Property
 prop_eval_simplestring_as_scalar_roundtrips =
   forAll quotableASCIIString $ \str -> do
-    res <- evalTest ("'" <> str <> "'") Item
+    res <- evalTest ("'" <> str <> "'") ScalarCtx
     let res' :: Ptr SV
         res' = castPtr res
     firstEl  <- peek (advancePtr res' 1) >>= perl5_SvPV >>= peekCString
@@ -129,7 +129,7 @@ prop_eval_splitstring_as_array_roundtrips =
           fragment = [qc| my @res = split ' ', 'a{str1_} b{str2_}'; return @res;
                       |]
       -- hPutStrLn stderr $ "fragment = " <> fragment
-      res <- evalTest fragment List
+      res <- evalTest fragment ListCtx
       let res' :: Ptr SV
           res' = castPtr res
       zerothEl   <- peek res'
@@ -147,7 +147,7 @@ prop_eval_splitstring_as_array_roundtrips =
 
 eval_die :: String -> IO (Ptr SV)
 eval_die msg = do
-    res <- evalTest perlString Void
+    res <- evalTest perlString VoidCtx
     let res' :: Ptr SV
         res' = castPtr res
     return res'

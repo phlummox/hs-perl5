@@ -95,7 +95,7 @@ callSub sub args = do
     args'   <- toArgs args
     sub'    <- toCV sub (length args')
     rv      <- withArray0 nullPtr args' $ \argsPtr ->
-        perl5_apply sub' nullPtr argsPtr (enumContext $ contextOf (undefined :: r))
+        perl5_apply sub' nullPtr argsPtr (numContext $ contextOf (undefined :: r))
     returnPerl5 rv
 
 (.$) :: (ToSV meth, ToArgs args, FromArgs ret) => SV -> meth -> args -> IO ret
@@ -111,7 +111,7 @@ callMethod inv meth args = do
     args'   <- toArgs args
     sub'    <- toSV meth
     rv      <- withArray0 nullPtr args' $ \argsPtr ->
-        perl5_apply sub' inv' argsPtr (enumContext $ contextOf (undefined :: r))
+        perl5_apply sub' inv' argsPtr (numContext $ contextOf (undefined :: r))
     returnPerl5 rv
 
 -- | Use a module.  Returns a prototype object representing the module.
@@ -130,7 +130,7 @@ withPerl5 f =
 -- | Evaluate a snippet of Perl 5 code.
 eval :: forall a. FromArgs a => String -> IO a
 eval str = withCStringLen str $ \(cstr, len) -> do
-    rv  <- perl5_eval cstr (toEnum len) (enumContext $ contextOf (undefined :: a))
+    rv  <- perl5_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a))
     returnPerl5 rv
 
 -- | Same as 'eval' but always in void context.
@@ -211,7 +211,7 @@ class ToArgs a where
 class FromArgs a where
     fromArgs :: [SV] -> IO a
     contextOf :: a -> Context
-    contextOf _ = Item
+    contextOf _ = ScalarCtx
 
 instance ToArgs [String] where
     toArgs = mapM toSV
@@ -222,7 +222,7 @@ instance FromArgs [String] where
 
 instance {- OVERLAPS -} FromArgs () where
     fromArgs _ = return ()
-    contextOf _ = Void
+    contextOf _ = VoidCtx
 
 instance ToArgs () where
     toArgs _ = return []
@@ -239,7 +239,7 @@ instance (ToSV a, ToSV b) => ToArgs (a, b) where
 instance {-# OVERLAPS #-} FromSV a => FromArgs a where
     fromArgs [] = error "Can't convert an empty return list!"
     fromArgs (x:_) = fromSV x
-    contextOf _ = Item
+    contextOf _ = ScalarCtx
 
 instance (FromSV a, FromSV b) => FromArgs (a, b) where
     fromArgs [] = error "Can't convert an empty return list!"
@@ -248,7 +248,7 @@ instance (FromSV a, FromSV b) => FromArgs (a, b) where
         x' <- fromSV x
         y' <- fromSV y
         return (x', y')
-    contextOf _ = List
+    contextOf _ = ListCtx
 
 instance FromArgs r => FromSV (IO r) where
     -- Callback code.

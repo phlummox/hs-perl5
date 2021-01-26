@@ -51,8 +51,10 @@ custom-setup
 library
   exposed-modules:
       Language.Perl5
-      Language.Perl5.Internal
       Language.Perl5.Types
+      Language.Perl5.Internal
+      Language.Perl5.Internal.Types
+      Language.Perl5.Internal.Constants
   hs-source-dirs:      src
   include-dirs:        cbits
   c-sources:           cbits/p5embed.c
