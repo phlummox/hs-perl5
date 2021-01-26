@@ -29,6 +29,9 @@ import Control.Exception (bracket, throwIO, Exception(..))
 import Data.Dynamic (toDyn)
 import Data.List (intersperse, intercalate)
 
+{-# ANN module ("HLint: ignore Eta reduce" :: String) #-}
+
+
 -- | Perl 5's calling context.
 data Context = Void | Item | List
 
@@ -43,10 +46,10 @@ type SV = Ptr ()
 class ToCV a where
     toCV :: a -> Int -> IO SV
 
-instance ToSV a => ToCV a where
+instance {-# OVERLAPS #-} ToSV a => ToCV a where
     toCV x _ = toSV x
 
-instance ToCV String where
+instance {-# OVERLAPS #-} ToCV String where
     toCV sub count = do
         cv <- withCString sub perl5_get_cv
         if cv /= nullPtr then return cv else do
@@ -64,7 +67,7 @@ callSub :: forall s a r. (ToCV s, ToArgs a, FromArgs r) => s -> a -> IO r
 callSub sub args = do
     args'   <- toArgs args
     sub'    <- toCV sub (length args')
-    rv      <- withArray0 nullPtr args' $ \argsPtr -> do
+    rv      <- withArray0 nullPtr args' $ \argsPtr ->
         perl5_apply sub' nullPtr argsPtr (enumContext $ contextOf (undefined :: r))
     returnPerl5 rv
 
@@ -80,7 +83,7 @@ callMethod inv meth args = do
     inv'    <- toSV inv
     args'   <- toArgs args
     sub'    <- toSV meth
-    rv      <- withArray0 nullPtr args' $ \argsPtr -> do
+    rv      <- withArray0 nullPtr args' $ \argsPtr ->
         perl5_apply sub' inv' argsPtr (enumContext $ contextOf (undefined :: r))
     returnPerl5 rv
 
@@ -90,9 +93,9 @@ use m = eval $ "use " ++ m ++ "; q[" ++ m ++ "]"
 
 -- | Run a computation within the context of a Perl 5 interpreter. 
 withPerl5 :: IO a -> IO a
-withPerl5 f = do
-    withCString "-e" $ \prog -> withCString "" $ \cstr -> do
-        withArray [prog, prog, cstr] $ \argv -> do
+withPerl5 f =
+    withCString "-e" $ \prog -> withCString "" $ \cstr ->
+        withArray [prog, prog, cstr] $ \argv ->
             bracket (perl5_init 3 argv) (\interp -> do
                 perl_destruct interp
                 perl_free interp) (const f)
@@ -138,8 +141,9 @@ instance FromArgs [String] where
     fromArgs = mapM fromSV
 
 instance ToSV String where
-    toSV str = withCStringLen str $ \(cstr, len) -> do
+    toSV str = withCStringLen str $ \(cstr, len) ->
         perl5_newSVpvn cstr (toEnum len)
+
 instance FromSV String where
     fromSV sv = do
         cstr <- perl5_SvPV sv
@@ -189,13 +193,13 @@ instance (ToSV a, ToSV b) => ToArgs (a, b) where
         return [x', y']
 
 instance {-# OVERLAPS #-} FromSV a => FromArgs a where
-    fromArgs [] = fail "Can't convert an empty return list!"
+    fromArgs [] = error "Can't convert an empty return list!"
     fromArgs (x:_) = fromSV x
     contextOf _ = Item
 
 instance (FromSV a, FromSV b) => FromArgs (a, b) where
-    fromArgs [] = fail "Can't convert an empty return list!"
-    fromArgs [_] = fail "Can't convert a single  return list!"
+    fromArgs [] = error "Can't convert an empty return list!"
+    fromArgs [_] = error "Can't convert a single  return list!"
     fromArgs (x:y:_) = do
         x' <- fromSV x
         y' <- fromSV y
@@ -204,17 +208,17 @@ instance (FromSV a, FromSV b) => FromArgs (a, b) where
 
 instance FromArgs r => FromSV (IO r) where
     -- Callback code.
-    fromSV x = do
+    fromSV x =
         return $ callSub x ()
 
 instance (ToArgs a, FromArgs r) => FromSV (a -> IO r) where
     -- Callback code.
-    fromSV x = do
+    fromSV x =
         return $ callSub x
 
 instance (ToArgs a, ToArgs b, FromArgs r) => FromSV (a -> b -> IO r) where
     -- Callback code.
-    fromSV x = do
+    fromSV x =
         -- First we obtain x as a CV
         return $ \arg1 arg2 -> do
             as1  <- toArgs arg1
@@ -233,7 +237,7 @@ instance ToArgs a => ToSV (IO a) where
             newArray0 nullPtr svs
         perl5_make_cv sp
 
-instance (ToArgs a, FromArgs r) => ToSV (r -> IO a) where
+instance {-# OVERLAPS #-} (ToArgs a, FromArgs r) => ToSV (r -> IO a) where
     toSV f = do
         sp <- newStablePtr $ \args _ -> do
             args'   <- fromArgs =<< peekArray0 nullPtr args
@@ -249,7 +253,7 @@ instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> IO a) where
             newArray0 nullPtr svs
         perl5_make_cv sp
 
-instance (ToArgs a, FromArgs r) => ToSV (r -> a) where
+instance {-# OVERLAPS #-} (ToArgs a, FromArgs r) => ToSV (r -> a) where
     toSV f = do
         sp <- newStablePtr $ \args _ -> do
             args'   <- fromArgs =<< peekArray0 nullPtr args
