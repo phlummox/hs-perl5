@@ -23,7 +23,12 @@ description:        This module provides a Haskell interface to embedded Perl 5
                     * Callbacks
                     .
                     /IN DEVELOPMENT & EXPERIMENTAL/
+                    .
+                    /PORTABILITY: probably only Linux/
+                    .
+                    If using Stack -- seems to work OK on stack lts-9 thru stack lts-11
 stability:          experimental
+tested-with:        GHC == 8.0.2, GHC == 8.2.2
 build-type:         Custom
 category:           Language, Perl
 
@@ -51,7 +56,9 @@ library
   c-sources:           cbits/p5embed.c
   includes:            p5embed.h
   build-depends:
-      base >=4.7 && <5
+                       base >=4.7 && <5
+                     , bytestring
+                     , text
   default-language:    Haskell2010
 
 -- test-suite hs-perl5-test
