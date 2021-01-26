@@ -16,6 +16,10 @@
 #include "perl.h"
 #include "embed.h"
 
+int perl5_G_VOID   ;
+int perl5_G_SCALAR ;
+int perl5_G_ARRAY  ;
+
 /*
 PerlInterpreter * perl5_init ( int argc, char **argv );
 bool perl5_SvROK(SV *inv);

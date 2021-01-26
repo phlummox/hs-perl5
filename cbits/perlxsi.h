@@ -1,3 +1,5 @@
+// generated with:
+// perl -MExtUtils::Embed -e xsinit  -- -o cbits/perlxsi.h
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"

@@ -30,6 +30,10 @@ const char HsPerl5Preamble[] =
 #undef OP_MAPSTART
 #define OP_MAPSTART OP_GREPSTART
 
+int perl5_G_VOID   = G_VOID;
+int perl5_G_SCALAR = G_SCALAR;
+int perl5_G_ARRAY  = G_ARRAY;
+
 static PerlInterpreter *my_perl;
 int _P5EMBED_INIT = 0;
 
