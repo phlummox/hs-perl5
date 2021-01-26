@@ -21,19 +21,19 @@ matrix:
   # Cabal
   - env: BUILD=cabal GHCVER=8.0.1 CABALVER=2.2 HAPPYVER=1.19.5 ALEXVER=3.1.7
     compiler: ": #GHC 8.0.1"
-    addons: 
+    addons:
       {apt: {packages: [cabal-install-2.2,ghc-8.0.1,happy-1.19.5,alex-3.1.7], sources: [hvr-ghc]}}
 
   # Stack lts-9
   - env: BUILD=stack STACK_RESOLVER="lts-9"
     compiler: ": #stack"
-    addons: 
+    addons:
       {apt: {packages: [libgmp-dev], sources: [hvr-ghc]}}
 
   # Stack lts-11
   - env: BUILD=stack STACK_RESOLVER="lts-11"
     compiler: ": #stack"
-    addons: 
+    addons:
       {apt: {packages: [libgmp-dev], sources: [hvr-ghc]}}
 
 before_install:
@@ -49,7 +49,7 @@ before_install:
 
 install:
   - |
-    #set -x
+    set -ex
     case "$BUILD" in
       cabal)
         echo TODO
@@ -59,6 +59,12 @@ install:
         stack --version
         stack --resolver="$STACK_RESOLVER" ghc -- --version
         stack --resolver="$STACK_RESOLVER" setup
+        # get appropriate stack.yaml
+        if [ -f "stack-${STACK_RESOLVER}.yaml" ] ; then
+          cp "stack-${STACK_RESOLVER}.yaml" stack.yaml
+        else
+          stack --resolver="${STACK_RESOLVER} init
+        fi
         stack build  --test --no-run-tests
       ;;
       *)
