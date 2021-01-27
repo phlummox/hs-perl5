@@ -6,7 +6,7 @@ license:            MIT
 license-file:       LICENSE
 homepage:           https://github.com/phlummox/hs-perl5#readme
 bug-reports:        https://github.com/phlummox/hs-perl5/issues
-author:             Audrey Tang <audreyt@audreyt.org>
+author:             Audrey Tang <audreyt@audreyt.org>, phlummox <phlummox2@gmail.com>
 maintainer:         phlummox <phlummox2@gmail.com>
 synopsis:           Haskell interface to embedded Perl 5 interpreter
 description:        This module provides a Haskell interface to embedded Perl 5
