@@ -8,6 +8,7 @@ git:
   depth: 5
 
 os: linux
+dist: xenial
 
 cache:
   directories:
@@ -21,7 +22,7 @@ cache:
   - /home/travis/.stack
   - /home/travis/.local
 
-matrix:
+jobs:
   include:
 
   # Cabal
@@ -85,6 +86,8 @@ install:
         exit 1
       ;;
     esac
+
+    +ex
 
 script:
   - |
