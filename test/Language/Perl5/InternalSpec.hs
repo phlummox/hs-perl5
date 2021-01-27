@@ -11,6 +11,7 @@ module Language.Perl5.InternalSpec
 
 import Test.Hspec
 import Test.QuickCheck
+import Test.Hspec.QuickCheck (modifyMaxSuccess)
 
 import            Control.Monad
 import            Data.Either.Compat
@@ -19,8 +20,6 @@ import            Data.Monoid ( (<>) )
 import            Data.Text.Arbitrary ()
 import            Foreign
 import            Foreign.C
-import            System.IO.Temp
-import            System.IO
 import            Text.InterpolatedString.Perl6 (qc)
 
 import Language.Perl5 (withPerl5) -- shift withPerl5 out?
@@ -143,28 +142,35 @@ prop_die_returns_error =
 spec :: Spec
 spec = do
   describe "perl5_newSViv (Int32)" $ do
-    it "should roundtrip OK" $
-        property prop_perlInt32_roundtrips
+    modifyMaxSuccess (const 500) $
+      it "should roundtrip OK" $
+          property prop_perlInt32_roundtrips
   describe "perl5_newSVnv (CDouble)" $ do
-    it "should roundtrip OK" $
-        property prop_perlDouble_roundtrips
+    modifyMaxSuccess (const 500) $
+      it "should roundtrip OK" $
+          property prop_perlDouble_roundtrips
   describe "perl5_newSVpvn (CStringLen)" $ do
-    it "should roundtrip OK"
-        prop_perlString_roundtrips
+    modifyMaxSuccess (const 500) $
+      it "should roundtrip OK"
+          prop_perlString_roundtrips
   describe "perl5_eval" $ do
     describe "when evaluating an int" $ do
-      it "should give 1 result" $
-        property prop_eval_cint_as_scalar_gives_single_result
-      it "should roundtrip" $
-        property prop_eval_cint_as_scalar_roundtrips
+      modifyMaxSuccess (const 500) $ do
+        it "should give 1 result" $
+          property prop_eval_cint_as_scalar_gives_single_result
+        it "should roundtrip" $
+          property prop_eval_cint_as_scalar_roundtrips
     describe "when evaluating simple, single-quote-quotable string" $
-      it "should roundtrip"
-        prop_eval_simplestring_as_scalar_roundtrips
+      modifyMaxSuccess (const 500) $
+        it "should roundtrip"
+          prop_eval_simplestring_as_scalar_roundtrips
     describe "when evaluating expressions of form: split \" \" \"str1 str2\"" $
-      it "should give 2 results"
-        prop_eval_splitstring_as_array_roundtrips
-    describe "when we die()" $ do
-      it "the error list contains the error message we put in"
-        prop_die_returns_error
+      modifyMaxSuccess (const 500) $
+        it "should give 2 results"
+          prop_eval_splitstring_as_array_roundtrips
+    describe "when we die()" $
+      modifyMaxSuccess (const 500) $
+        it "the error list contains the error message we put in"
+          prop_die_returns_error
 
 
