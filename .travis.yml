@@ -87,7 +87,7 @@ install:
       ;;
     esac
 
-    +ex
+    set +ex
 
 script:
   - |
