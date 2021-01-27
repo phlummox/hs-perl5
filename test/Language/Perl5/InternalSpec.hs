@@ -12,35 +12,25 @@ module Language.Perl5.InternalSpec
 import Test.Hspec
 import Test.QuickCheck
 
-import            Data.Char
-import            Data.Int
-import qualified  Data.Text as T
-import            Data.Text (Text)
+import            Control.Monad
+import            Data.Either
+import qualified  Data.List as L
+import            Data.Monoid ( (<>) )
 import            Data.Text.Arbitrary ()
-import            Data.Word
-
-import Foreign
-import Foreign.C
-
+import            Foreign
+import            Foreign.C
 import            System.IO.Temp
 import            System.IO
-
 import            Text.InterpolatedString.Perl6 (qc)
 
 import Language.Perl5 (withPerl5) -- shift withPerl5 out?
-import Language.Perl5.Types
+import Language.Perl5.Internal.Types
 import Language.Perl5.Internal
-
-import qualified Language.Perl5.Internal as I
-
-import Data.Proxy
-import GHC.Exts
-import Debug.Trace
-import Data.Monoid
 
 import Language.Perl5.TestUtils
 
 {-# ANN module ("HLint: ignore Redundant do" :: String) #-}
+{-# ANN module ("HLint: ignore Redundant return" :: String) #-}
 {-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
 
@@ -51,6 +41,9 @@ default(String)
 main :: IO ()
 main = hspec spec
 
+forceEither :: Either a b -> b
+forceEither Left{}    = error "bad forceEither"
+forceEither (Right r) = r
 
 prop_perlInt32_roundtrips :: Int32 -> Expectation
 prop_perlInt32_roundtrips n = withPerl5 $ do
@@ -72,12 +65,11 @@ prop_perlString_roundtrips = forAll noNulsASCIIString $ \str ->
       res <- perl5_SvPV sv >>= peekCString
       res `shouldBe` str
 
-evalTest :: String -> Context -> IO (Ptr SV)
+evalTest :: String -> Context -> IO (Either [SV] [SV])
 evalTest str ctx =
   withCStringLen str $ \(cStr, len) ->
     withPerl5 $
-      perl5_eval cStr (fromIntegral len) (numContext ctx)
-
+      svEither =<< perl5_eval cStr (fromIntegral len) (numContext ctx)
 
 -- |
 -- evaluating a Perl fragment like "2", "99", "-10" etc.,
@@ -85,35 +77,25 @@ evalTest str ctx =
 -- { NULL, ptr-to-sole-result, NULL}.
 prop_eval_cint_as_scalar_gives_single_result :: CInt -> Expectation
 prop_eval_cint_as_scalar_gives_single_result n = do
-  res <- evalTest (show n) ScalarCtx
-  let res' :: Ptr SV
-      res' = castPtr res
-  zerothEl  <- peek res'
-  firstEl   <- peek (advancePtr res' 1)
-  secondEl  <- peek (advancePtr res' 2)
-  -- !_ <- traceM $ "hs. res: " <> show res <> ", zerothEl: " <> show zerothEl
-  ("zerothEl",zerothEl)   `shouldBe`    ("zerothEl",nullPtr)
-  ("firstEl",firstEl)     `shouldNotBe` ("firstEl",nullPtr)
-  ("secondEl",secondEl)   `shouldBe`    ("secondEl",nullPtr)
+  res   <- evalTest (show n) ScalarCtx
+  res   `shouldSatisfy` (\x -> isRight x && length (forceEither x) == 1)
 
 prop_eval_cint_as_scalar_roundtrips :: CInt -> Expectation
 prop_eval_cint_as_scalar_roundtrips n = do
-  res <- evalTest (show n) ScalarCtx
-  let res' :: Ptr SV
-      res' = castPtr res
-  firstEl  <- peek (advancePtr res' 1) >>= perl5_SvIV
-  firstEl `shouldBe` n
+  retVal  <- evalTest (show n) ScalarCtx
+  retVal `shouldSatisfy` isRight
+  res <- mapM perl5_SvIV (forceEither retVal)
+  ("res",res) `shouldBe` ("res",[n])
 
 -- evaluate a simple (ASCII, no control characters, no NUls) string --
 -- equivalent of  perl -e '"mystring"'
 prop_eval_simplestring_as_scalar_roundtrips :: Property
 prop_eval_simplestring_as_scalar_roundtrips =
   forAll quotableASCIIString $ \str -> do
-    res <- evalTest ("'" <> str <> "'") ScalarCtx
-    let res' :: Ptr SV
-        res' = castPtr res
-    firstEl  <- peek (advancePtr res' 1) >>= perl5_SvPV >>= peekCString
-    firstEl `shouldBe` str
+    retVal  <- evalTest ("'" <> str <> "'") ScalarCtx
+    retVal `shouldSatisfy` isRight
+    res <- mapM (peekCString <=< perl5_SvPV) (forceEither retVal)
+    ("res",res) `shouldBe` ("res",[str])
 
 -- | evaluate the expression:
 -- @
@@ -129,57 +111,33 @@ prop_eval_splitstring_as_array_roundtrips =
           fragment = [qc| my @res = split ' ', 'a{str1_} b{str2_}'; return @res;
                       |]
       -- hPutStrLn stderr $ "fragment = " <> fragment
-      res <- evalTest fragment ListCtx
-      let res' :: Ptr SV
-          res' = castPtr res
-      zerothEl   <- peek res'
-      ("zerothEl",zerothEl)   `shouldBe`    ("zerothEl",nullPtr)
-      firstEl  <- peek (advancePtr res' 1)
-      ("firstEl",firstEl) `shouldNotBe` ("firstEl",nullPtr)
-      firstElStr <- perl5_SvPV (firstEl) >>= peekCString
-      ("firstElStr",firstElStr) `shouldBe` ("firstElStr", "a" <> str1_)
-      secondEl   <- peek (advancePtr res' 2)
-      ("secondEl",secondEl) `shouldNotBe` ("secondEl",nullPtr)
-      secondElStr <- perl5_SvPV (secondEl) >>= peekCString
-      ("secondElStr",secondElStr) `shouldBe` ("secondElStr", "b" <> str2_)
-      thirdEl   <- peek (advancePtr res' 3)
-      ("thirdEl",thirdEl)   `shouldBe`    ("thirdEl",nullPtr)
+      retVal <- evalTest fragment ListCtx
+      retVal `shouldSatisfy` isRight
+      res    <- mapM (peekCString <=< perl5_SvPV) (forceEither retVal)
+      ("res",res) `shouldBe` ("res",["a" <> str1_, "b" <> str2_])
 
-eval_die :: String -> IO (Ptr SV)
+
+eval_die :: String -> IO (Either [SV] [SV])
 eval_die msg = do
-    res <- evalTest perlString VoidCtx
-    let res' :: Ptr SV
-        res' = castPtr res
-    return res'
+    evalTest perlString VoidCtx
   where
     perlString :: String
     perlString =
       [qc|die '{msg}';|]
 
 -- when we die(0, the (NULL-terminated) error list is
--- non-zero-len
+-- non-zero-len and contains the expected error
 prop_die_returns_error :: Property
 prop_die_returns_error =
     forAll quotableASCIIString $ \str -> do
-      res' <- eval_die str
-      zerothEl   <- peek res'
-      errList    <- peekArray0 nullPtr res'
-      ("zerothEl",zerothEl) `shouldNotBe` ("zerothEl",nullPtr)
-      ("errListLen",length errList) `shouldNotBe` ("errListLen",1)
+      retVal <- eval_die ("xx" <> str)
+      retVal `shouldSatisfy` isLeft
+      errList <- mapM (peekCString <=< perl5_SvPV) $ fromLeft (error "ack!") retVal
+      errList `shouldSatisfy` (not . null)
+      let errMesg  = head errList
+          expectedMesgPrefix = "xx" <> str <> " at (eval"
+      ("errMesg",errMesg)  `shouldSatisfy` (\x -> expectedMesgPrefix `L.isPrefixOf` snd x)
 
----- the error we get out is the error we put in
---prop_die_roundtrips_error :: Property
---prop_die_roundtrips_error =
---    forAll quotableASCIIString $ \str -> do
---      res' <- eval_die ("xx" <> str)
---      zerothEl   <- peek res'
---      errList    <- peekArray0 nullPtr res'
---      errMesg    <- fromSV (head errList)
---      let zz = errMesg :: Text
---          expectedMesgPrefix :: Text
---          expectedMesgPrefix = "xx" <> T.pack str <> " at (eval"
---      ("zerothEl",zerothEl) `shouldNotBe` ("zerothEl",nullPtr)
---      ("errMesg",errMesg)   `shouldSatisfy` (\x -> expectedMesgPrefix `T.isPrefixOf` snd x)
 
 
 spec :: Spec
@@ -206,10 +164,7 @@ spec = do
       it "should give 2 results"
         prop_eval_splitstring_as_array_roundtrips
     describe "when we die()" $ do
-      it "should result in a non-zero-len error list"
+      it "the error list contains the error message we put in"
         prop_die_returns_error
-      it "that contains the error we put in" $
-        pendingWith "consider where ToSV and FromSV classes should go"
-        --property prop_die_roundtrips_error
 
 

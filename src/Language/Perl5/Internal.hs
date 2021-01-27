@@ -41,7 +41,7 @@ import Foreign
 import Foreign.C.Types
 import Foreign.C.String
 
-import Language.Perl5.Types
+import Language.Perl5.Internal.Types
 
 
 foreign import ccall "perl5_make_cv"
@@ -80,3 +80,5 @@ foreign import ccall "perl5_get_sv"
     perl5_get_sv :: CString -> IO SV
 foreign import ccall "perl5_get_cv"
     perl5_get_cv :: CString -> IO SV
+
+
