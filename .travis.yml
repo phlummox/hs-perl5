@@ -7,6 +7,8 @@ language: c
 git:
   depth: 5
 
+os: linux
+
 cache:
   directories:
   - $HOME/.ghc

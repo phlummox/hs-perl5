@@ -3,5 +3,5 @@ resolver: lts-10.10
 packages:
 - .
 
-
-
+extra-deps:
+- base-compat-0.11.2@sha256:f95374022a56e8c74a289e2b70ec50a1365f58b5f1f50f5c7f0fc14edf88f30e,7230

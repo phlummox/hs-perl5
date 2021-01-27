@@ -70,6 +70,7 @@ test-suite hs-perl5-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
+                     , base-compat >= 0.10
                      , hs-perl5
                      , hspec
                      , QuickCheck >= 2.10

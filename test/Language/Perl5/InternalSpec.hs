@@ -13,7 +13,7 @@ import Test.Hspec
 import Test.QuickCheck
 
 import            Control.Monad
-import            Data.Either
+import            Data.Either.Compat
 import qualified  Data.List as L
 import            Data.Monoid ( (<>) )
 import            Data.Text.Arbitrary ()
