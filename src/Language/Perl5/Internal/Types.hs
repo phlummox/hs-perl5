@@ -7,6 +7,22 @@ Types for interfacing with an embedded Perl interpreter.
 -}
 
 module Language.Perl5.Internal.Types
+  (
+  -- * main types
+    Interpreter(..)
+  , SV(..)
+  , Callback
+  -- * Perl calling context
+  , Context(..)
+  , numContext
+  -- * ptr-to-ptr utility functions
+  -- $ptrToPtr
+  , asSVList
+  , svTail
+  , svEither
+  , mkSVList
+  , withSVArray
+  )
   where
 
 import Foreign
@@ -26,11 +42,12 @@ newtype SV          = SV          { unSV          :: Ptr SV }          deriving 
 -- | type of a callback from Perl into Haskell.
 type Callback = Ptr SV -> CInt -> IO (Ptr SV)
 
+-- $ptrToPtr
 -- the downside of the "newtype X = X (Ptr X)"
--- approach is that working with *arrays* of ptrs-to-X becomes
+-- approach is that working with /arrays/ of ptrs-to-X becomes
 -- more fiddly.
 --
--- so we define a few helper functions for working with
+-- So we define a few helper functions for working with
 -- arrays-of-ptrs-to-SVs.
 
 -- | convert a NULL terminated "array of pointers" (ptr-to-ptr-to-SV)
