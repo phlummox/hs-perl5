@@ -1,6 +1,6 @@
 # adapted from https://github.com/haskell-CI/haskell-ci/issues/411
 
-name: Haskell CI
+name: haskell-build
 
 on:
   push:

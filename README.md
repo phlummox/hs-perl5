@@ -1,6 +1,6 @@
 # hs-perl5
 
-![Linux Build Status](https://github.com/phlummox/hs-perl5/workflows/Linux%20Build%20Status/badge.svg)
+![Linux Build Status](https://github.com/phlummox/hs-perl5/workflows/haskell-build/badge.svg)
 
 This package provides a Haskell interface to an embedded Perl 5 interpreter.
 
