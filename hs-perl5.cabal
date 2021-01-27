@@ -65,10 +65,22 @@ library
                      , text
   default-language:    Haskell2010
 
+  ghc-options: -Wall -fwarn-tabs
+  if impl(ghc >= 8.0)
+    ghc-options: -Wredundant-constraints -Wno-type-defaults -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-name-shadowing -Wextra
+  if impl(ghc >= 8.2)
+    ghc-options: -fhide-source-paths
+  if impl(ghc >= 8.4)
+    ghc-options: -Wmissing-export-lists -Wpartial-fields
+  if impl(ghc >= 8.8)
+    ghc-options: -Wmissing-deriving-strategies
+
+
 test-suite hs-perl5-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
+  other-modules:       Language.Perl5.TestUtils
   build-depends:       base
                      , base-compat >= 0.10
                      , hs-perl5
@@ -79,7 +91,17 @@ test-suite hs-perl5-test
                      , interpolatedstring-perl6
                      , temporary
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+                       -Wall -fwarn-tabs
   default-language:    Haskell2010
+
+  if impl(ghc >= 8.0)
+    ghc-options: -Wredundant-constraints -Wno-type-defaults -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-name-shadowing -Wextra
+  if impl(ghc >= 8.2)
+    ghc-options: -fhide-source-paths
+  if impl(ghc >= 8.4)
+    ghc-options: -Wmissing-export-lists -Wpartial-fields
+  if impl(ghc >= 8.8)
+    ghc-options: -Wmissing-deriving-strategies
 
 executable example
   buildable: False
