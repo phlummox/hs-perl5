@@ -1,7 +1,11 @@
-This module provides a Haskell interface to embedded Perl 5 interpreter.
+# hs-perl5
 
-Documentation and functionality is scarce at the moment; see the file
-`examples/test.hs` for some basic usage examples.
+[![Linux Build Status](https://img.shields.io/travis/com/phlummox/hs-perl5.svg?label=Linux%20build)](https://travis-ci.com/phlummox/hs-perl5)
+
+This package provides a Haskell interface to an embedded Perl 5 interpreter.
+
+Documentation and functionality is scarce at the moment; see the tests
+under `test` for some basic usage examples.
 
 Currently supported features are:
 
