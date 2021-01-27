@@ -40,27 +40,33 @@ at the command-line.
 
 module Language.Perl5
     (
+    -- * Perl calling context
       Context(..)
+    -- * Major types
+    , SV
+    -- * Marshal values between Haskell and Perl
     , ToSV(..)
     , FromSV(..)
+    -- * Safely run Perl things
     , withPerl5
+    -- * evaluate in a Perl context
     , callSub,      (.:), (.!)
     , callMethod,   (.$), (.$!)
     , eval
     , eval_
-    , SV
+    -- * utility functions
     , use
     )
     where
 
 
 import Control.Exception (bracket, throwIO, Exception(..))
-
+import Control.Monad
 import Data.Dynamic (toDyn)
 import Data.Int
-import Data.List (intersperse, intercalate)
+import Data.List ( intercalate)
 
-import Foreign
+import Foreign hiding (void)
 import Foreign.C.Types
 import Foreign.C.String
 
@@ -79,7 +85,7 @@ withPerl5 f =
     withCString "-e" $ \prog -> withCString "" $ \cstr ->
         withArray [prog, prog, cstr] $ \argv ->
             bracket (perl5_init 3 argv) (\interp -> do
-                perl_destruct interp
+                void $ perl_destruct interp
                 perl_free interp) (const f)
 
 
@@ -150,7 +156,7 @@ instance ToSV Bool where
 -- -- ---
 --  CVs -- Code Values
 
-
+-- | convert to code value
 class ToCV a where
     toCV :: a -> Int -> IO SV
 
@@ -160,9 +166,11 @@ instance {-# OVERLAPS #-} ToSV a => ToCV a where
 ----------
 -- Arg conversion
 
+-- | argument conversion
 class ToArgs a where
     toArgs :: a -> IO [SV]
 
+-- | argument conversion
 class FromArgs a where
     fromArgs :: [SV] -> IO a
     contextOf :: a -> Context
@@ -264,6 +272,7 @@ returnPerl5 rv = do
       Left [err]   -> throwIO (toException $ toDyn err)
       Left (_:x:_) -> error =<< fromSV x
       Right r      -> fromArgs r
+      _            -> error "unexpected return value"
 
 ------
 -- --- eval funcs
@@ -300,16 +309,19 @@ callMethod inv meth args = do
 
 -- aliases for callSub and callMethod
 
+-- | alias for 'callSub'
 (.:) :: (ToCV sub, ToArgs args, FromArgs ret) => sub -> args -> IO ret
 (.:) = callSub
 
+-- | version of 'callSub' that returns no result
 (.!) :: (ToCV sub, ToArgs args) => sub -> args -> IO ()
 (.!) = callSub
 
-
+-- | alias for 'callMethod'
 (.$) :: (ToSV meth, ToArgs args, FromArgs ret) => SV -> meth -> args -> IO ret
 (.$) = callMethod
 
+-- | version of 'callMethod' that returns no result
 (.$!) :: (ToSV meth, ToArgs args) => SV -> meth -> args -> IO ()
 (.$!) = callMethod
 
@@ -341,6 +353,7 @@ instance (ToArgs a, ToArgs b, FromArgs r) => FromSV (a -> b -> IO r) where
             as2  <- toArgs arg2
             callSub x (as1 ++ as2)
 
+-- NB: weird casting of CV to SV
 instance {-# OVERLAPS #-} ToCV String where
   toCV  sub count = do
       cv <- withCString sub perl5_get_cv

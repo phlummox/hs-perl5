@@ -11,17 +11,19 @@ module Language.Perl5.Internal.Types
 
 import Foreign
 import Foreign.C.Types
-import Foreign.C.String
 
 import Language.Perl5.Internal.Constants
 
 
 {-# ANN module ("HLint: ignore Missing NOINLINE pragma" :: String) #-}
 
+-- | (pointer to a) Perl interpreter instance.
 newtype Interpreter = Interpreter { unInterpreter :: Ptr Interpreter } deriving (Show, Eq)
+-- | (pointer to a) scalar value.
 newtype SV          = SV          { unSV          :: Ptr SV }          deriving (Show, Eq)
 
 
+-- | type of a callback from Perl into Haskell.
 type Callback = Ptr SV -> CInt -> IO (Ptr SV)
 
 -- the downside of the "newtype X = X (Ptr X)"
@@ -93,6 +95,7 @@ instance Enum Context where
     G_VOID    -> VoidCtx
     G_SCALAR  -> ScalarCtx
     G_ARRAY   -> ListCtx
+    _         -> error "not a context"
 
 -- | Convert a 'Context' to an integral
 -- value that can be passed to the C API.

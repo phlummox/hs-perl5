@@ -9,7 +9,6 @@ module Language.Perl5.TestUtils
   where
 
 import Data.Char
-import Test.Hspec
 import Test.QuickCheck
 
 

@@ -46,38 +46,166 @@ import Language.Perl5.Internal.Types
 
 foreign import ccall "perl5_make_cv"
     perl5_make_cv :: StablePtr Callback -> IO SV
+
+-- |
+-- @
+-- perl5_init argc argv
+-- @
+--
+-- Allocates and initializes an 'Interpreter' instance,
+-- and runs it as if called at the command line with @argv@ strings as
+-- arguments (minus the program name, naturally)
+-- and the original environment.
+--
+-- As a side effect, initializes global data structures needed by
+-- Perl API functions.
+--
+-- Internally, calls:
+--
+-- * <https://perldoc.perl.org/perlapi#perl_alloc>,
+-- * <https://perldoc.perl.org/perlapi#perl_construct>,
+-- * <https://perldoc.perl.org/perlapi#perl_parse>,
+-- * <https://perldoc.perl.org/perlapi#perl_run>.
 foreign import ccall "perl5_init"
     perl5_init :: CInt -> Ptr CString -> IO Interpreter
+
+-- |
+-- This is the undef SV. Always refer to this as &PL_sv_undef.
+--
+-- source: <https://perldoc.perl.org/perlapi#PL_sv_undef>
 foreign import ccall "perl5_sv_undef"
     perl5_sv_undef :: IO SV
+
+-- | This is the @true@ SV. See \"PL_sv_no". Always refer to this as &PL_sv_yes.
+--
+-- source: <https://perldoc.perl.org/perlapi#PL_sv_yes>
 foreign import ccall "perl5_sv_yes"
     perl5_sv_yes :: IO SV
+
 foreign import ccall "perl5_sv_no"
     perl5_sv_no :: IO SV
 foreign import ccall "perl5_eval"
     perl5_eval :: CString -> CInt -> CInt -> IO (Ptr SV)
+
+-- |
+-- Creates a new SV and copies a string into it. The reference count for the SV
+-- is set to 1. Note that if len is zero, Perl will create a zero length
+-- string. You are responsible for ensuring that the source string is at least
+-- len bytes long. If the s argument is NULL the new SV will be undefined.
+--
+-- See <https://perldoc.perl.org/perlapi#newSVpvn>
 foreign import ccall "perl5_newSVpvn"
     perl5_newSVpvn :: CString -> CInt -> IO SV
+
+-- | Returns a pointer to the string in the SV, or a stringified form of the SV
+-- if the SV does not contain a string.
+--
+-- See <https://perldoc.perl.org/perlapi#SvPV_nolen>
 foreign import ccall "perl5_SvPV"
     perl5_SvPV :: SV -> IO CString
+
+
+-- |
+-- Coerces the given SV to IV and returns it. The returned value in many
+-- circumstances will get stored in sv's IV slot, but not in all cases. (Use
+-- "sv_setiv" to make sure it does).
+--
+-- See "SvIVx" for a version which guarantees to evaluate sv only once.
+--
+-- Source: <https://perldoc.perl.org/perlapi#SvIV>
 foreign import ccall "perl5_SvIV"
     perl5_SvIV :: SV -> IO CInt
+
+
+
+-- |
+-- Coerces the given SV to NV and returns it. The returned value in many
+-- circumstances will get stored in sv's NV slot, but not in all cases. (Use
+-- "sv_setnv" to make sure it does).
+--
+-- See "SvNVx" for a version which guarantees to evaluate sv only once.
+--
+-- Source: <https://perldoc.perl.org/perlapi#SvNV>
 foreign import ccall "perl5_SvNV"
     perl5_SvNV :: SV -> IO CDouble
+
+-- |
+-- Creates a new SV and copies an integer into it. The reference count for the
+-- SV is set to 1.
+--
+-- Source: <https://perldoc.perl.org/perlapi#newSViv>
 foreign import ccall "perl5_newSViv"
     perl5_newSViv :: CInt -> IO SV
+
+-- |
+-- Creates a new SV and copies a floating point value into it. The reference
+-- count for the SV is set to 1.
+--
+-- Source: <https://perldoc.perl.org/perlapi#newSVnv>
 foreign import ccall "perl5_newSVnv"
     perl5_newSVnv :: CDouble -> IO SV
+
 foreign import ccall "perl_destruct"
     perl_destruct :: Interpreter -> IO CInt
+
+-- |
+-- Releases a Perl 'Interpreter'. See
+-- <https://perldoc.perl.org/perlembed perlembed>.
+--
+-- See <https://perldoc.perl.org/perlapi#perl_free>.
 foreign import ccall "perl_free"
     perl_free :: Interpreter -> IO ()
+
+-- |
+-- @
+-- perl5_apply subroutine receiver args context
+-- @
+--
+-- Apply a subroutine to the specified args.
+-- The subroutine can be either a plain subroutine
+-- or a method.
+--
+-- The first parameter, @subroutine@, is either the name of a subroutine (i.e.
+-- a string) or a reference to a subroutine.
+--
+-- The second parameter specifies the method receiver
+-- (if a method is being called). If a plain subroutine
+-- is being called, NULL should be passed.
+-- If a method is being called, this should be either
+-- a reference to an object (for a normal method) or
+-- a reference to a class (for a static method).
+--
+-- Then follows a NULL terminated list of args, and the
+-- usual calling 'Context', (encoded as an int, with potentially
+-- other flags bitwise OR'ed into it).
+--
+-- Return values are given according to the same protocol as
+-- 'perl5_eval'.
 foreign import ccall "perl5_apply"
     perl5_apply :: SV -> SV -> Ptr SV -> CInt -> IO (Ptr SV)
+
 foreign import ccall "perl5_SvTRUE"
     perl5_SvTRUE :: SV -> IO Bool
+
+-- |
+-- Returns the SV of the specified Perl scalar. flags are passed to @gv_fetchpv@.
+-- If @GV_ADD@ is set and the Perl variable does not exist then it will be
+-- created. If @flags@ is zero and the variable does not exist then NULL is
+-- returned.
+--
+-- NOTE: the perl_ form of this function is deprecated.
+--
+-- source: <https://perldoc.perl.org/perlapi#get_sv>
 foreign import ccall "perl5_get_sv"
     perl5_get_sv :: CString -> IO SV
+
+-- |
+-- @perl5_get_cv name flags@: Uses strlen to get the length of name, then calls
+-- get_cvn_flags.
+--
+-- NOTE: the perl_ form of this function is deprecated.
+--
+-- See <https://perldoc.perl.org/perlapi#get_cv>
 foreign import ccall "perl5_get_cv"
     perl5_get_cv :: CString -> IO SV
 
