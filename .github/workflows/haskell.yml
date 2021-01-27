@@ -1,0 +1,96 @@
+# adapted from https://github.com/haskell-CI/haskell-ci/issues/411
+
+name: Haskell CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        builder:  ['cabal-ghc-8.0.1','stack-lts-9','stack-lts-11']
+        os: [ubuntu-16.04] #, macOS-latest, windows-latest]
+
+    name: ${{ matrix.builder }} on ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Haskell
+        uses: actions/setup-haskell@v1
+        with: #TODO
+          # ghc-version: ${{ matrix.ghc }}
+          # cabal-version: ${{ matrix.cabal }}
+          ghc-version: '8.0.1'
+          cabal-version: '2.2'
+
+      - name: Cache
+        uses: actions/cache@v2
+        env:
+          cache-name: haskell-cache
+        with:
+          path: |
+            ~/.cabal
+            ~/.local
+            ~/.ghc
+            ~/.stack
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.builder }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.builder }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: dependencies for ${{ matrix.builder }} on ${{matrix.os}}
+        run: |
+          set -ex
+          sudo apt-get update && sudo apt-get install libperl-dev xz-utils curl
+
+          case ${{ matrix.builder }} in
+            stack*)
+              mkdir -p "$HOME/.local/bin"
+              export PATH=$HOME/.local/bin:$PATH
+              export LINUX64_STACK="https://github.com/commercialhaskell/stack/releases/download/v2.1.3/stack-2.1.3-linux-x86_64.tar.gz"
+              curl -L "${LINUX64_STACK}" | tar xz --wildcards --strip-components=1 -C $HOME/.local/bin '*/stack'
+            ;;
+          esac
+
+          set +ex
+
+      - name: Haskell build and test using ${{ matrix.builder }} on ${{matrix.os}}
+        run: |
+          set -ex
+
+          case ${{ matrix.builder }} in
+            cabal*)
+              .ci-scripts/cabal-build.sh
+            ;;
+            stack*)
+              # build project with stack
+              stack --version
+              STACK_RESOLVER="$(echo ${{ matrix.builder }} | sed 's/^stack-//')"
+              stack --resolver="$STACK_RESOLVER" ghc -- --version
+              stack --resolver="$STACK_RESOLVER" setup
+              # get appropriate stack.yaml
+              if [ -f "stack-${STACK_RESOLVER}.yaml" ] ; then
+                cp "stack-${STACK_RESOLVER}.yaml" stack.yaml
+              else
+                stack --resolver="${STACK_RESOLVER}" init
+              fi
+              stack build  --test --no-run-tests
+              stack test
+            ;;
+            *)
+              echo unknown build tool!!
+              exit 1
+            ;;
+          esac
+
+          set +ex
+
+
