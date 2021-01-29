@@ -84,6 +84,10 @@ foreign import ccall "perl5_sv_yes"
 
 foreign import ccall "perl5_sv_no"
     perl5_sv_no :: IO SV
+
+-- | warning: only handles non-null ASCII strings - not Unicode-safe.
+--
+-- caller should free returned memory.
 foreign import ccall "perl5_eval"
     perl5_eval :: CString -> CInt -> CInt -> IO (Ptr SV)
 
@@ -94,6 +98,8 @@ foreign import ccall "perl5_eval"
 -- len bytes long. If the s argument is NULL the new SV will be undefined.
 --
 -- See <https://perldoc.perl.org/perlapi#newSVpvn>
+--
+-- warning: only handles non-null ASCII strings - not Unicode-safe.
 foreign import ccall "perl5_newSVpvn"
     perl5_newSVpvn :: CString -> CInt -> IO SV
 
@@ -181,6 +187,8 @@ foreign import ccall "perl_free"
 --
 -- Return values are given according to the same protocol as
 -- 'perl5_eval'.
+--
+-- Caller should free returned memory.
 foreign import ccall "perl5_apply"
     perl5_apply :: SV -> SV -> Ptr SV -> CInt -> IO (Ptr SV)
 
@@ -208,5 +216,12 @@ foreign import ccall "perl5_get_sv"
 -- See <https://perldoc.perl.org/perlapi#get_cv>
 foreign import ccall "perl5_get_cv"
     perl5_get_cv :: CString -> IO SV
+
+-- | If it's desired Perl be extra-hygienic about cleaning up resources,
+-- this should be called (a) after allocation, but before initialization, and (b) before
+-- destruction. Currently, our initialization code already includes a call to it.
+-- (Multiple calls are harmless, though.)
+foreign import ccall "perl5_set_destruct_level"
+    perl5_set_destruct_level :: IO ()
 
 

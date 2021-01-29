@@ -38,6 +38,10 @@ newtype Interpreter = Interpreter { unInterpreter :: Ptr Interpreter } deriving 
 -- | (pointer to a) scalar value.
 newtype SV          = SV          { unSV          :: Ptr SV }          deriving (Show, Eq)
 -- | (pointer to an) array value.
+
+-----
+-- for use later:
+
 newtype AV          = AV          { unAV          :: Ptr AV }          deriving (Show, Eq)
 -- | (pointer to a) code value.
 newtype CV          = CV          { unCV          :: Ptr CV }          deriving (Show, Eq)
