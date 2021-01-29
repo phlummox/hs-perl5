@@ -22,9 +22,6 @@ const char HsPerl5Preamble[] =
 
 static PerlInterpreter *my_perl;
 
-// probably left over from earlier code
-int _P5EMBED_INIT = 0;
-
 SV *
 perl5_sv_undef ()
 {
@@ -44,7 +41,7 @@ perl5_sv_no ()
 }
 
 // mark as not Unicode-safe
-// if callers want Utf8, they should apply it themselves
+// if callers want Utf8, they should apply SvUTF8_on themselves
 SV **
 perl5_eval(char *code, int len, int cxt)
 {
@@ -116,7 +113,7 @@ perl5_SvPV ( SV *sv )
 }
 
 // mark as not Unicode safe - if calls
-// want Utf8, they should apply it themselves
+// want Utf8, they should apply SvUTF8_on themselves
 SV *
 perl5_newSVpvn ( char * pv, int len )
 {
