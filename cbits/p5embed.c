@@ -55,6 +55,8 @@ perl5_sv_no ()
     return(&PL_sv_no);
 }
 
+// mark as not Unicode-safe
+// if callers want Utf8, they should apply it themselves
 SV **
 perl5_eval(char *code, int len, int cxt)
 {
@@ -66,9 +68,9 @@ perl5_eval(char *code, int len, int cxt)
     SAVETMPS;
 
     sv = newSVpvn(code, len);
-#ifdef SvUTF8_on
-    SvUTF8_on(sv);
-#endif
+//#ifdef SvUTF8_on
+//    SvUTF8_on(sv);
+//#endif
     count = eval_sv(sv, cxt);
     SvREFCNT_dec(sv);
 
@@ -85,6 +87,10 @@ perl5_return_conv (int count) {
     SPAGAIN;
 
     if (SvTRUE(ERRSV)) {
+        // TODO:
+        // (a) replace with malloc. As of 2021, there should
+        // be no portability problems - it has C standard semantics.
+        // (b) this is likely a memory leak.
         Newz(42, out, 3, SV*);
         if (SvROK(ERRSV)) {
             out[0] = newSVsv(ERRSV);
@@ -97,6 +103,7 @@ perl5_return_conv (int count) {
         out[2] = NULL;
     }
     else {
+        // replace with malloc.
         Newz(42, out, count+2, SV*);
 
         out[0] = NULL;
@@ -123,13 +130,15 @@ perl5_SvPV ( SV *sv )
     return rv;
 }
 
+// mark as not Unicode safe - if calls
+// want Utf8, they should apply it themselves
 SV *
 perl5_newSVpvn ( char * pv, int len )
 {
     SV *sv = newSVpvn(pv, len);
-#ifdef SvUTF8_on
-    SvUTF8_on(sv);
-#endif
+//#ifdef SvUTF8_on
+//    SvUTF8_on(sv);
+//#endif
     return(sv);
 }
 
@@ -234,7 +243,7 @@ XS(__HsPerl5__Invoke) {
     int i;
 
     IV tmp = 0;
-            
+
     dXSARGS;
 
     if (items < 1) {
@@ -253,7 +262,7 @@ XS(__HsPerl5__Invoke) {
     }
     stack[i-1] = NULL;
     Safefree(stack);
-    
+
     SPAGAIN;
 
     ret = hsPerl5Apply(sub, stack, GIMME_V);
@@ -276,31 +285,38 @@ perl5_init ( int argc, char **argv )
     int exitstatus;
     int i;
 
-#ifdef PERL_GPROF_MONCONTROL
-    PERL_GPROF_MONCONTROL(0);
-#endif
+// Unlikely to be of any use
+//#ifdef PERL_GPROF_MONCONTROL
+//    PERL_GPROF_MONCONTROL(0);
+//#endif
 
-#if (defined(USE_5005THREADS) || defined(USE_ITHREADS)) && defined(HAS_PTHREAD_ATFORK)
-    /* XXX Ideally, this should really be happening in perl_alloc() or
-     * perl_construct() to keep libperl.a transparently fork()-safe.
-     * It is currently done here only because Apache/mod_perl have
-     * problems due to lack of a call to cancel pthread_atfork()
-     * handlers when shared objects that contain the handlers may
-     * be dlclose()d.  This forces applications that embed perl to
-     * call PTHREAD_ATFORK() explicitly, but if and only if it hasn't
-     * been called at least once before in the current process.
-     * --GSAR 2001-07-20 */
-    PTHREAD_ATFORK(Perl_atfork_lock,
-                   Perl_atfork_unlock,
-                   Perl_atfork_unlock);
-#endif
+// Not sure this does anything especially useful, for most Haskell scenarios.
+//#if (defined(USE_5005THREADS) || defined(USE_ITHREADS)) && defined(HAS_PTHREAD_ATFORK)
+//    /* XXX Ideally, this should really be happening in perl_alloc() or
+//     * perl_construct() to keep libperl.a transparently fork()-safe.
+//     * It is currently done here only because Apache/mod_perl have
+//     * problems due to lack of a call to cancel pthread_atfork()
+//     * handlers when shared objects that contain the handlers may
+//     * be dlclose()d.  This forces applications that embed perl to
+//     * call PTHREAD_ATFORK() explicitly, but if and only if it hasn't
+//     * been called at least once before in the current process.
+//     * --GSAR 2001-07-20 */
+//    PTHREAD_ATFORK(Perl_atfork_lock,
+//                   Perl_atfork_unlock,
+//                   Perl_atfork_unlock);
+//#endif
 
+    // TODO: remove this, and just document that we don't support
+    // the "-u" ("compile-and-then-coredump") command-line options
+    // being passed.
+    // (see https://perldoc.perl.org/perlinterp#Startup)
     if (!PL_do_undump) {
         my_perl = perl_alloc();
         if (!my_perl)
             exit(1);
+        PL_perl_destruct_level = 1; // be extra-hygienic when deleting resources
         perl_construct( my_perl );
-        PL_perl_destruct_level = 0;
+        //PL_perl_destruct_level = 0; // shouldn't be needed, if access restricted to a single OS thread
     }
 #ifdef PERL_EXIT_DESTRUCT_END
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
@@ -309,6 +325,8 @@ perl5_init ( int argc, char **argv )
     PL_exit_flags |= PERL_EXIT_EXPECTED;
 #endif /* PERL_EXIT_EXPECTED */
 
+// tempted to remove this, & just say we don't support --
+// whatever problem with the c-shell it's supposed to fix.
 #if (defined(CSH) && defined(PL_cshname))
     if (!PL_cshlen)
       PL_cshlen = strlen(PL_cshname);
@@ -316,23 +334,19 @@ perl5_init ( int argc, char **argv )
 
     exitstatus = perl_parse(my_perl, xs_init, argc, argv, (char **)NULL);
 
+    // TODO: should raise some sort of error on failure
     if (exitstatus == 0)
         exitstatus = perl_run( my_perl );
 
     _P5EMBED_INIT = 1;
 
     newXS((char*) "__HsPerl5__::Invoke", __HsPerl5__Invoke, (char*)__FILE__);
-    /*
-    newXS((char*) "pugs::guts::eval_apply", _pugs_guts_eval_apply, (char*)__FILE__);
-    */
 
-#if PERL5_EMBED_DEBUG
-    fprintf(stderr, "(%s)", pugs_guts_code);
-#endif
     eval_pv(HsPerl5Preamble, TRUE);
 
     if (SvTRUE(ERRSV)) {
         STRLEN n_a;
+        // poor form - at the very least, print to stderr, not stdout
         printf("Error init perl: %s\n", SvPV(ERRSV,n_a));
         exit(1);
     }
@@ -351,6 +365,12 @@ perl5_get_cv(const char *name)
 {
     SV *cv = (SV*)(get_cv(name, 0));
     return cv;
+}
+
+// be extra-hygienic when deleting resources
+void
+perl5_set_destruct_level() {
+  PL_perl_destruct_level = 1;
 }
 
 
