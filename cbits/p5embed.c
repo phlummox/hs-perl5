@@ -225,9 +225,10 @@ XS(__HsPerl5__Invoke) {
 
     dXSARGS;
 
-    if (items < 1) {
-      hate;
-    }
+    // TODO: report error in some other way
+    //if (items < 1) {
+    //  hate;
+    //}
 
     sv = ST(0);
 
