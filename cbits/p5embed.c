@@ -1,20 +1,10 @@
 #ifndef HsPerl5DefinedC
 #define HsPerl5DefinedC 1
 
+// TODO - tidy up #includes, are we needlessly
+// double-including?
 #include "p5embed.h"
-//#include <XSUB.h>
 #include "perlxsi.h"
-
-/* define to enable pugsembed debug messages */
-#define PERL5_EMBED_DEBUG 0
-
-#if PERL5_EMBED_DEBUG
-#define oRZ ""
-#define hate Perl_croak(aTHX_ "hate software")
-#else
-#define oRZ "#"
-#define hate
-#endif
 
 const char HsPerl5Preamble[] =
 "package __HsPerl5__;\n\n"
@@ -30,11 +20,9 @@ const char HsPerl5Preamble[] =
 #undef OP_MAPSTART
 #define OP_MAPSTART OP_GREPSTART
 
-int perl5_G_VOID   = G_VOID;
-int perl5_G_SCALAR = G_SCALAR;
-int perl5_G_ARRAY  = G_ARRAY;
-
 static PerlInterpreter *my_perl;
+
+// probably left over from earlier code
 int _P5EMBED_INIT = 0;
 
 SV *
@@ -68,9 +56,6 @@ perl5_eval(char *code, int len, int cxt)
     SAVETMPS;
 
     sv = newSVpvn(code, len);
-//#ifdef SvUTF8_on
-//    SvUTF8_on(sv);
-//#endif
     count = eval_sv(sv, cxt);
     SvREFCNT_dec(sv);
 
@@ -136,9 +121,6 @@ SV *
 perl5_newSVpvn ( char * pv, int len )
 {
     SV *sv = newSVpvn(pv, len);
-//#ifdef SvUTF8_on
-//    SvUTF8_on(sv);
-//#endif
     return(sv);
 }
 
@@ -285,11 +267,6 @@ perl5_init ( int argc, char **argv )
     int exitstatus;
     int i;
 
-// Unlikely to be of any use
-//#ifdef PERL_GPROF_MONCONTROL
-//    PERL_GPROF_MONCONTROL(0);
-//#endif
-
 // Not sure this does anything especially useful, for most Haskell scenarios.
 //#if (defined(USE_5005THREADS) || defined(USE_ITHREADS)) && defined(HAS_PTHREAD_ATFORK)
 //    /* XXX Ideally, this should really be happening in perl_alloc() or
@@ -316,7 +293,6 @@ perl5_init ( int argc, char **argv )
             exit(1);
         PL_perl_destruct_level = 1; // be extra-hygienic when deleting resources
         perl_construct( my_perl );
-        //PL_perl_destruct_level = 0; // shouldn't be needed, if access restricted to a single OS thread
     }
 #ifdef PERL_EXIT_DESTRUCT_END
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
@@ -325,7 +301,7 @@ perl5_init ( int argc, char **argv )
     PL_exit_flags |= PERL_EXIT_EXPECTED;
 #endif /* PERL_EXIT_EXPECTED */
 
-// tempted to remove this, & just say we don't support --
+// TODO:remove this, & just say we don't support --
 // whatever problem with the c-shell it's supposed to fix.
 #if (defined(CSH) && defined(PL_cshname))
     if (!PL_cshlen)
@@ -338,16 +314,15 @@ perl5_init ( int argc, char **argv )
     if (exitstatus == 0)
         exitstatus = perl_run( my_perl );
 
-    _P5EMBED_INIT = 1;
-
     newXS((char*) "__HsPerl5__::Invoke", __HsPerl5__Invoke, (char*)__FILE__);
 
     eval_pv(HsPerl5Preamble, TRUE);
 
     if (SvTRUE(ERRSV)) {
         STRLEN n_a;
-        // poor form - at the very least, print to stderr, not stdout
-        printf("Error init perl: %s\n", SvPV(ERRSV,n_a));
+        // TODO: see if we can raise a proper exception instead
+        fprintf(stderr, "Error init perl: %s\n", SvPV(ERRSV,n_a));
+        // NO. Should _NOT_ be aborting, mid-program.
         exit(1);
     }
     return my_perl;
@@ -367,7 +342,9 @@ perl5_get_cv(const char *name)
     return cv;
 }
 
-// be extra-hygienic when deleting resources
+// be extra-hygienic when deleting resources - don't let values "leak"
+// from one instance of the interpreter to a later one.
+// See https://perldoc.perl.org/perlembed#Maintaining-multiple-interpreter-instances
 void
 perl5_set_destruct_level() {
   PL_perl_destruct_level = 1;
