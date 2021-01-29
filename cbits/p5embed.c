@@ -2,7 +2,7 @@
 #define HsPerl5DefinedC 1
 
 #include "p5embed.h"
-#include <XSUB.h>
+//#include <XSUB.h>
 #include "perlxsi.h"
 
 /* define to enable pugsembed debug messages */
