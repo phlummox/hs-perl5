@@ -37,7 +37,14 @@ import Language.Perl5.Internal.Constants
 newtype Interpreter = Interpreter { unInterpreter :: Ptr Interpreter } deriving (Show, Eq)
 -- | (pointer to a) scalar value.
 newtype SV          = SV          { unSV          :: Ptr SV }          deriving (Show, Eq)
+-- | (pointer to an) array value.
 
+-----
+-- for use later:
+
+newtype AV          = AV          { unAV          :: Ptr AV }          deriving (Show, Eq)
+-- | (pointer to a) code value.
+newtype CV          = CV          { unCV          :: Ptr CV }          deriving (Show, Eq)
 
 -- | type of a callback from Perl into Haskell.
 type Callback = Ptr SV -> CInt -> IO (Ptr SV)

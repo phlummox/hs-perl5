@@ -67,7 +67,6 @@ prop_perlString_roundtrips = forAll noNulsASCIIString $ \str ->
 evalTest :: String -> Context -> IO (Either [SV] [SV])
 evalTest str ctx =
   withCStringLen str $ \(cStr, len) ->
-    withPerl5 $
       svEither =<< perl5_eval cStr (fromIntegral len) (numContext ctx)
 
 -- |
@@ -76,21 +75,22 @@ evalTest str ctx =
 -- { NULL, ptr-to-sole-result, NULL}.
 prop_eval_cint_as_scalar_gives_single_result :: CInt -> Expectation
 prop_eval_cint_as_scalar_gives_single_result n = do
-  res   <- evalTest (show n) ScalarCtx
+  res   <- withPerl5 $ evalTest (show n) ScalarCtx
   res   `shouldSatisfy` (\x -> isRight x && length (forceEither x) == 1)
 
 prop_eval_cint_as_scalar_roundtrips :: CInt -> Expectation
 prop_eval_cint_as_scalar_roundtrips n = do
-  retVal  <- evalTest (show n) ScalarCtx
-  retVal `shouldSatisfy` isRight
-  res <- mapM perl5_SvIV (forceEither retVal)
-  ("res",res) `shouldBe` ("res",[n])
+  withPerl5 $ do
+    retVal  <- evalTest (show n) ScalarCtx
+    retVal `shouldSatisfy` isRight
+    res <- mapM perl5_SvIV (forceEither retVal)
+    ("res",res) `shouldBe` ("res",[n])
 
 -- evaluate a simple (ASCII, no control characters, no NUls) string --
 -- equivalent of  perl -e '"mystring"'
 prop_eval_simplestring_as_scalar_roundtrips :: Property
 prop_eval_simplestring_as_scalar_roundtrips =
-  forAll quotableASCIIString $ \str -> do
+  forAll quotableASCIIString $ \str -> withPerl5 $ do
     retVal  <- evalTest ("'" <> str <> "'") ScalarCtx
     retVal `shouldSatisfy` isRight
     res <- mapM (peekCString <=< perl5_SvPV) (forceEither retVal)
@@ -103,7 +103,7 @@ prop_eval_simplestring_as_scalar_roundtrips =
 prop_eval_splitstring_as_array_roundtrips :: Property
 prop_eval_splitstring_as_array_roundtrips =
   forAll quotableASCIIString $ \str1 ->
-    forAll quotableASCIIString $ \str2 -> do
+    forAll quotableASCIIString $ \str2 -> withPerl5 $ do
       let str1_ = filter (/= ' ') str1
           str2_ = filter (/= ' ') str2
           fragment :: String
@@ -128,7 +128,7 @@ eval_die msg = do
 -- non-zero-len and contains the expected error
 prop_die_returns_error :: Property
 prop_die_returns_error =
-    forAll quotableASCIIString $ \str -> do
+    forAll quotableASCIIString $ \str -> withPerl5 $ do
       retVal <- eval_die ("xx" <> str)
       retVal `shouldSatisfy` isLeft
       errList <- mapM (peekCString <=< perl5_SvPV) $ fromLeft (error "ack!") retVal

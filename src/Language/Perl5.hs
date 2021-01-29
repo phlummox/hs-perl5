@@ -59,7 +59,7 @@ module Language.Perl5
     )
     where
 
-
+import Control.Concurrent
 import Control.Exception (bracket, throwIO, Exception(..))
 import Control.Monad
 import Data.Dynamic (toDyn)
@@ -84,10 +84,19 @@ withPerl5 :: IO a -> IO a
 withPerl5 f =
     withCString "-e" $ \prog -> withCString "" $ \cstr ->
         withArray [prog, prog, cstr] $ \argv ->
-            bracket (perl5_init 3 argv) (\interp -> do
-                void $ perl_destruct interp
-                perl_free interp) (const f)
-
+            bracket (acquire argv) release between
+  where
+    acquire argv   = perl5_init 3 argv
+    release interp = do -- currently, interpreter leaves data lying around
+                         -- after destruction -- "set_destruct_level"
+                         -- ensures it is cleared/deallocated
+                         perl5_set_destruct_level
+                         void $ perl_destruct interp
+                         perl_free interp
+    -- we should be running in a bound thread, since interpreter
+    -- is not thread-safe
+    between _interp = (if rtsSupportsBoundThreads then runInBoundThread else id) $
+                         f
 
 -----
 -- marshalling to and from Perl
