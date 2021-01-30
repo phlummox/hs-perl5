@@ -32,17 +32,26 @@ My suggestion is:
   list of return values. The second list will only be non-empty if the /first/
   list (of errors) is empty.
 
+= Methods where caller must free returned memory
+
+* 'perl5_eval_c' - prefer 'perl5_eval'
+* 'perl5_apply_c' - prefer 'perl5_apply'
+
 -}
 
 module Language.Perl5.Internal
   where
 
-import Foreign
+import Control.Exception
+
+import Foreign hiding (void)
 import Foreign.C.Types
 import Foreign.C.String
 
 import Language.Perl5.Internal.Types
 
+{-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
+{-# ANN module ("HLint: ignore Eta reduce" :: String) #-}
 
 foreign import ccall "perl5_make_cv"
     perl5_make_cv :: StablePtr Callback -> IO SV
@@ -89,7 +98,15 @@ foreign import ccall "perl5_sv_no"
 --
 -- caller should free returned memory.
 foreign import ccall "perl5_eval"
-    perl5_eval :: CString -> CInt -> CInt -> IO (Ptr SV)
+    perl5_eval_c :: CString -> CInt -> CInt -> IO (Ptr SV)
+
+-- | args: str, len of str, flags
+perl5_eval :: CString -> CInt -> CInt -> (Ptr SV -> IO b) -> IO b
+perl5_eval str len flags between =
+    bracket acquire release between
+  where
+    acquire = perl5_eval_c str len flags
+    release = free
 
 -- |
 -- Creates a new SV and copies a string into it. The reference count for the SV
@@ -151,6 +168,8 @@ foreign import ccall "perl5_newSViv"
 foreign import ccall "perl5_newSVnv"
     perl5_newSVnv :: CDouble -> IO SV
 
+-- | source:
+-- <https://perldoc.perl.org/perlapi#perl_destruct>
 foreign import ccall "perl_destruct"
     perl_destruct :: Interpreter -> IO CInt
 
@@ -189,8 +208,18 @@ foreign import ccall "perl_free"
 -- 'perl5_eval'.
 --
 -- Caller should free returned memory.
+--
+-- args: sub, method, args, flags
 foreign import ccall "perl5_apply"
-    perl5_apply :: SV -> SV -> Ptr SV -> CInt -> IO (Ptr SV)
+    perl5_apply_c :: SV -> SV -> Ptr SV -> CInt -> IO (Ptr SV)
+
+perl5_apply ::
+  SV -> SV -> Ptr SV -> CInt -> (Ptr SV -> IO b) -> IO b
+perl5_apply sub receiver args flags between =
+    bracket acquire release between
+  where
+    acquire = perl5_apply_c sub receiver args flags
+    release = free
 
 foreign import ccall "perl5_SvTRUE"
     perl5_SvTRUE :: SV -> IO Bool

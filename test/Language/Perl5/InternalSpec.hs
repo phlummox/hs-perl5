@@ -67,7 +67,7 @@ prop_perlString_roundtrips = forAll noNulsASCIIString $ \str ->
 evalTest :: String -> Context -> IO (Either [SV] [SV])
 evalTest str ctx =
   withCStringLen str $ \(cStr, len) ->
-      svEither =<< perl5_eval cStr (fromIntegral len) (numContext ctx)
+      perl5_eval cStr (fromIntegral len) (numContext ctx) svEither
 
 -- |
 -- evaluating a Perl fragment like "2", "99", "-10" etc.,

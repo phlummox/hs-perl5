@@ -289,9 +289,8 @@ returnPerl5 rv = do
 
 -- | Evaluate a snippet of Perl 5 code.
 eval :: forall a. FromArgs a => String -> IO a
-eval str = withCStringLen str $ \(cstr, len) -> do
-    rv  <- perl5_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a))
-    returnPerl5 rv
+eval str = withCStringLen str $ \(cstr, len) ->
+  perl5_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a)) returnPerl5
 
 -- | Same as 'eval' but always in void context.
 eval_ :: String -> IO ()
@@ -302,9 +301,8 @@ callSub :: forall s a r. (ToCV s, ToArgs a, FromArgs r) => s -> a -> IO r
 callSub sub args = do
     args'   <- toArgs args
     sub'    <- toCV sub (length args')
-    rv      <- withSVArray args' $ \argsPtr ->
-        perl5_apply sub' (SV nullPtr) argsPtr (numContext $ contextOf (undefined :: r))
-    returnPerl5 rv
+    withSVArray args' $ \argsPtr ->
+      perl5_apply sub' (SV nullPtr) argsPtr (numContext $ contextOf (undefined :: r)) returnPerl5
 
 -- | Call a Perl 5 method.
 callMethod :: forall i m a r. (ToSV i, ToSV m, ToArgs a, FromArgs r) => i -> m -> a -> IO r
@@ -312,9 +310,8 @@ callMethod inv meth args = do
     inv'    <- toSV inv
     args'   <- toArgs args
     sub'    <- toSV meth
-    rv      <- withSVArray args' $ \argsPtr ->
-        perl5_apply sub' inv' argsPtr (numContext $ contextOf (undefined :: r))
-    returnPerl5 rv
+    withSVArray args' $ \argsPtr ->
+      perl5_apply sub' inv' argsPtr (numContext $ contextOf (undefined :: r)) returnPerl5
 
 -- aliases for callSub and callMethod
 
