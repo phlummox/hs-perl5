@@ -2,11 +2,8 @@
 
 name: haskell-build
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
+
 
 jobs:
   build:
@@ -14,7 +11,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        builder:  ['cabal-ghc-8.0.1','stack-lts-9','stack-lts-11']
+        builder:
+          - 'cabal-ghc-8.0.1'
+          - 'stack-lts-9'
+          - 'stack-lts-11'
+          - 'stack-lts-15'
         os: [ubuntu-16.04] #, macOS-latest, windows-latest]
 
     name: ${{ matrix.builder }} on ${{matrix.os}}

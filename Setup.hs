@@ -1,6 +1,7 @@
 
 
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE TupleSections #-}
 
 {- |
 
@@ -15,7 +16,7 @@ uses to augment the fields from the .cabal file: see
 <https://www.haskell.org/cabal/release/cabal-1.22.2.0/doc/users-guide/developing-packages.html#system-dependent-parameters the cabal docco>.
 
 Currently this Setup file is known to work with versions of Cabal from
->= 1.24 to <= 2.0.
+>= 1.24 to <= 3.0.
 On Linux.
 
 -}
@@ -25,6 +26,7 @@ import Distribution.Simple
 import Distribution.Verbosity                 (Verbosity)
 import Distribution.Simple.Utils              (
                                                 info
+                                              , warn
 #if MIN_VERSION_Cabal(2,2,0)
                                               , findHookedPackageDesc
 #endif
@@ -34,10 +36,12 @@ import Distribution.PackageDescription        ( HookedBuildInfo
                                               ,emptyHookedBuildInfo
                                               , PackageDescription(..) )
 import Distribution.Simple.LocalBuildInfo     (localPkgDescr
-                                              , LocalBuildInfo)
+                                              , LocalBuildInfo
+                                              , buildDir )
 import Distribution.Simple.Setup              (ConfigFlags(..)
                                               , fromFlag
                                               , configVerbosity
+                                              , BuildFlags(..)
                                               )
 #if MIN_VERSION_Cabal(2,2,0)
 import Distribution.PackageDescription.Parsec (readHookedBuildInfo)
@@ -46,7 +50,7 @@ import Distribution.PackageDescription.Parse  (readHookedBuildInfo)
 #endif
 
 import System.Process (readCreateProcess, shell)
-import System.IO
+import Data.Maybe (fromMaybe)
 
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
 
@@ -63,15 +67,6 @@ is_verbose_configure =
   False
 #endif
 
--- failed attempt to deal with Cabal >= 2.2
-hookedPackageDesc :: IO (Maybe FilePath)
-hookedPackageDesc =
-#if MIN_VERSION_Cabal(2,2,0)
-  do res <- findHookedPackageDesc "."
-     return res
-#else
-  defaultHookedPackageDesc
-#endif
 
 -- |
 -- List of
@@ -96,56 +91,77 @@ buildInfoFields = [
   , ("extra-libraries", "perl -MExtUtils::Embed -e 'print(join \" \", (map { $_ =~ s/^-l//; $_; } ( grep /^-l/, (split \" \", ldopts(1)))))'")
     -- ^ just the libraries: e.g.
     --      perl dl m pthread c crypt
+  , ("include-dirs", "perl -MExtUtils::Embed -e 'my $output; { open local(*STDOUT), \">\", \\$output; perl_inc();}  $output =~ s/^\\s+-I//; print $output; '")
+  , ("extra-lib-dirs", "perl -MExtUtils::Embed -e 'print(join \", \", (map { $_ =~ s/^-L//; $_; } ( grep /^-L/, (split \" \", ldopts(1)))))'")
   ]
 
--- | generate conts of .buildinfo file
-generate_buildinfo_file_conts :: IO String
-generate_buildinfo_file_conts =
-  fmap unlines $
+-- | turn @buildInfoFields@ above into an
+-- associative list, mapping from field to value.
+get_buildinfo_fields :: IO [(String, String)]
+get_buildinfo_fields =
     forM buildInfoFields $ \(fld, cmd) -> do
             let cmd' = if is_verbose_configure
                        then "set -x; " ++ cmd
                        else cmd
+            (fld,) <$> readCreateProcess (shell cmd') ""
 
-            out_line <- ((fld ++ ": ") ++) <$> readCreateProcess (shell cmd') ""
-            when is_verbose_configure $
-              hPutStrLn stderr ("> " ++ out_line)
-            return out_line
-
-
+-- Setup will get normally be called (at least) twice --
+-- once for `configure`, once for `build`.
+--
+-- We do writeBuildInfo regardless, every time, 'cos
+-- no harm in doing so. (Not normally, anyway.)
 main :: IO ()
---main = writeBuildInfo >> defaultMainWithHooks defaultUserHooks
---                                                ^ deprecated
-main = writeBuildInfo >> defaultMainWithHooks myUserHooks
-     where
-     writeBuildInfo =
-        generate_buildinfo_file_conts >>= writeFile "hs-perl5.buildinfo"
+main = do
+          buildInfoFields <- get_buildinfo_fields
+          let buildInfoConts = unlines
+               [ line | (fld, val) <- buildInfoFields,
+                        let line = fld ++ ": " ++ val
+               ]
+          writeFile "hs-perl5.buildinfo" buildInfoConts
+          defaultMainWithHooks myUserHooks
+  where
+  myUserHooks = autoconfUserHooks {
+        postConf = customPostConf
+      , preBuild = customPreBuild
+      }
 
-     -- more or less duplicates behaviour of old "defaultUserHooks" -- copied
-     -- from Distribution.Simple. Feel free to fix/tidy if you've got the time
-     -- or inclination.
-     myUserHooks = autoconfUserHooks {
-          confHook = confHook autoconfUserHooks,
-          postConf = oldCompatPostConf
-          }
-        where
-              oldCompatPostConf :: Args -> ConfigFlags ->
-                    PackageDescription -> LocalBuildInfo -> IO ()
-              oldCompatPostConf args flags pkg_descr lbi
-                  = do let verbosity = fromFlag (configVerbosity flags)
-                       pbi <- getHookedBuildInfo verbosity
-                       let pkg_descr' = updatePackageDescription pbi pkg_descr
-                           lbi' = lbi { localPkgDescr = pkg_descr' }
-                       postConf simpleUserHooks args flags pkg_descr' lbi'
+  -- we override preBuild, because our .buildinfo file is
+  -- in a non-usual place (namely, the working directory, instead of somewhere
+  -- in a dist/ or new-dist/ directory).
+  -- (tho in Cabal < 2.2, it seems this can be left off.)
+  customPreBuild :: Args -> BuildFlags -> IO HookedBuildInfo
+  customPreBuild args flags =
+      getHookedBuildInfo verbosity
+    where
+      verbosity = fromFlag (buildVerbosity flags)
 
-              getHookedBuildInfo :: Verbosity -> IO HookedBuildInfo
-              getHookedBuildInfo verbosity = do
-                maybe_infoFile <- hookedPackageDesc
+  -- more or less duplicates behaviour of old "defaultUserHooks" -- copied
+  -- from Distribution.Simple. Feel free to fix/tidy if time
+  -- or inclination is available.
+  customPostConf :: Args -> ConfigFlags ->
+        PackageDescription -> LocalBuildInfo -> IO ()
+  customPostConf args flags pkg_descr lbi = do
+      let verbosity = fromFlag (configVerbosity flags)
+      pbi <- getHookedBuildInfo verbosity
+      let pkg_descr' = updatePackageDescription pbi pkg_descr
+          lbi' = lbi { localPkgDescr = pkg_descr' }
+      postConf simpleUserHooks args flags pkg_descr' lbi'
+
+  -- always fetches the .buildinfo file from the current
+  -- directory, ".".
+  getHookedBuildInfo :: Verbosity -> IO HookedBuildInfo
+  getHookedBuildInfo verbosity = do
+#if MIN_VERSION_Cabal(3,0,1)
+                maybe_infoFile <- findHookedPackageDesc verbosity "."
+#elif MIN_VERSION_Cabal(2,2,0)
+                maybe_infoFile <- findHookedPackageDesc "."
+#else
+                maybe_infoFile <- defaultHookedPackageDesc
+#endif
                 case maybe_infoFile of
-                  Nothing       -> return emptyHookedBuildInfo
+                  Nothing       -> error "should have .buildinfo file!"
                   Just infoFile -> do
-                    info verbosity $ "Reading parameters from " ++ infoFile
+                    warn verbosity $ "Reading parameters from " ++ infoFile
                     readHookedBuildInfo verbosity infoFile
-
 
 
