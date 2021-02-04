@@ -6,19 +6,10 @@
 #define _UINTPTR_T_DEFINED
 #undef RETURN
 
-#if defined(__OpenBSD__)
-#define _P5EMBED_INIT _p5embed_init
-#else
-#define _P5EMBED_INIT __init
-#endif
-
 #include "EXTERN.h"
 #include "perl.h"
 #include "embed.h"
 
-int perl5_G_VOID   ;
-int perl5_G_SCALAR ;
-int perl5_G_ARRAY  ;
 
 /*
 PerlInterpreter * perl5_init ( int argc, char **argv );
