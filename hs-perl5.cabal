@@ -26,9 +26,9 @@ description:        This module provides a Haskell interface to embedded Perl 5
                     .
                     /PORTABILITY: probably only Linux/
                     .
-                    If using Stack -- seems to work OK on stack lts-9 thru stack lts-11
+                    If using Stack -- seems to work OK on stack lts-9 thru stack lts-15
 stability:          experimental
-tested-with:        GHC == 8.0.2, GHC == 8.2.2
+tested-with:        GHC == 8.0.2, GHC == 8.2.2, GHC == 8.8.3
 build-type:         Custom
 category:           Language, Perl
 
@@ -58,7 +58,6 @@ library
   hs-source-dirs:      src
   include-dirs:        cbits
   c-sources:           cbits/p5embed.c
-  includes:            p5embed.h
   build-depends:
                        base >=4.7 && <5
                      , bytestring
