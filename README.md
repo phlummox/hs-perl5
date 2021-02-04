@@ -45,8 +45,5 @@ $ cabal install --dependencies-only
 $ cabal build
 ```
 
-Currently only `cabal` versions from >= 1.24 to < 2.2 will work.
-It is intended to extend this to more versions in future.
-
 [stack]: https://www.haskellstack.org/
 [cabal]: https://www.haskell.org/cabal/
