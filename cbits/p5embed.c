@@ -1,5 +1,3 @@
-#ifndef HsPerl5DefinedC
-#define HsPerl5DefinedC 1
 
 // TODO - tidy up #includes, are we needlessly
 // double-including?
@@ -69,11 +67,9 @@ perl5_return_conv (int count) {
     SPAGAIN;
 
     if (SvTRUE(ERRSV)) {
-        // TODO:
-        // (a) replace with malloc. As of 2021, there should
-        // be no portability problems - it has C standard semantics.
-        // (b) this is likely a memory leak.
-        Newz(42, out, 3, SV*);
+        // 3 = space for 2 error thingies and a NULL ptr.
+        void * res = malloc (3 * sizeof(SV *));
+        out = (SV **) res;
         if (SvROK(ERRSV)) {
             out[0] = newSVsv(ERRSV);
             out[1] = NULL;
@@ -85,9 +81,8 @@ perl5_return_conv (int count) {
         out[2] = NULL;
     }
     else {
-        // replace with malloc.
-        Newz(42, out, count+2, SV*);
-
+        void * res = malloc ( (count+2) * sizeof(SV *));
+        out = (SV **) res;
         out[0] = NULL;
 
         for (i=count; i>0; --i) {
@@ -362,4 +357,3 @@ perl5_set_destruct_level() {
 }
 
 
-#endif
