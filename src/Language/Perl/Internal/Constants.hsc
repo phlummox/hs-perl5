@@ -9,7 +9,8 @@ Constants and stuff extracted from header files
 
 module Language.Perl.Internal.Constants
   (
-  -- * Flag values for 'call' functions
+  -- * Flag values for 'call' functions.
+  --
   -- See <https://perldoc.perl.org/perlcall#FLAG-VALUES perlcall> for more
   -- detail.
     pattern G_VOID

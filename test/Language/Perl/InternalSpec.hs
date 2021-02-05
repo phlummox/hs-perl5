@@ -18,7 +18,6 @@ import            Data.Either.Compat
 import qualified  Data.List as L
 import            Data.Monoid ( (<>) )
 import            Data.Text.Arbitrary ()
-import            Foreign
 import            Foreign.C
 import            Text.InterpolatedString.Perl6 (qc)
 
@@ -48,7 +47,7 @@ prop_perlIV_roundtrips :: IV -> Expectation
 prop_perlIV_roundtrips n = withPerl $ do
   sv  <- hsperl_newSViv n
   res <- hsperl_SvIV sv
-  fromIntegral res `shouldBe` n
+  res `shouldBe` n
 
 prop_perlNV_roundtrips :: NV -> Expectation
 prop_perlNV_roundtrips f = withPerl $ do
