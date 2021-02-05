@@ -21,10 +21,11 @@
 
 ## C source files
 
-`cbits/p5embed.c` largely contains thin wrappers around Perl C API
+`cbits/p5embed.c` largely contain wrappers around Perl C API
 functions (documented in <https://perldoc.perl.org/perlapi>), adding a
-`perl5_` namespace to them. (A bunch of API functions start with capital
-letters anyway, so it's handy to give them a name that's valid Haskell.)
+`hsperl_` prefix to them. This is necessary because the "functions"
+are often actually macros, and macro trickery is used to make them
+operate on an implicit Perl interpreter instance.
 
 `cbits/p5embed.h`, unsurprisingly, contains prototypes for the functions
 in `cbits/p5embed.c`.

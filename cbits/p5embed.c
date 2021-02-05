@@ -4,6 +4,16 @@
 #include "p5embed.h"
 #include "perlxsi.h"
 
+// Any functions we define here should be prefixed
+// with 'hsperl_', to avoid any possibility of name
+// clashes.
+//
+// If _no_ wrapper is needed, then don't define a function!
+// Just 'foreign import' it directly. (Although most of the
+// "functions" listed in the perl API page
+// (https://perldoc.perl.org/perlapi) are actually macros,
+// and _do_ need to be wrapped.)
+
 const char HsPerl5Preamble[] =
 "package __HsPerl5__;\n\n"
 "sub MkCode {\n"
@@ -21,19 +31,19 @@ const char HsPerl5Preamble[] =
 static PerlInterpreter *my_perl;
 
 SV *
-perl5_sv_undef ()
+hsperl_sv_undef ()
 {
     return(&PL_sv_undef);
 }
 
 SV *
-perl5_sv_yes ()
+hsperl_sv_yes ()
 {
     return(&PL_sv_yes);
 }
 
 SV *
-perl5_sv_no ()
+hsperl_sv_no ()
 {
     return(&PL_sv_no);
 }
@@ -41,7 +51,7 @@ perl5_sv_no ()
 // mark as not Unicode-safe
 // if callers want Utf8, they should apply SvUTF8_on themselves
 SV **
-perl5_eval(char *code, int len, int cxt)
+hsperl_eval(char *code, int len, int cxt)
 {
     dSP;
     SV* sv;
@@ -54,12 +64,12 @@ perl5_eval(char *code, int len, int cxt)
     count = eval_sv(sv, cxt);
     SvREFCNT_dec(sv);
 
-    return perl5_return_conv(count);
+    return hsperl_return_conv(count);
 }
 
 
 SV **
-perl5_return_conv (int count) {
+hsperl_return_conv (int count) {
     SV **out;
     int i;
 
@@ -100,7 +110,7 @@ perl5_return_conv (int count) {
 }
 
 char *
-perl5_SvPV ( SV *sv )
+hsperl_SvPV ( SV *sv )
 {
     char *rv;
     rv = SvPV_nolen(sv);
@@ -110,14 +120,14 @@ perl5_SvPV ( SV *sv )
 // mark as not Unicode safe - if calls
 // want Utf8, they should apply SvUTF8_on themselves
 SV *
-perl5_newSVpvn ( char * pv, int len )
+hsperl_newSVpvn ( char * pv, int len )
 {
     SV *sv = newSVpvn(pv, len);
     return(sv);
 }
 
 SV **
-perl5_apply(SV *sub, SV *inv, SV** args, int cxt)
+hsperl_apply(SV *sub, SV *inv, SV** args, int cxt)
 {
     SV **arg;
     SV *rv;
@@ -138,39 +148,39 @@ perl5_apply(SV *sub, SV *inv, SV** args, int cxt)
     PUTBACK;
 
     if (inv != NULL) {
-        perl5_return_conv(call_method(SvPV_nolen(sub), cxt|G_EVAL));
+        hsperl_return_conv(call_method(SvPV_nolen(sub), cxt|G_EVAL));
     }
     else {
-        perl5_return_conv(call_sv(sub, cxt|G_EVAL));
+        hsperl_return_conv(call_sv(sub, cxt|G_EVAL));
     }
 }
 
 SV *
-perl5_newSViv ( int iv )
+hsperl_newSViv ( int iv )
 {
     return(newSViv(iv));
 }
 
 SV *
-perl5_newSVnv ( double iv )
+hsperl_newSVnv ( double iv )
 {
     return(newSVnv(iv));
 }
 
 int
-perl5_SvIV ( SV *sv )
+hsperl_SvIV ( SV *sv )
 {
     return((int)SvIV(sv));
 }
 
 double
-perl5_SvNV ( SV *sv )
+hsperl_SvNV ( SV *sv )
 {
     return((double)SvNV(sv));
 }
 
 bool
-perl5_SvTRUE ( SV * sv )
+hsperl_SvTRUE ( SV * sv )
 {
     bool rv;
     rv = SvTRUE(sv);
@@ -178,7 +188,7 @@ perl5_SvTRUE ( SV * sv )
 }
 
 SV *
-perl5_make_cv ( HsStablePtr *sub )
+hsperl_make_cv ( HsStablePtr *sub )
 {
     SV *sv = newSV(0);
     SV *ret = NULL;
@@ -255,7 +265,7 @@ XS(__HsPerl5__Invoke) {
 }
 
 PerlInterpreter *
-perl5_init ( int argc, char **argv )
+hsperl_init ( int argc, char **argv )
 {
     int exitstatus;
     int i;
@@ -323,26 +333,25 @@ perl5_init ( int argc, char **argv )
 
 // switch on Utf8 flag
 void
-perl5_SvUTF8_on(SV *sv)
+hsperl_SvUTF8_on(SV *sv)
 {
   SvUTF8_on(sv);
 }
 
 // convert SV to a Utf8 string
 char*
-perl5_sv_2pvutf8(SV* sv, STRLEN* lp) {
+hsperl_sv_2pvutf8(SV* sv, STRLEN* lp) {
   return sv_2pvutf8(sv, lp);
 }
 
 SV *
-perl5_get_sv(const char *name)
+hsperl_get_sv(const char *name)
 {
-    SV *sv = get_sv(name, 1);
-    return sv;
+    return get_sv(name, 1);
 }
 
 SV *
-perl5_get_cv(const char *name)
+hsperl_get_cv(const char *name)
 {
     SV *cv = (SV*)(get_cv(name, 0));
     return cv;
@@ -352,7 +361,7 @@ perl5_get_cv(const char *name)
 // from one instance of the interpreter to a later one.
 // See https://perldoc.perl.org/perlembed#Maintaining-multiple-interpreter-instances
 void
-perl5_set_destruct_level() {
+hsperl_set_destruct_level() {
   PL_perl_destruct_level = 1;
 }
 

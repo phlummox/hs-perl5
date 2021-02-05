@@ -13,16 +13,16 @@ Interact with embedded Perl interpreter.
 
 Pretty much any function in this module will only operated correctly if a
 properly initialized /interpreter instance/ exists  -- that is,
-the function 'perl5_init' has been called. You don't
+the function 'hsperl_init' has been called. You don't
 have to /pass/ the resulting 'Interpreter' to the functions, typically --
-rather, calling 'perl5_init' has the side effect
+rather, calling 'hsperl_init' has the side effect
 of initializing various global variables needed by Perl.
 Normally, only one interpreter instance can exist at a time
 (unless your Perl library has been specially compiled to allow for multiple
 instances -- see <https://perldoc.perl.org/perlembed#Maintaining-multiple-interpreter-instances perlembed>).
 
 For convenience, a 'bracket'-like function is provided, 'withPerl', which creates
-an interpreter using 'perl5_init', cleans up afterwards using
+an interpreter using 'hsperl_init', cleans up afterwards using
 'perl_destruct', and runs your 'IO' actions in between.
 
 Calling 'withPerl' creates an 'Interpreter' instance that is
@@ -90,16 +90,16 @@ withPerl f =
         withArray [prog, prog, cstr] $ \argv ->
             bracket (acquire argv) release between
   where
-    acquire argv   = perl5_init 3 argv
+    acquire argv   = hsperl_init 3 argv
     release interp = do -- currently, interpreter leaves data lying around
                          -- after destruction -- "set_destruct_level"
                          -- ensures it is cleared/deallocated
-                         perl5_set_destruct_level
+                         hsperl_set_destruct_level
                          void $ perl_destruct interp
                          perl_free interp
     -- we should be running in a bound thread, since interpreter
     -- is not thread-safe
-    between _interp = (if rtsSupportsBoundThreads then runInBoundThread else id) $
+    between _interp = (if rtsSupportsBoundThreads then runInBoundThread else id)
                          f
 
 -----
@@ -118,42 +118,43 @@ instance ToSV SV where toSV = return
 instance FromSV SV where fromSV = return
 
 instance ToSV () where
-    toSV _ = perl5_sv_undef
+    toSV _ = hsperl_sv_undef
 instance FromSV () where
     fromSV x = seq x (return ())
 
 instance ToSV String where
     toSV str = withCStringLen str $ \(cstr, len) ->
-        perl5_newSVpvn cstr (toEnum len)
+        hsperl_newSVpvn cstr (toEnum len)
 
 instance FromSV String where
     fromSV sv = do
-        cstr <- perl5_SvPV sv
+        cstr <- hsperl_SvPV sv
         peekCString cstr
 
 instance ToSV Text where
   toSV txt = BS.useAsCStringLen (T.encodeUtf8 txt) $ \(cstr, len) -> do
-               sv <- perl5_newSVpvn cstr (toEnum len)
-               perl5_SvUTF8_on sv
+               sv <- hsperl_newSVpvn cstr (toEnum len)
+               hsperl_SvUTF8_on sv
                return sv
 
 instance FromSV Text where
     fromSV sv =
           alloca $ \(lenPtr :: Ptr CSize) -> do
-            cStr <- perl5_sv_2pvutf8 sv lenPtr
+            cStr <- hsperl_sv_2pvutf8 sv lenPtr
             len  <- peek lenPtr
             -- to do: unsafePackCStringLen is presumably faster
             T.decodeUtf8  <$> BS.packCStringLen (cStr, fromIntegral len)
 
 
 -- | For convenience, a 'ToSV' instance is provided for 'Int's.
--- However, it's lossy: actually, a Perl 'SV' will only fit
--- an 'Int32'.
+-- However, a Haskell 'Int' on your platform might not be the same size 
+-- as Perl's integral type - for an exact
+-- conversion, see the instance for 'IV'.
 instance ToSV Int where
-    toSV = perl5_newSViv . toEnum
+    toSV = hsperl_newSViv . toEnum
 
 instance FromSV Int where
-    fromSV = fmap fromEnum . perl5_SvIV
+    fromSV = fmap fromEnum . hsperl_SvIV
 
 instance ToSV Int32 where
     toSV = toSV . toInt
@@ -168,17 +169,17 @@ instance FromSV Int32 where
         fromInt = fromIntegral
 
 instance ToSV Double where
-    toSV = perl5_newSVnv . realToFrac
+    toSV = hsperl_newSVnv . realToFrac
 
 instance FromSV Double where
-    fromSV = fmap realToFrac . perl5_SvNV
+    fromSV = fmap realToFrac . hsperl_SvNV
 
 instance FromSV Bool where
-    fromSV = perl5_SvTRUE
+    fromSV = hsperl_SvTRUE
 
 instance ToSV Bool where
-    toSV True = perl5_sv_yes
-    toSV False = perl5_sv_no
+    toSV True = hsperl_sv_yes
+    toSV False = hsperl_sv_no
 
 
 -- -- ---
@@ -252,7 +253,7 @@ instance ToArgs a => ToSV (IO a) where
       sp <- newStablePtr $ \_ _ -> do
         svs <- toArgs =<< f
         mkSVList svs
-      perl5_make_cv sp
+      hsperl_make_cv sp
 
 instance {-# OVERLAPS #-} (ToArgs a, FromArgs r) => ToSV (r -> IO a) where
   toSV f = do
@@ -260,7 +261,7 @@ instance {-# OVERLAPS #-} (ToArgs a, FromArgs r) => ToSV (r -> IO a) where
             args'   <- fromArgs =<< asSVList args
             svs     <- toArgs =<< f args'
             mkSVList svs
-        perl5_make_cv sp
+        hsperl_make_cv sp
 
 instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> IO a) where
   toSV f = do
@@ -268,7 +269,7 @@ instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> IO a) where
             (a1, a2)    <- fromArgs =<< asSVList args
             svs         <- toArgs =<< f a1 a2
             mkSVList svs
-        perl5_make_cv sp
+        hsperl_make_cv sp
 
 instance {-# OVERLAPS #-} (ToArgs a, FromArgs r) => ToSV (r -> a) where
   toSV f = do
@@ -276,7 +277,7 @@ instance {-# OVERLAPS #-} (ToArgs a, FromArgs r) => ToSV (r -> a) where
             args'   <- fromArgs =<< asSVList args
             svs     <- toArgs $ f args'
             mkSVList svs
-        perl5_make_cv sp
+        hsperl_make_cv sp
 
 instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> a) where
   toSV f = do
@@ -284,14 +285,14 @@ instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> a) where
             (a1, a2)    <- fromArgs =<< asSVList args
             svs         <- toArgs $ f a1 a2
             mkSVList svs
-        perl5_make_cv sp
+        hsperl_make_cv sp
 
 
 
 
 -- un-befunge the result of calling one of our eval/apply
 -- functions. i.e., any functions whose return value is
--- ultimately given to us by @perl5_return_conv@ from
+-- ultimately given to us by @hsperl_return_conv@ from
 -- @cbits/p5embed.c@.
 returnPerl :: forall a. FromArgs a => Ptr SV -> IO a
 returnPerl rv = do
@@ -309,7 +310,7 @@ returnPerl rv = do
 -- | Evaluate a snippet of Perl 5 code.
 eval :: forall a. FromArgs a => String -> IO a
 eval str = withCStringLen str $ \(cstr, len) ->
-  perl5_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a)) returnPerl
+  hsperl_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a)) returnPerl
 
 -- | Same as 'eval' but always in void context.
 eval_ :: String -> IO ()
@@ -321,7 +322,7 @@ callSub sub args = do
     args'   <- toArgs args
     sub'    <- toCV sub (length args')
     withSVArray args' $ \argsPtr ->
-      perl5_apply sub' (SV nullPtr) argsPtr (numContext $ contextOf (undefined :: r)) returnPerl
+      hsperl_apply sub' (SV nullPtr) argsPtr (numContext $ contextOf (undefined :: r)) returnPerl
 
 -- | Call a Perl 5 method.
 callMethod :: forall i m a r. (ToSV i, ToSV m, ToArgs a, FromArgs r) => i -> m -> a -> IO r
@@ -330,7 +331,7 @@ callMethod inv meth args = do
     args'   <- toArgs args
     sub'    <- toSV meth
     withSVArray args' $ \argsPtr ->
-      perl5_apply sub' inv' argsPtr (numContext $ contextOf (undefined :: r)) returnPerl
+      hsperl_apply sub' inv' argsPtr (numContext $ contextOf (undefined :: r)) returnPerl
 
 -- aliases for callSub and callMethod
 
@@ -381,7 +382,7 @@ instance (ToArgs a, ToArgs b, FromArgs r) => FromSV (a -> b -> IO r) where
 -- NB: weird casting of CV to SV
 instance {-# OVERLAPS #-} ToCV String where
   toCV  sub count = do
-      cv <- withCString sub perl5_get_cv
+      cv <- withCString sub hsperl_get_cv
       if unSV cv /= nullPtr then return cv else do
            let prms = map (\i -> "$_[" ++ show i ++ "]") [0 .. count-1]
            eval ("sub { " ++ sub ++ "(" ++ intercalate ", " prms ++ ") }")

@@ -11,6 +11,8 @@ module Language.Perl.Internal.Types
   -- * main types
     Interpreter(..)
   , SV(..)
+  , AV(..)
+  , CV(..)
   , Callback
   -- * Perl calling context
   , Context(..)

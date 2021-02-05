@@ -34,8 +34,8 @@ My suggestion is:
 
 = Methods where caller must free returned memory
 
-* 'perl5_eval_c' - prefer 'perl5_eval'
-* 'perl5_apply_c' - prefer 'perl5_apply'
+* 'hsperl_eval_c' - prefer 'hsperl_eval'
+* 'hsperl_apply_c' - prefer 'hsperl_apply'
 
 -}
 
@@ -53,12 +53,12 @@ import Language.Perl.Internal.Types
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
 {-# ANN module ("HLint: ignore Eta reduce" :: String) #-}
 
-foreign import ccall "perl5_make_cv"
-    perl5_make_cv :: StablePtr Callback -> IO SV
+foreign import ccall "hsperl_make_cv"
+    hsperl_make_cv :: StablePtr Callback -> IO SV
 
 -- |
 -- @
--- perl5_init argc argv
+-- hsperl_init argc argv
 -- @
 --
 -- Allocates and initializes an 'Interpreter' instance,
@@ -75,37 +75,37 @@ foreign import ccall "perl5_make_cv"
 -- * <https://perldoc.perl.org/perlapi#perl_construct>,
 -- * <https://perldoc.perl.org/perlapi#perl_parse>,
 -- * <https://perldoc.perl.org/perlapi#perl_run>.
-foreign import ccall "perl5_init"
-    perl5_init :: CInt -> Ptr CString -> IO Interpreter
+foreign import ccall "hsperl_init"
+    hsperl_init :: CInt -> Ptr CString -> IO Interpreter
 
 -- |
 -- This is the undef SV. Always refer to this as &PL_sv_undef.
 --
 -- source: <https://perldoc.perl.org/perlapi#PL_sv_undef>
-foreign import ccall "perl5_sv_undef"
-    perl5_sv_undef :: IO SV
+foreign import ccall "hsperl_sv_undef"
+    hsperl_sv_undef :: IO SV
 
 -- | This is the @true@ SV. See \"PL_sv_no". Always refer to this as &PL_sv_yes.
 --
 -- source: <https://perldoc.perl.org/perlapi#PL_sv_yes>
-foreign import ccall "perl5_sv_yes"
-    perl5_sv_yes :: IO SV
+foreign import ccall "hsperl_sv_yes"
+    hsperl_sv_yes :: IO SV
 
-foreign import ccall "perl5_sv_no"
-    perl5_sv_no :: IO SV
+foreign import ccall "hsperl_sv_no"
+    hsperl_sv_no :: IO SV
 
 -- | warning: only handles non-null ASCII strings - not Unicode-safe.
 --
 -- caller should free returned memory.
-foreign import ccall "perl5_eval"
-    perl5_eval_c :: CString -> CInt -> CInt -> IO (Ptr SV)
+foreign import ccall "hsperl_eval"
+    hsperl_eval_c :: CString -> CInt -> CInt -> IO (Ptr SV)
 
 -- | args: str, len of str, flags
-perl5_eval :: CString -> CInt -> CInt -> (Ptr SV -> IO b) -> IO b
-perl5_eval str len flags between =
+hsperl_eval :: CString -> CInt -> CInt -> (Ptr SV -> IO b) -> IO b
+hsperl_eval str len flags between =
     bracket acquire release between
   where
-    acquire = perl5_eval_c str len flags
+    acquire = hsperl_eval_c str len flags
     release = free
 
 -- |
@@ -117,15 +117,15 @@ perl5_eval str len flags between =
 -- See <https://perldoc.perl.org/perlapi#newSVpvn>
 --
 -- warning: only handles non-null ASCII strings - not Unicode-safe.
-foreign import ccall "perl5_newSVpvn"
-    perl5_newSVpvn :: CString -> CInt -> IO SV
+foreign import ccall "hsperl_newSVpvn"
+    hsperl_newSVpvn :: CString -> CInt -> IO SV
 
 -- | Returns a pointer to the string in the SV, or a stringified form of the SV
 -- if the SV does not contain a string.
 --
 -- See <https://perldoc.perl.org/perlapi#SvPV_nolen>
-foreign import ccall "perl5_SvPV"
-    perl5_SvPV :: SV -> IO CString
+foreign import ccall "hsperl_SvPV"
+    hsperl_SvPV :: SV -> IO CString
 
 
 -- |
@@ -136,8 +136,8 @@ foreign import ccall "perl5_SvPV"
 -- See "SvIVx" for a version which guarantees to evaluate sv only once.
 --
 -- Source: <https://perldoc.perl.org/perlapi#SvIV>
-foreign import ccall "perl5_SvIV"
-    perl5_SvIV :: SV -> IO CInt
+foreign import ccall "hsperl_SvIV"
+    hsperl_SvIV :: SV -> IO CInt
 
 
 
@@ -149,24 +149,24 @@ foreign import ccall "perl5_SvIV"
 -- See "SvNVx" for a version which guarantees to evaluate sv only once.
 --
 -- Source: <https://perldoc.perl.org/perlapi#SvNV>
-foreign import ccall "perl5_SvNV"
-    perl5_SvNV :: SV -> IO CDouble
+foreign import ccall "hsperl_SvNV"
+    hsperl_SvNV :: SV -> IO CDouble
 
 -- |
 -- Creates a new SV and copies an integer into it. The reference count for the
 -- SV is set to 1.
 --
 -- Source: <https://perldoc.perl.org/perlapi#newSViv>
-foreign import ccall "perl5_newSViv"
-    perl5_newSViv :: CInt -> IO SV
+foreign import ccall "hsperl_newSViv"
+    hsperl_newSViv :: CInt -> IO SV
 
 -- |
 -- Creates a new SV and copies a floating point value into it. The reference
 -- count for the SV is set to 1.
 --
 -- Source: <https://perldoc.perl.org/perlapi#newSVnv>
-foreign import ccall "perl5_newSVnv"
-    perl5_newSVnv :: CDouble -> IO SV
+foreign import ccall "hsperl_newSVnv"
+    hsperl_newSVnv :: CDouble -> IO SV
 
 -- | source:
 -- <https://perldoc.perl.org/perlapi#perl_destruct>
@@ -183,7 +183,7 @@ foreign import ccall "perl_free"
 
 -- |
 -- @
--- perl5_apply subroutine receiver args context
+-- hsperl_apply subroutine receiver args context
 -- @
 --
 -- Apply a subroutine to the specified args.
@@ -205,27 +205,29 @@ foreign import ccall "perl_free"
 -- other flags bitwise OR'ed into it).
 --
 -- Return values are given according to the same protocol as
--- 'perl5_eval'.
+-- 'hsperl_eval'.
 --
 -- Caller should free returned memory.
 --
 -- args: sub, method, args, flags
-foreign import ccall "perl5_apply"
-    perl5_apply_c :: SV -> SV -> Ptr SV -> CInt -> IO (Ptr SV)
+foreign import ccall "hsperl_apply"
+    hsperl_apply_c :: SV -> SV -> Ptr SV -> CInt -> IO (Ptr SV)
 
-perl5_apply ::
+hsperl_apply ::
   SV -> SV -> Ptr SV -> CInt -> (Ptr SV -> IO b) -> IO b
-perl5_apply sub receiver args flags between =
+hsperl_apply sub receiver args flags between =
     bracket acquire release between
   where
-    acquire = perl5_apply_c sub receiver args flags
+    acquire = hsperl_apply_c sub receiver args flags
     release = free
 
-foreign import ccall "perl5_SvTRUE"
-    perl5_SvTRUE :: SV -> IO Bool
+foreign import ccall "hsperl_SvTRUE"
+    hsperl_SvTRUE :: SV -> IO Bool
 
 -- |
--- Returns the SV of the specified Perl scalar. flags are passed to @gv_fetchpv@.
+-- Returns the SV of the specified Perl scalar. 
+-- Flags are passed to @gv_fetchpv@.
+--
 -- If @GV_ADD@ is set and the Perl variable does not exist then it will be
 -- created. If @flags@ is zero and the variable does not exist then NULL is
 -- returned.
@@ -233,20 +235,20 @@ foreign import ccall "perl5_SvTRUE"
 -- NOTE: the perl_ form of this function is deprecated.
 --
 -- source: <https://perldoc.perl.org/perlapi#get_sv>
-foreign import ccall "perl5_get_sv"
-    perl5_get_sv :: CString -> IO SV
+foreign import ccall "hsperl_get_sv"
+    hsperl_get_sv :: CString -> IO SV
 
 -- |
 -- Turn on the UTF-8 status of an 'SV' (the data is not changed, just the
 -- flag). Do not use frivolously.
 --
 -- source: <https://perldoc.perl.org/perlapi#SvUTF8_on>.
-foreign import ccall "perl5_SvUTF8_on"
-    perl5_SvUTF8_on :: SV -> IO ()
+foreign import ccall "hsperl_SvUTF8_on"
+    hsperl_SvUTF8_on :: SV -> IO ()
 
 -- |
 -- @
--- perl5_sv_2pvutf8 sv lp
+-- hsperl_sv_2pvutf8 sv lp
 -- @
 --
 -- Return a pointer to the UTF-8-encoded representation of the SV, and set
@@ -254,24 +256,24 @@ foreign import ccall "perl5_SvUTF8_on"
 -- side-effect.
 --
 -- source: <https://perldoc.perl.org/perlapi#sv_2pvutf8>
-foreign import ccall "perl5_sv_2pvutf8"
-    perl5_sv_2pvutf8 :: SV -> Ptr CSize -> IO (Ptr CChar)
+foreign import ccall "hsperl_sv_2pvutf8"
+    hsperl_sv_2pvutf8 :: SV -> Ptr CSize -> IO (Ptr CChar)
 
 -- |
--- @perl5_get_cv name flags@: Uses strlen to get the length of name, then calls
+-- @hsperl_get_cv name flags@: Uses strlen to get the length of name, then calls
 -- get_cvn_flags.
 --
 -- NOTE: the perl_ form of this function is deprecated.
 --
 -- See <https://perldoc.perl.org/perlapi#get_cv>
-foreign import ccall "perl5_get_cv"
-    perl5_get_cv :: CString -> IO SV
+foreign import ccall "hsperl_get_cv"
+    hsperl_get_cv :: CString -> IO SV
 
 -- | If it's desired Perl be extra-hygienic about cleaning up resources,
 -- this should be called (a) after allocation, but before initialization, and (b) before
 -- destruction. Currently, our initialization code already includes a call to it.
 -- (Multiple calls are harmless, though.)
-foreign import ccall "perl5_set_destruct_level"
-    perl5_set_destruct_level :: IO ()
+foreign import ccall "hsperl_set_destruct_level"
+    hsperl_set_destruct_level :: IO ()
 
 

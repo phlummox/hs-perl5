@@ -16,26 +16,26 @@ PerlInterpreter * perl5_init ( int argc, char **argv );
 bool perl5_SvROK(SV *inv);
 bool perl5_can(SV *inv, char *subname);
 */
-SV * perl5_sv_undef ();
-SV * perl5_sv_yes ();
-SV * perl5_sv_no ();
-SV ** perl5_eval(char *code, int len, int cxt);
-char * perl5_SvPV ( SV * sv );
-SV * perl5_newSVpvn ( char * pv, int len );
-SV ** perl5_return_conv (int count);
-SV ** perl5_apply(SV *sub, SV *inv, SV** args, int cxt);
-SV * perl5_newSViv ( int iv );
-int perl5_SvIV ( SV * sv );
-double perl5_SvNV ( SV * sv );
-SV * perl5_newSVnv ( double iv );
-bool perl5_SvTRUE ( SV * sv );
-SV * perl5_get_sv ( const char *name );
-SV * perl5_get_cv ( const char *name );
-void perl5_SvUTF8_on(SV *sv);
-char* perl5_sv_2pvutf8(SV* sv, STRLEN* lp);
+SV *   hsperl_sv_undef ();
+SV *   hsperl_sv_yes ();
+SV *   hsperl_sv_no ();
+SV **  hsperl_eval(char *code, int len, int cxt);
+char * hsperl_SvPV ( SV * sv );
+SV *   hsperl_newSVpvn ( char * pv, int len );
+SV **  hsperl_return_conv (int count);
+SV **  hsperl_apply(SV *sub, SV *inv, SV** args, int cxt);
+SV *   hsperl_newSViv ( int iv );
+int    hsperl_SvIV ( SV * sv );
+double hsperl_SvNV ( SV * sv );
+SV *   hsperl_newSVnv ( double iv );
+bool   hsperl_SvTRUE ( SV * sv );
+SV *   hsperl_get_sv ( const char *name );
+SV *   hsperl_get_cv ( const char *name );
+void   hsperl_SvUTF8_on(SV *sv);
+char*  hsperl_sv_2pvutf8(SV* sv, STRLEN* lp);
 
 #include <HsFFI.h>
 extern SV ** hsPerlApply ( HsStablePtr *sub, SV **args, int cxt );
-SV * perl5_make_cv ( HsStablePtr *sub );
+SV * hsperl_make_cv ( HsStablePtr *sub );
 
 #endif

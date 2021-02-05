@@ -18,7 +18,6 @@ module Language.Perl.Types
   )
   where
 
-
 import Language.Perl.Internal.Types
 
 

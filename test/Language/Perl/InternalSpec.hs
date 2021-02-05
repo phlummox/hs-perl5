@@ -46,28 +46,28 @@ forceEither (Right r) = r
 
 prop_perlInt32_roundtrips :: Int32 -> Expectation
 prop_perlInt32_roundtrips n = withPerl $ do
-  sv  <- perl5_newSViv (fromIntegral n)
-  res <- perl5_SvIV sv
+  sv  <- hsperl_newSViv (fromIntegral n)
+  res <- hsperl_SvIV sv
   fromIntegral res `shouldBe` n
 
 prop_perlDouble_roundtrips :: CDouble -> Expectation
 prop_perlDouble_roundtrips f = withPerl $ do
-  sv  <- perl5_newSVnv f
-  res <- perl5_SvNV sv
+  sv  <- hsperl_newSVnv f
+  res <- hsperl_SvNV sv
   res `shouldBe` f
 
 prop_perlString_roundtrips :: Property
 prop_perlString_roundtrips = forAll noNulsASCIIString $ \str ->
   withCStringLen str $ \(cStr, len) ->
     withPerl $ do
-      sv  <- perl5_newSVpvn cStr (fromIntegral len)
-      res <- perl5_SvPV sv >>= peekCString
+      sv  <- hsperl_newSVpvn cStr (fromIntegral len)
+      res <- hsperl_SvPV sv >>= peekCString
       res `shouldBe` str
 
 evalTest :: String -> Context -> IO (Either [SV] [SV])
 evalTest str ctx =
   withCStringLen str $ \(cStr, len) ->
-      perl5_eval cStr (fromIntegral len) (numContext ctx) svEither
+      hsperl_eval cStr (fromIntegral len) (numContext ctx) svEither
 
 -- |
 -- evaluating a Perl fragment like "2", "99", "-10" etc.,
@@ -83,7 +83,7 @@ prop_eval_cint_as_scalar_roundtrips n = do
   withPerl $ do
     retVal  <- evalTest (show n) ScalarCtx
     retVal `shouldSatisfy` isRight
-    res <- mapM perl5_SvIV (forceEither retVal)
+    res <- mapM hsperl_SvIV (forceEither retVal)
     ("res",res) `shouldBe` ("res",[n])
 
 -- evaluate a simple (ASCII, no control characters, no NUls) string --
@@ -93,7 +93,7 @@ prop_eval_simplestring_as_scalar_roundtrips =
   forAll quotableASCIIString $ \str -> withPerl $ do
     retVal  <- evalTest ("'" <> str <> "'") ScalarCtx
     retVal `shouldSatisfy` isRight
-    res <- mapM (peekCString <=< perl5_SvPV) (forceEither retVal)
+    res <- mapM (peekCString <=< hsperl_SvPV) (forceEither retVal)
     ("res",res) `shouldBe` ("res",[str])
 
 -- | evaluate the expression:
@@ -112,7 +112,7 @@ prop_eval_splitstring_as_array_roundtrips =
       -- hPutStrLn stderr $ "fragment = " <> fragment
       retVal <- evalTest fragment ListCtx
       retVal `shouldSatisfy` isRight
-      res    <- mapM (peekCString <=< perl5_SvPV) (forceEither retVal)
+      res    <- mapM (peekCString <=< hsperl_SvPV) (forceEither retVal)
       ("res",res) `shouldBe` ("res",["a" <> str1_, "b" <> str2_])
 
 
@@ -131,7 +131,7 @@ prop_die_returns_error =
     forAll quotableASCIIString $ \str -> withPerl $ do
       retVal <- eval_die ("xx" <> str)
       retVal `shouldSatisfy` isLeft
-      errList <- mapM (peekCString <=< perl5_SvPV) $ fromLeft (error "ack!") retVal
+      errList <- mapM (peekCString <=< hsperl_SvPV) $ fromLeft (error "ack!") retVal
       errList `shouldSatisfy` (not . null)
       let errMesg  = head errList
           expectedMesgPrefix = "xx" <> str <> " at (eval"
@@ -141,19 +141,19 @@ prop_die_returns_error =
 
 spec :: Spec
 spec = do
-  describe "perl5_newSViv (Int32)" $ do
+  describe "hsperl_newSViv (Int32)" $ do
     modifyMaxSuccess (const 500) $
       it "should roundtrip OK" $
           property prop_perlInt32_roundtrips
-  describe "perl5_newSVnv (CDouble)" $ do
+  describe "hsperl_newSVnv (CDouble)" $ do
     modifyMaxSuccess (const 500) $
       it "should roundtrip OK" $
           property prop_perlDouble_roundtrips
-  describe "perl5_newSVpvn (CStringLen)" $ do
+  describe "hsperl_newSVpvn (CStringLen)" $ do
     modifyMaxSuccess (const 500) $
       it "should roundtrip OK"
           prop_perlString_roundtrips
-  describe "perl5_eval" $ do
+  describe "hsperl_eval" $ do
     describe "when evaluating an int" $ do
       modifyMaxSuccess (const 500) $ do
         it "should give 1 result" $
