@@ -326,6 +326,19 @@ perl5_init ( int argc, char **argv )
     return my_perl;
 }
 
+// switch on Utf8 flag
+void
+perl5_SvUTF8_on(SV *sv)
+{
+  SvUTF8_on(sv);
+}
+
+// convert SV to a Utf8 string
+char*
+perl5_sv_2pvutf8(SV* sv, STRLEN* lp) {
+  return sv_2pvutf8(sv, lp);
+}
+
 SV *
 perl5_get_sv(const char *name)
 {

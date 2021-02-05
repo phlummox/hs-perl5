@@ -31,7 +31,8 @@ SV * perl5_newSVnv ( double iv );
 bool perl5_SvTRUE ( SV * sv );
 SV * perl5_get_sv ( const char *name );
 SV * perl5_get_cv ( const char *name );
-
+void perl5_SvUTF8_on(SV *sv);
+char* perl5_sv_2pvutf8(SV* sv, STRLEN* lp);
 
 #include <HsFFI.h>
 extern SV ** hsPerl5Apply ( HsStablePtr *sub, SV **args, int cxt );

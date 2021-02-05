@@ -62,9 +62,13 @@ module Language.Perl5
 import Control.Concurrent
 import Control.Exception (bracket, throwIO, Exception(..))
 import Control.Monad
-import Data.Dynamic (toDyn)
-import Data.Int
-import Data.List ( intercalate)
+
+import qualified Data.ByteString as BS
+import           Data.Dynamic (toDyn)
+import           Data.Int
+import           Data.List ( intercalate)
+import           Data.Text (Text)
+import qualified Data.Text.Encoding as T
 
 import Foreign hiding (void)
 import Foreign.C.Types
@@ -126,6 +130,21 @@ instance FromSV String where
     fromSV sv = do
         cstr <- perl5_SvPV sv
         peekCString cstr
+
+instance ToSV Text where
+  toSV txt = BS.useAsCStringLen (T.encodeUtf8 txt) $ \(cstr, len) -> do
+               sv <- perl5_newSVpvn cstr (toEnum len)
+               perl5_SvUTF8_on sv
+               return sv
+
+instance FromSV Text where
+    fromSV sv =
+          alloca $ \(lenPtr :: Ptr CSize) -> do
+            cStr <- perl5_sv_2pvutf8 sv lenPtr
+            len  <- peek lenPtr
+            -- to do: unsafePackCStringLen is presumably faster
+            T.decodeUtf8  <$> BS.packCStringLen (cStr, fromIntegral len)
+
 
 -- | For convenience, a 'ToSV' instance is provided for 'Int's.
 -- However, it's lossy: actually, a Perl 'SV' will only fit

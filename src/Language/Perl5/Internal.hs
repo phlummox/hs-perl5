@@ -237,6 +237,27 @@ foreign import ccall "perl5_get_sv"
     perl5_get_sv :: CString -> IO SV
 
 -- |
+-- Turn on the UTF-8 status of an 'SV' (the data is not changed, just the
+-- flag). Do not use frivolously.
+--
+-- source: <https://perldoc.perl.org/perlapi#SvUTF8_on>.
+foreign import ccall "perl5_SvUTF8_on"
+    perl5_SvUTF8_on :: SV -> IO ()
+
+-- |
+-- @
+-- perl5_sv_2pvutf8 sv lp
+-- @
+--
+-- Return a pointer to the UTF-8-encoded representation of the SV, and set
+-- @*lp@ to its length. May cause the SV to be upgraded to UTF-8 as a
+-- side-effect.
+--
+-- source: <https://perldoc.perl.org/perlapi#sv_2pvutf8>
+foreign import ccall "perl5_sv_2pvutf8"
+    perl5_sv_2pvutf8 :: SV -> Ptr CSize -> IO (Ptr CChar)
+
+-- |
 -- @perl5_get_cv name flags@: Uses strlen to get the length of name, then calls
 -- get_cvn_flags.
 --
