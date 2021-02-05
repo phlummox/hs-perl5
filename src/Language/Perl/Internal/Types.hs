@@ -14,6 +14,9 @@ module Language.Perl.Internal.Types
   , AV(..)
   , CV(..)
   , Callback
+  -- * Underlying C types
+  , IV
+  , NV
   -- * Perl calling context
   , Context(..)
   , numContext

@@ -24,13 +24,13 @@ char * hsperl_SvPV ( SV * sv );
 SV *   hsperl_newSVpvn ( char * pv, int len );
 SV **  hsperl_return_conv (int count);
 SV **  hsperl_apply(SV *sub, SV *inv, SV** args, int cxt);
-SV *   hsperl_newSViv ( int iv );
-int    hsperl_SvIV ( SV * sv );
-double hsperl_SvNV ( SV * sv );
-SV *   hsperl_newSVnv ( double iv );
+SV *   hsperl_newSViv ( IV iv );
+IV     hsperl_SvIV ( SV * sv );
+NV     hsperl_SvNV ( SV * sv );
+SV *   hsperl_newSVnv ( NV nv );
 bool   hsperl_SvTRUE ( SV * sv );
 SV *   hsperl_get_sv ( const char *name );
-SV *   hsperl_get_cv ( const char *name );
+CV *   hsperl_get_cv ( const char *name );
 void   hsperl_SvUTF8_on(SV *sv);
 char*  hsperl_sv_2pvutf8(SV* sv, STRLEN* lp);
 

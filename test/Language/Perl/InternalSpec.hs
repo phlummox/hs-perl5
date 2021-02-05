@@ -44,14 +44,14 @@ forceEither :: Either a b -> b
 forceEither Left{}    = error "bad forceEither"
 forceEither (Right r) = r
 
-prop_perlInt32_roundtrips :: Int32 -> Expectation
-prop_perlInt32_roundtrips n = withPerl $ do
-  sv  <- hsperl_newSViv (fromIntegral n)
+prop_perlIV_roundtrips :: IV -> Expectation
+prop_perlIV_roundtrips n = withPerl $ do
+  sv  <- hsperl_newSViv n
   res <- hsperl_SvIV sv
   fromIntegral res `shouldBe` n
 
-prop_perlDouble_roundtrips :: CDouble -> Expectation
-prop_perlDouble_roundtrips f = withPerl $ do
+prop_perlNV_roundtrips :: NV -> Expectation
+prop_perlNV_roundtrips f = withPerl $ do
   sv  <- hsperl_newSVnv f
   res <- hsperl_SvNV sv
   res `shouldBe` f
@@ -78,7 +78,7 @@ prop_eval_cint_as_scalar_gives_single_result n = do
   res   <- withPerl $ evalTest (show n) ScalarCtx
   res   `shouldSatisfy` (\x -> isRight x && length (forceEither x) == 1)
 
-prop_eval_cint_as_scalar_roundtrips :: CInt -> Expectation
+prop_eval_cint_as_scalar_roundtrips :: IV -> Expectation
 prop_eval_cint_as_scalar_roundtrips n = do
   withPerl $ do
     retVal  <- evalTest (show n) ScalarCtx
@@ -141,14 +141,14 @@ prop_die_returns_error =
 
 spec :: Spec
 spec = do
-  describe "hsperl_newSViv (Int32)" $ do
+  describe "hsperl_newSViv (IV)" $ do
     modifyMaxSuccess (const 500) $
       it "should roundtrip OK" $
-          property prop_perlInt32_roundtrips
-  describe "hsperl_newSVnv (CDouble)" $ do
+          property prop_perlIV_roundtrips
+  describe "hsperl_newSVnv (NV)" $ do
     modifyMaxSuccess (const 500) $
       it "should roundtrip OK" $
-          property prop_perlDouble_roundtrips
+          property prop_perlNV_roundtrips
   describe "hsperl_newSVpvn (CStringLen)" $ do
     modifyMaxSuccess (const 500) $
       it "should roundtrip OK"
