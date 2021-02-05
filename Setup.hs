@@ -141,10 +141,10 @@ get_buildinfo_fields =
                        else cmd
             (fld,) <$> readCreateProcess (shell cmd') ""
 
--- Setup will get normally be called (at least) twice --
+-- Setup will normally get invoked (at least) twice --
 -- once for `configure`, once for `build`.
 --
--- We do writeBuildInfo regardless, every time, 'cos
+-- We write "hs-perl5.buildinfo" regardless, every time, 'cos
 -- no harm in doing so. (Not normally, anyway.)
 main :: IO ()
 main = do
