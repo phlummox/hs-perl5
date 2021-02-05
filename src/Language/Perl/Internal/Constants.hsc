@@ -19,12 +19,17 @@ module Language.Perl.Internal.Constants
   , pattern G_NOARGS
   , pattern G_EVAL
   , pattern G_KEEPERR
+  -- * Underlying C types
+  , IV
+  , NV
   )
   where
 
 #include "EXTERN.h"
 #include "perl.h"
 #include "embed.h"
+
+import Data.Int
 
 -- | void context
 pattern G_VOID :: (Num a, Eq a) => a
@@ -56,4 +61,11 @@ pattern G_EVAL   = #const G_EVAL
 pattern G_KEEPERR :: (Num a, Eq a) => a
 pattern G_KEEPERR   = #const G_KEEPERR
 
+
+
+-- | Underlying C integer type used by Perl. (\"IV" = "Integer value".)
+type IV = #type IV
+
+-- | Underlying C floating-point type used by Perl. (\"NV" = "Numeric value".)
+type NV = #type NV
 

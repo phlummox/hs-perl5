@@ -156,27 +156,27 @@ hsperl_apply(SV *sub, SV *inv, SV** args, int cxt)
 }
 
 SV *
-hsperl_newSViv ( int iv )
+hsperl_newSViv ( IV iv )
 {
     return(newSViv(iv));
 }
 
 SV *
-hsperl_newSVnv ( double iv )
+hsperl_newSVnv ( NV nv )
 {
-    return(newSVnv(iv));
+    return(newSVnv(nv));
 }
 
-int
+IV
 hsperl_SvIV ( SV *sv )
 {
-    return((int)SvIV(sv));
+    return SvIV(sv);
 }
 
-double
+NV
 hsperl_SvNV ( SV *sv )
 {
-    return((double)SvNV(sv));
+    return SvNV(sv);
 }
 
 bool
@@ -350,11 +350,10 @@ hsperl_get_sv(const char *name)
     return get_sv(name, 1);
 }
 
-SV *
+CV *
 hsperl_get_cv(const char *name)
 {
-    SV *cv = (SV*)(get_cv(name, 0));
-    return cv;
+  return get_cv(name, 0);
 }
 
 // be extra-hygienic when deleting resources - don't let values "leak"

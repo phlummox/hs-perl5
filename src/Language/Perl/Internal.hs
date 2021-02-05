@@ -137,7 +137,7 @@ foreign import ccall "hsperl_SvPV"
 --
 -- Source: <https://perldoc.perl.org/perlapi#SvIV>
 foreign import ccall "hsperl_SvIV"
-    hsperl_SvIV :: SV -> IO CInt
+    hsperl_SvIV :: SV -> IO IV
 
 
 
@@ -150,7 +150,7 @@ foreign import ccall "hsperl_SvIV"
 --
 -- Source: <https://perldoc.perl.org/perlapi#SvNV>
 foreign import ccall "hsperl_SvNV"
-    hsperl_SvNV :: SV -> IO CDouble
+    hsperl_SvNV :: SV -> IO NV
 
 -- |
 -- Creates a new SV and copies an integer into it. The reference count for the
@@ -158,7 +158,7 @@ foreign import ccall "hsperl_SvNV"
 --
 -- Source: <https://perldoc.perl.org/perlapi#newSViv>
 foreign import ccall "hsperl_newSViv"
-    hsperl_newSViv :: CInt -> IO SV
+    hsperl_newSViv :: IV -> IO SV
 
 -- |
 -- Creates a new SV and copies a floating point value into it. The reference
@@ -166,7 +166,7 @@ foreign import ccall "hsperl_newSViv"
 --
 -- Source: <https://perldoc.perl.org/perlapi#newSVnv>
 foreign import ccall "hsperl_newSVnv"
-    hsperl_newSVnv :: CDouble -> IO SV
+    hsperl_newSVnv :: NV -> IO SV
 
 -- | source:
 -- <https://perldoc.perl.org/perlapi#perl_destruct>
@@ -267,7 +267,7 @@ foreign import ccall "hsperl_sv_2pvutf8"
 --
 -- See <https://perldoc.perl.org/perlapi#get_cv>
 foreign import ccall "hsperl_get_cv"
-    hsperl_get_cv :: CString -> IO SV
+    hsperl_get_cv :: CString -> IO CV
 
 -- | If it's desired Perl be extra-hygienic about cleaning up resources,
 -- this should be called (a) after allocation, but before initialization, and (b) before

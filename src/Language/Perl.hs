@@ -1,4 +1,9 @@
 
+-- On most platforms, the conversion from from 'NV' to 'Double'
+-- should be just 'id'. But don't warn us about this, ghc, as it
+-- seems at least possible it also might _not_ be 'id':
+{-# OPTIONS_GHC -Wno-identities #-}
+
 {-# LANGUAGE
   ForeignFunctionInterface, TypeSynonymInstances,
   ScopedTypeVariables, FlexibleInstances, FlexibleContexts,
@@ -65,7 +70,6 @@ import Control.Monad
 
 import qualified Data.ByteString as BS
 import           Data.Dynamic (toDyn)
-import           Data.Int
 import           Data.List ( intercalate)
 import           Data.Text (Text)
 import qualified Data.Text.Encoding as T
@@ -156,22 +160,22 @@ instance ToSV Int where
 instance FromSV Int where
     fromSV = fmap fromEnum . hsperl_SvIV
 
-instance ToSV Int32 where
+instance ToSV IV where
     toSV = toSV . toInt
       where
-        toInt :: Int32 -> Int
+        toInt :: IV -> Int
         toInt = fromIntegral
 
-instance FromSV Int32 where
+instance FromSV IV where
     fromSV = fmap fromInt . fromSV
       where
-        fromInt :: Int -> Int32
+        fromInt :: Int -> IV
         fromInt = fromIntegral
 
-instance ToSV Double where
+instance ToSV NV where
     toSV = hsperl_newSVnv . realToFrac
 
-instance FromSV Double where
+instance FromSV NV where
     fromSV = fmap realToFrac . hsperl_SvNV
 
 instance FromSV Bool where
@@ -383,7 +387,7 @@ instance (ToArgs a, ToArgs b, FromArgs r) => FromSV (a -> b -> IO r) where
 instance {-# OVERLAPS #-} ToCV String where
   toCV  sub count = do
       cv <- withCString sub hsperl_get_cv
-      if unSV cv /= nullPtr then return cv else do
+      if unCV cv /= nullPtr then return (SV $ castPtr $ unCV cv) else do
            let prms = map (\i -> "$_[" ++ show i ++ "]") [0 .. count-1]
            eval ("sub { " ++ sub ++ "(" ++ intercalate ", " prms ++ ") }")
 
