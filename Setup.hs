@@ -61,7 +61,7 @@ import Data.Maybe (fromMaybe)
 
 is_verbose_configure :: Bool
 is_verbose_configure =
-#ifdef VERBOSE_CONFIGURE
+#if VERBOSE_CONFIGURE
   True
 #else
   False
@@ -71,35 +71,71 @@ is_verbose_configure =
 -- |
 -- List of
 -- @
---    (field-name, shell command to get field body)
+--    (field-name, perl expression to get field body)
 -- @
 -- to be output to a .buildinfo file
 buildInfoFields :: [(String,String)]
 buildInfoFields = [
-    -- when invoked with no params, "ccopts" and "ldopts" output
-    -- results to stdout
-    ("cc-options", "perl -MExtUtils::Embed -e ccopts")
-    -- ^ typically something like:
-    --      -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fwrapv -fno-strict-aliasing
-    --      -pipe -I/usr/local/include -D_LARGEFILE_SOURCE
-    --      -D_FILE_OFFSET_BITS=64  -I/usr/lib/x86_64-linux-gnu/perl/5.26/CORE
-  , ("ld-options", "perl -MExtUtils::Embed -e ldopts")
-    -- ^ typically something like:
-    --      -Wl,-E  -fstack-protector-strong -L/usr/local/lib
-    --      -L/usr/lib/x86_64-linux-gnu/perl/5.26/CORE -lperl -ldl -lm
-    --      -lpthread -lc -lcrypt
-  , ("extra-libraries", "perl -MExtUtils::Embed -e 'print(join \" \", (map { $_ =~ s/^-l//; $_; } ( grep /^-l/, (split \" \", ldopts(1)))))'")
-    -- ^ just the libraries: e.g.
-    --      perl dl m pthread c crypt
-  , ("include-dirs", "perl -MExtUtils::Embed -e 'my $output; { open local(*STDOUT), \">\", \\$output; perl_inc();}  $output =~ s/^\\s+-I//; print $output; '")
-  , ("extra-lib-dirs", "perl -MExtUtils::Embed -e 'print(join \", \", (map { $_ =~ s/^-L//; $_; } ( grep /^-L/, (split \" \", ldopts(1)))))'")
+  -- All perl expressions:
+  -- - are run with the module ExtUtils::Embed loaded.
+  -- - are wrapped in single quotes when passed to the shell,
+  --   so don't use single quotes in your expression.
+  --
+  -- NB when invoked with no params, "ccopts" and "ldopts" output
+  -- results to stdout
+
+  ("cc-options",        "ccopts")
+
+                        -- ^ output: typically something like:
+                        --     -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fwrapv
+                        --     -fno-strict-aliasing -pipe
+                        --     -I/usr/local/include -D_LARGEFILE_SOURCE
+                        --     -D_FILE_OFFSET_BITS=64
+                        --     -I/usr/lib/x86_64-linux-gnu/perl/5.26/CORE
+
+  ,("ld-options",       "ldopts")
+
+                        -- ^ output: typically something like:
+                        --     -Wl,-E  -fstack-protector-strong
+                        --     -L/usr/local/lib
+                        --     -L/usr/lib/x86_64-linux-gnu/perl/5.26/CORE
+                        --     -lperl -ldl -lm -lpthread -lc -lcrypt
+
+  , ("extra-libraries", "print(join \" \", (map { $_ =~ s/^-l//; $_; } " ++
+                        "( grep /^-l/, (split \" \", ldopts(1)))))")
+
+                        -- ^ output: just the libraries to link against: e.g.
+                        --      perl dl m pthread c crypt
+
+  , ("include-dirs",    unlines [
+                            "my $output;"
+                          -- .. capture STDOUT to $output:
+                          , "{"
+                          , "open local(*STDOUT), \">\", \\$output;"
+                          , "perl_inc();"
+                          , "}"
+                          , "$output =~ s/^\\s+-I//;"
+                          , "print $output;"
+                        ])
+
+                        -- ^ output: just the include dirs: e.g.
+                        --      /usr/lib/x86_64-linux-gnu/perl/5.26/CORE
+
+  , ("extra-lib-dirs",  "print(join \", \", (map { $_ =~ s/^-L//; $_; } "
+                        ++ "( grep /^-L/, (split \" \", ldopts(1)))))")
+
+                        -- ^ output: just the lib dirs: e.g.
+                        --      /usr/local/lib
+                        --      /usr/lib/x86_64-linux-gnu/perl/5.26/CORE
   ]
 
 -- | turn @buildInfoFields@ above into an
 -- associative list, mapping from field to value.
 get_buildinfo_fields :: IO [(String, String)]
 get_buildinfo_fields =
-    forM buildInfoFields $ \(fld, cmd) -> do
+    forM buildInfoFields $ \(fld, perl_expr) -> do
+            let cmd  = "perl -MExtUtils::Embed -e '"
+                          ++ perl_expr ++ "'"
             let cmd' = if is_verbose_configure
                        then "set -x; " ++ cmd
                        else cmd
