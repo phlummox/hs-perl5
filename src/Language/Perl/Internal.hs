@@ -85,12 +85,17 @@ foreign import ccall "hsperl_init"
 foreign import ccall "hsperl_sv_undef"
     hsperl_sv_undef :: IO SV
 
--- | This is the @true@ SV. See \"PL_sv_no". Always refer to this as &PL_sv_yes.
+-- | This is the @true@ 'SV'. See \"PL_sv_no". Always refer to this as
+-- @&PL_sv_yes@.
 --
 -- source: <https://perldoc.perl.org/perlapi#PL_sv_yes>
 foreign import ccall "hsperl_sv_yes"
     hsperl_sv_yes :: IO SV
 
+-- | This is the @false@ 'SV'. See \"PL_sv_yes". Always refer to this as
+-- @&PL_sv_no@.
+--
+-- source: <https://perldoc.perl.org/perlapi#PL_sv_no>
 foreign import ccall "hsperl_sv_no"
     hsperl_sv_no :: IO SV
 
@@ -221,11 +226,20 @@ hsperl_apply sub receiver args flags between =
     acquire = hsperl_apply_c sub receiver args flags
     release = free
 
+-- |
+-- Returns a boolean indicating whether Perl would evaluate the SV as
+-- true or false. See \"SvOK" for a defined/undefined test. Handles
+-- 'get' magic unless the scalar is already SvPOK, SvIOK or SvNOK (the
+-- public, not the private flags).
+--
+-- See \"SvTRUEx" for a version which guarantees to evaluate sv only once.
+--
+-- source: <https://perldoc.perl.org/perlapi#SvTRUE>
 foreign import ccall "hsperl_SvTRUE"
     hsperl_SvTRUE :: SV -> IO Bool
 
 -- |
--- Returns the SV of the specified Perl scalar. 
+-- Returns the SV of the specified Perl scalar.
 -- Flags are passed to @gv_fetchpv@.
 --
 -- If @GV_ADD@ is set and the Perl variable does not exist then it will be
