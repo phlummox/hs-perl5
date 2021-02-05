@@ -21,11 +21,11 @@ Normally, only one interpreter instance can exist at a time
 (unless your Perl library has been specially compiled to allow for multiple
 instances -- see <https://perldoc.perl.org/perlembed#Maintaining-multiple-interpreter-instances perlembed>).
 
-For convenience, a 'bracket'-like function is provided, 'withPerl5', which creates
+For convenience, a 'bracket'-like function is provided, 'withPerl', which creates
 an interpreter using 'perl5_init', cleans up afterwards using
 'perl_destruct', and runs your 'IO' actions in between.
 
-Calling 'withPerl5' creates an 'Interpreter' instance that is
+Calling 'withPerl' creates an 'Interpreter' instance that is
 equivalent to running
 
 @
@@ -38,7 +38,7 @@ at the command-line.
 
 
 
-module Language.Perl5
+module Language.Perl
     (
     -- * Perl calling context
       Context(..)
@@ -48,7 +48,7 @@ module Language.Perl5
     , ToSV(..)
     , FromSV(..)
     -- * Safely run Perl things
-    , withPerl5
+    , withPerl
     -- * evaluate in a Perl context
     , callSub,      (.:), (.!)
     , callMethod,   (.$), (.$!)
@@ -74,8 +74,8 @@ import Foreign hiding (void)
 import Foreign.C.Types
 import Foreign.C.String
 
-import Language.Perl5.Internal
-import Language.Perl5.Internal.Types
+import Language.Perl.Internal
+import Language.Perl.Internal.Types
 
 {-# ANN module ("HLint: ignore Eta reduce" :: String) #-}
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
@@ -84,8 +84,8 @@ import Language.Perl5.Internal.Types
 -- safely running Perl things
 
 -- | Run a computation within the context of a Perl 5 interpreter.
-withPerl5 :: IO a -> IO a
-withPerl5 f =
+withPerl :: IO a -> IO a
+withPerl f =
     withCString "-e" $ \prog -> withCString "" $ \cstr ->
         withArray [prog, prog, cstr] $ \argv ->
             bracket (acquire argv) release between
@@ -293,8 +293,8 @@ instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> a) where
 -- functions. i.e., any functions whose return value is
 -- ultimately given to us by @perl5_return_conv@ from
 -- @cbits/p5embed.c@.
-returnPerl5 :: forall a. FromArgs a => Ptr SV -> IO a
-returnPerl5 rv = do
+returnPerl :: forall a. FromArgs a => Ptr SV -> IO a
+returnPerl rv = do
     res  <- svEither rv
     case res of
       Left [err]   -> throwIO (toException $ toDyn err)
@@ -309,7 +309,7 @@ returnPerl5 rv = do
 -- | Evaluate a snippet of Perl 5 code.
 eval :: forall a. FromArgs a => String -> IO a
 eval str = withCStringLen str $ \(cstr, len) ->
-  perl5_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a)) returnPerl5
+  perl5_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a)) returnPerl
 
 -- | Same as 'eval' but always in void context.
 eval_ :: String -> IO ()
@@ -321,7 +321,7 @@ callSub sub args = do
     args'   <- toArgs args
     sub'    <- toCV sub (length args')
     withSVArray args' $ \argsPtr ->
-      perl5_apply sub' (SV nullPtr) argsPtr (numContext $ contextOf (undefined :: r)) returnPerl5
+      perl5_apply sub' (SV nullPtr) argsPtr (numContext $ contextOf (undefined :: r)) returnPerl
 
 -- | Call a Perl 5 method.
 callMethod :: forall i m a r. (ToSV i, ToSV m, ToArgs a, FromArgs r) => i -> m -> a -> IO r
@@ -330,7 +330,7 @@ callMethod inv meth args = do
     args'   <- toArgs args
     sub'    <- toSV meth
     withSVArray args' $ \argsPtr ->
-      perl5_apply sub' inv' argsPtr (numContext $ contextOf (undefined :: r)) returnPerl5
+      perl5_apply sub' inv' argsPtr (numContext $ contextOf (undefined :: r)) returnPerl
 
 -- aliases for callSub and callMethod
 
@@ -386,16 +386,16 @@ instance {-# OVERLAPS #-} ToCV String where
            let prms = map (\i -> "$_[" ++ show i ++ "]") [0 .. count-1]
            eval ("sub { " ++ sub ++ "(" ++ intercalate ", " prms ++ ") }")
 
--- hsPerl5Apply -- a function we expose from Haskell
+-- hsPerlApply -- a function we expose from Haskell
 -- to C. (used in cbits/p5embed.c)
 
-hsPerl5Apply :: StablePtr Callback -> Ptr SV -> CInt -> IO (Ptr SV)
-hsPerl5Apply ptr args cxt = do
+hsPerlApply :: StablePtr Callback -> Ptr SV -> CInt -> IO (Ptr SV)
+hsPerlApply ptr args cxt = do
     f <- deRefStablePtr ptr
     f args cxt
 
-foreign export ccall "hsPerl5Apply"
-    hsPerl5Apply :: StablePtr Callback -> Ptr SV -> CInt -> IO (Ptr SV)
+foreign export ccall "hsPerlApply"
+    hsPerlApply :: StablePtr Callback -> Ptr SV -> CInt -> IO (Ptr SV)
 
 
 

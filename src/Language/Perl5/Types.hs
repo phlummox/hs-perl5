@@ -6,7 +6,7 @@ Types for interfacing with an embedded Perl interpreter.
 
 -}
 
-module Language.Perl5.Types
+module Language.Perl.Types
   (
   -- * Basic types
     SV
@@ -19,7 +19,7 @@ module Language.Perl5.Types
   where
 
 
-import Language.Perl5.Internal.Types
+import Language.Perl.Internal.Types
 
 
 

@@ -7,7 +7,7 @@ Constants and stuff extracted from header files
 
 -}
 
-module Language.Perl5.Internal.Constants
+module Language.Perl.Internal.Constants
   (
   -- * Flag values for 'call' functions
   -- See <https://perldoc.perl.org/perlcall#FLAG-VALUES perlcall> for more

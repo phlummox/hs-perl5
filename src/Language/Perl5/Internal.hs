@@ -39,7 +39,7 @@ My suggestion is:
 
 -}
 
-module Language.Perl5.Internal
+module Language.Perl.Internal
   where
 
 import Control.Exception
@@ -48,7 +48,7 @@ import Foreign hiding (void)
 import Foreign.C.Types
 import Foreign.C.String
 
-import Language.Perl5.Internal.Types
+import Language.Perl.Internal.Types
 
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
 {-# ANN module ("HLint: ignore Eta reduce" :: String) #-}

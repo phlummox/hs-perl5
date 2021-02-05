@@ -5,7 +5,7 @@ Helper funcs and instances for testing.
 
 -}
 
-module Language.Perl5.TestUtils
+module Language.Perl.TestUtils
   where
 
 import Data.Char

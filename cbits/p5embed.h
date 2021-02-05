@@ -35,7 +35,7 @@ void perl5_SvUTF8_on(SV *sv);
 char* perl5_sv_2pvutf8(SV* sv, STRLEN* lp);
 
 #include <HsFFI.h>
-extern SV ** hsPerl5Apply ( HsStablePtr *sub, SV **args, int cxt );
+extern SV ** hsPerlApply ( HsStablePtr *sub, SV **args, int cxt );
 SV * perl5_make_cv ( HsStablePtr *sub );
 
 #endif

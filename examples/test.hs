@@ -1,8 +1,8 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
-import Language.Perl5
+import Language.Perl
 
 main :: IO ()
-main = withPerl5 $ do
+main = withPerl $ do
     _Test_  <- use "Test"
 
     "plan".!("tests", 11)

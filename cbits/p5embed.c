@@ -245,7 +245,7 @@ XS(__HsPerl5__Invoke) {
 
     SPAGAIN;
 
-    ret = hsPerl5Apply(sub, stack, GIMME_V);
+    ret = hsPerlApply(sub, stack, GIMME_V);
     if (ret == NULL) {
         XSRETURN(0);
     }

@@ -6,7 +6,7 @@ Types for interfacing with an embedded Perl interpreter.
 
 -}
 
-module Language.Perl5.Internal.Types
+module Language.Perl.Internal.Types
   (
   -- * main types
     Interpreter(..)
@@ -28,7 +28,7 @@ module Language.Perl5.Internal.Types
 import Foreign
 import Foreign.C.Types
 
-import Language.Perl5.Internal.Constants
+import Language.Perl.Internal.Constants
 
 
 {-# ANN module ("HLint: ignore Missing NOINLINE pragma" :: String) #-}

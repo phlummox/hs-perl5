@@ -50,11 +50,11 @@ custom-setup
 
 library
   exposed-modules:
-      Language.Perl5
-      Language.Perl5.Types
-      Language.Perl5.Internal
-      Language.Perl5.Internal.Types
-      Language.Perl5.Internal.Constants
+      Language.Perl
+      Language.Perl.Types
+      Language.Perl.Internal
+      Language.Perl.Internal.Types
+      Language.Perl.Internal.Constants
   hs-source-dirs:      src
   include-dirs:        cbits
   c-sources:           cbits/p5embed.c
@@ -79,7 +79,7 @@ test-suite hs-perl5-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       Language.Perl5.TestUtils
+  other-modules:       Language.Perl.TestUtils
   build-depends:       base
                      , base-compat >= 0.10
                      , hs-perl5
