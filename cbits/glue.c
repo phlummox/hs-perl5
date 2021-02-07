@@ -15,7 +15,6 @@
 // and _do_ need to be wrapped.)
 
 
-
 /* Workaround for mapstart: the only op which needs a different ppaddr */
 #undef Perl_pp_mapstart
 #define Perl_pp_mapstart Perl_pp_grepstart

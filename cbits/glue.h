@@ -3,15 +3,15 @@
 
 // apparently defined by old ./Configure.PL
 // for Windows
-#define dirent DIRENT
+//#define dirent DIRENT
 
 // possibly previously used for
 // Windows compatibility?
-#define _INTPTR_T_DEFINED
-#define _UINTPTR_T_DEFINED
+//#define _INTPTR_T_DEFINED
+//#define _UINTPTR_T_DEFINED
 
 // almost certainly pointless
-#undef RETURN
+//#undef RETURN
 
 #include "EXTERN.h"
 #include "perl.h"
