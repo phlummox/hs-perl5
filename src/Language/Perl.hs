@@ -87,7 +87,7 @@ import Language.Perl.Internal.Types
 ----
 -- safely running Perl things
 
--- | Run a computation within the context of a Perl 5 interpreter.
+-- | Run a computation within the context of a Perl interpreter.
 withPerl :: IO a -> IO a
 withPerl f =
     withCString "-e" $ \prog -> withCString "" $ \cstr ->
@@ -109,12 +109,12 @@ withPerl f =
 -----
 -- marshalling to and from Perl
 
--- | Data types that can be cast to a Perl 5 value (SV).
+-- | Data types that can be cast to a Perl value (SV).
 class ToSV a where
     toSV :: a -> IO SV
 -- TODO: shift 'primitive marshalling' into its own module.
 
--- | Data types that can be cast from a Perl 5 value (SV).
+-- | Data types that can be cast from a Perl value (SV).
 class FromSV a where
     fromSV :: SV -> IO a
 
@@ -151,7 +151,7 @@ instance FromSV Text where
 
 
 -- | For convenience, a 'ToSV' instance is provided for 'Int's.
--- However, a Haskell 'Int' on your platform might not be the same size 
+-- However, a Haskell 'Int' on your platform might not be the same size
 -- as Perl's integral type - for an exact
 -- conversion, see the instance for 'IV'.
 instance ToSV Int where
@@ -311,7 +311,7 @@ returnPerl rv = do
 -- --- eval funcs
 
 
--- | Evaluate a snippet of Perl 5 code.
+-- | Evaluate a snippet of Perl code.
 eval :: forall a. FromArgs a => String -> IO a
 eval str = withCStringLen str $ \(cstr, len) ->
   hsperl_eval cstr (toEnum len) (numContext $ contextOf (undefined :: a)) returnPerl
@@ -320,7 +320,7 @@ eval str = withCStringLen str $ \(cstr, len) ->
 eval_ :: String -> IO ()
 eval_ str = eval str
 
--- | Call a Perl 5 subroutine.
+-- | Call a Perl subroutine.
 callSub :: forall s a r. (ToCV s, ToArgs a, FromArgs r) => s -> a -> IO r
 callSub sub args = do
     args'   <- toArgs args
@@ -328,7 +328,7 @@ callSub sub args = do
     withSVArray args' $ \argsPtr ->
       hsperl_apply sub' (SV nullPtr) argsPtr (numContext $ contextOf (undefined :: r)) returnPerl
 
--- | Call a Perl 5 method.
+-- | Call a Perl method.
 callMethod :: forall i m a r. (ToSV i, ToSV m, ToArgs a, FromArgs r) => i -> m -> a -> IO r
 callMethod inv meth args = do
     inv'    <- toSV inv

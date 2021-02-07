@@ -233,16 +233,16 @@ static PerlInterpreter *my_perl;
 ////
 // Interpreter initialization
 
-const char HsPerl5Preamble[] =
-"package __HsPerl5__;\n\n"
+const char HsPerlPreamble[] =
+"package __HsPerl__;\n\n"
 "sub MkCode {\n"
 "    my $val = shift;\n"
-"    sub { unshift @_, $val; goto &__HsPerl5__::Invoke }\n"
+"    sub { unshift @_, $val; goto &__HsPerl__::Invoke }\n"
 "}\n"
 "1;\n";
 
 // used in the preamble.
-XS(__HsPerl5__Invoke) {
+XS(__HsPerl__Invoke) {
     HsStablePtr *sub;
     SV **stack;
     SV **ret;
@@ -341,9 +341,9 @@ hsperl_init ( int argc, char **argv )
     if (exitstatus == 0)
         exitstatus = perl_run( my_perl );
 
-    newXS((char*) "__HsPerl5__::Invoke", __HsPerl5__Invoke, (char*)__FILE__);
+    newXS((char*) "__HsPerl__::Invoke", __HsPerl__Invoke, (char*)__FILE__);
 
-    eval_pv(HsPerl5Preamble, TRUE);
+    eval_pv(HsPerlPreamble, TRUE);
 
     if (SvTRUE(ERRSV)) {
         STRLEN n_a;
@@ -376,7 +376,7 @@ hsperl_make_cv ( HsStablePtr *sub )
     SV *sv = newSV(0);
     SV *ret = NULL;
     int count;
-    sv_setref_pv(sv, "__HsPerl5__::Code", sub);
+    sv_setref_pv(sv, "__HsPerl__::Code", sub);
     dSP;
 
     ENTER;
@@ -385,7 +385,7 @@ hsperl_make_cv ( HsStablePtr *sub )
     XPUSHs(sv_2mortal(sv));
     PUTBACK;
 
-    count = call_pv("__HsPerl5__::MkCode", G_SCALAR);
+    count = call_pv("__HsPerl__::MkCode", G_SCALAR);
 
     if (count != 1) {
         croak("Big trouble\n");
