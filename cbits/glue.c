@@ -14,13 +14,7 @@
 // (https://perldoc.perl.org/perlapi) are actually macros,
 // and _do_ need to be wrapped.)
 
-const char HsPerl5Preamble[] =
-"package __HsPerl5__;\n\n"
-"sub MkCode {\n"
-"    my $val = shift;\n"
-"    sub { unshift @_, $val; goto &__HsPerl5__::Invoke }\n"
-"}\n"
-"1;\n";
+
 
 /* Workaround for mapstart: the only op which needs a different ppaddr */
 #undef Perl_pp_mapstart
@@ -28,7 +22,9 @@ const char HsPerl5Preamble[] =
 #undef OP_MAPSTART
 #define OP_MAPSTART OP_GREPSTART
 
-static PerlInterpreter *my_perl;
+
+////
+// Perl constants
 
 SV *
 hsperl_sv_undef ()
@@ -48,25 +44,93 @@ hsperl_sv_no ()
     return(&PL_sv_no);
 }
 
-// mark as not Unicode-safe
-// if callers want Utf8, they should apply SvUTF8_on themselves
-SV **
-hsperl_eval(char *code, int len, int cxt)
+////
+// Construct scalar values
+
+char *
+hsperl_SvPV ( SV *sv )
 {
-    dSP;
-    SV* sv;
-    int count;
-
-    ENTER;
-    SAVETMPS;
-
-    sv = newSVpvn(code, len);
-    count = eval_sv(sv, cxt);
-    SvREFCNT_dec(sv);
-
-    return hsperl_return_conv(count);
+    char *rv;
+    rv = SvPV_nolen(sv);
+    return rv;
 }
 
+// mark as not Unicode safe - if callers
+// want Utf8, they should apply SvUTF8_on themselves
+SV *
+hsperl_newSVpvn ( char * pv, int len )
+{
+    return newSVpvn(pv, len);
+}
+
+
+SV *
+hsperl_newSViv ( IV iv )
+{
+    return(newSViv(iv));
+}
+
+SV *
+hsperl_newSVnv ( NV nv )
+{
+    return(newSVnv(nv));
+}
+
+////
+// Other operations on SVs
+
+IV
+hsperl_SvIV ( SV *sv )
+{
+    return SvIV(sv);
+}
+
+NV
+hsperl_SvNV ( SV *sv )
+{
+    return SvNV(sv);
+}
+
+bool
+hsperl_SvTRUE ( SV * sv )
+{
+    bool rv;
+    rv = SvTRUE(sv);
+    return(rv ? 1 : 0);
+}
+
+// switch on Utf8 flag
+void
+hsperl_SvUTF8_on(SV *sv)
+{
+  SvUTF8_on(sv);
+}
+
+// convert SV to a Utf8 string
+char*
+hsperl_sv_2pvutf8(SV* sv, STRLEN* lp) {
+  return sv_2pvutf8(sv, lp);
+}
+
+SV *
+hsperl_get_sv(const char *name)
+{
+    return get_sv(name, 1);
+}
+
+
+
+////
+// Operations on CVs
+
+CV *
+hsperl_get_cv(const char *name)
+{
+  return get_cv(name, 0);
+}
+
+////
+// Return-value marshalling
 
 SV **
 hsperl_return_conv (int count) {
@@ -109,21 +173,27 @@ hsperl_return_conv (int count) {
     return out;
 }
 
-char *
-hsperl_SvPV ( SV *sv )
-{
-    char *rv;
-    rv = SvPV_nolen(sv);
-    return rv;
-}
 
-// mark as not Unicode safe - if calls
-// want Utf8, they should apply SvUTF8_on themselves
-SV *
-hsperl_newSVpvn ( char * pv, int len )
+////
+// Operations on code/subroutines
+
+// mark as not Unicode-safe
+// if callers want Utf8, they should apply SvUTF8_on themselves
+SV **
+hsperl_eval(char *code, int len, int cxt)
 {
-    SV *sv = newSVpvn(pv, len);
-    return(sv);
+    dSP;
+    SV* sv;
+    int count;
+
+    ENTER;
+    SAVETMPS;
+
+    sv = newSVpvn(code, len);
+    count = eval_sv(sv, cxt);
+    SvREFCNT_dec(sv);
+
+    return hsperl_return_conv(count);
 }
 
 SV **
@@ -155,69 +225,23 @@ hsperl_apply(SV *sub, SV *inv, SV** args, int cxt)
     }
 }
 
-SV *
-hsperl_newSViv ( IV iv )
-{
-    return(newSViv(iv));
-}
+////
+// Interpreter instance
 
-SV *
-hsperl_newSVnv ( NV nv )
-{
-    return(newSVnv(nv));
-}
+static PerlInterpreter *my_perl;
 
-IV
-hsperl_SvIV ( SV *sv )
-{
-    return SvIV(sv);
-}
+////
+// Interpreter initialization
 
-NV
-hsperl_SvNV ( SV *sv )
-{
-    return SvNV(sv);
-}
+const char HsPerl5Preamble[] =
+"package __HsPerl5__;\n\n"
+"sub MkCode {\n"
+"    my $val = shift;\n"
+"    sub { unshift @_, $val; goto &__HsPerl5__::Invoke }\n"
+"}\n"
+"1;\n";
 
-bool
-hsperl_SvTRUE ( SV * sv )
-{
-    bool rv;
-    rv = SvTRUE(sv);
-    return(rv ? 1 : 0);
-}
-
-SV *
-hsperl_make_cv ( HsStablePtr *sub )
-{
-    SV *sv = newSV(0);
-    SV *ret = NULL;
-    int count;
-    sv_setref_pv(sv, "__HsPerl5__::Code", sub);
-    dSP;
-
-    ENTER;
-    SAVETMPS;
-    PUSHMARK(SP);
-    XPUSHs(sv_2mortal(sv));
-    PUTBACK;
-
-    count = call_pv("__HsPerl5__::MkCode", G_SCALAR);
-
-    if (count != 1) {
-        croak("Big trouble\n");
-    }
-
-    SPAGAIN;
-    ret = newSVsv(POPs);
-
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
-
-    return (ret);
-}
-
+// used in the preamble.
 XS(__HsPerl5__Invoke) {
     HsStablePtr *sub;
     SV **stack;
@@ -331,30 +355,8 @@ hsperl_init ( int argc, char **argv )
     return my_perl;
 }
 
-// switch on Utf8 flag
-void
-hsperl_SvUTF8_on(SV *sv)
-{
-  SvUTF8_on(sv);
-}
-
-// convert SV to a Utf8 string
-char*
-hsperl_sv_2pvutf8(SV* sv, STRLEN* lp) {
-  return sv_2pvutf8(sv, lp);
-}
-
-SV *
-hsperl_get_sv(const char *name)
-{
-    return get_sv(name, 1);
-}
-
-CV *
-hsperl_get_cv(const char *name)
-{
-  return get_cv(name, 0);
-}
+////
+// Interpreter cleanup
 
 // be extra-hygienic when deleting resources - don't let values "leak"
 // from one instance of the interpreter to a later one.
@@ -364,4 +366,38 @@ hsperl_set_destruct_level() {
   PL_perl_destruct_level = 1;
 }
 
+
+////
+// Use Haskell callbacks in Perl
+
+SV *
+hsperl_make_cv ( HsStablePtr *sub )
+{
+    SV *sv = newSV(0);
+    SV *ret = NULL;
+    int count;
+    sv_setref_pv(sv, "__HsPerl5__::Code", sub);
+    dSP;
+
+    ENTER;
+    SAVETMPS;
+    PUSHMARK(SP);
+    XPUSHs(sv_2mortal(sv));
+    PUTBACK;
+
+    count = call_pv("__HsPerl5__::MkCode", G_SCALAR);
+
+    if (count != 1) {
+        croak("Big trouble\n");
+    }
+
+    SPAGAIN;
+    ret = newSVsv(POPs);
+
+    PUTBACK;
+    FREETMPS;
+    LEAVE;
+
+    return (ret);
+}
 
