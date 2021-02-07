@@ -1,18 +1,6 @@
 #ifndef HS_PERL_GLUE_H
 #define HS_PERL_GLUE_H 1
 
-// apparently defined by old ./Configure.PL
-// for Windows
-//#define dirent DIRENT
-
-// possibly previously used for
-// Windows compatibility?
-//#define _INTPTR_T_DEFINED
-//#define _UINTPTR_T_DEFINED
-
-// almost certainly pointless
-//#undef RETURN
-
 #include "EXTERN.h"
 #include "perl.h"
 #include "embed.h"
