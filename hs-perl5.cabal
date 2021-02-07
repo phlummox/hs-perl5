@@ -35,7 +35,7 @@ category:           Language, Perl
 extra-source-files:
     README.md
     CHANGELOG.md
-    cbits/p5embed.h
+    cbits/glue.h
     cbits/perlxsi.h
 
 source-repository head
@@ -57,7 +57,7 @@ library
       Language.Perl.Internal.Constants
   hs-source-dirs:      src
   include-dirs:        cbits
-  c-sources:           cbits/p5embed.c
+  c-sources:           cbits/glue.c
   build-depends:
                        base >=4.7 && <5
                      , bytestring

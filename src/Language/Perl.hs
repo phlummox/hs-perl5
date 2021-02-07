@@ -297,7 +297,7 @@ instance (ToArgs a, FromArgs (r1, r2)) => ToSV (r1 -> r2 -> a) where
 -- un-befunge the result of calling one of our eval/apply
 -- functions. i.e., any functions whose return value is
 -- ultimately given to us by @hsperl_return_conv@ from
--- @cbits/p5embed.c@.
+-- @cbits/glue.c@.
 returnPerl :: forall a. FromArgs a => Ptr SV -> IO a
 returnPerl rv = do
     res  <- svEither rv
@@ -392,7 +392,7 @@ instance {-# OVERLAPS #-} ToCV String where
            eval ("sub { " ++ sub ++ "(" ++ intercalate ", " prms ++ ") }")
 
 -- hsPerlApply -- a function we expose from Haskell
--- to C. (used in cbits/p5embed.c)
+-- to C. (used in cbits/glue.c)
 
 hsPerlApply :: StablePtr Callback -> Ptr SV -> CInt -> IO (Ptr SV)
 hsPerlApply ptr args cxt = do

@@ -1,7 +1,7 @@
 
 // TODO - tidy up #includes, are we needlessly
 // double-including?
-#include "p5embed.h"
+#include "glue.h"
 #include "perlxsi.h"
 
 // Any functions we define here should be prefixed
