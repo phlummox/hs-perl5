@@ -8,12 +8,12 @@ homepage:           https://github.com/phlummox/hs-perl5#readme
 bug-reports:        https://github.com/phlummox/hs-perl5/issues
 author:             Audrey Tang <audreyt@audreyt.org>, phlummox <phlummox2@gmail.com>
 maintainer:         phlummox <phlummox2@gmail.com>
-synopsis:           Haskell interface to embedded Perl 5 interpreter
-description:        This module provides a Haskell interface to embedded Perl 5
-                    interpreter.
+synopsis:           Haskell interface to an embedded Perl 5 interpreter
+description:        This module provides a Haskell interface to an embedded
+                    Perl 5 interpreter.
                     .
-                    Documentation and functionality is scarce at the moment; see
-                    @examples/test.hs@ for some basic usage examples.
+                    Documentation and functionality is scarce at the moment;
+                    see @examples/test.hs@ for some basic usage examples.
                     .
                     Currently supported features are:
                     .
@@ -27,16 +27,31 @@ description:        This module provides a Haskell interface to embedded Perl 5
                     /PORTABILITY: probably only Linux/
                     .
                     If using Stack -- seems to work OK on stack lts-9 thru stack lts-15
+                    .
+                    For further information, please see the README on GitHub
+                    at <https://github.com/phlummox/hs-perl5#readme>
 stability:          experimental
 tested-with:        GHC == 8.0.2, GHC == 8.2.2, GHC == 8.8.3
 build-type:         Custom
-category:           Language, Perl
+category:           Language, Perl, Foreign
 
 extra-source-files:
-    README.md
     CHANGELOG.md
+    HACKING.md
+    README.md
+    THANKS.md
     cbits/glue.h
     cbits/perlxsi.h
+    stack-lts-9.yaml
+    stack-lts-9.yaml.lock
+    stack-lts-10.yaml
+    stack-lts-10.yaml.lock
+    stack-lts-11.yaml
+    stack-lts-11.yaml.lock
+    stack-lts-12.yaml
+    stack-lts-12.yaml.lock
+    stack-lts-15.yaml
+    stack-lts-15.yaml.lock
 
 source-repository head
   type: git
